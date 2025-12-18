@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CLAUDE.md Relationship Graph</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.27.0/cytoscape.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/cytoscape-fcose@2.2.0/cytoscape-fcose.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); min-height: 100vh; color: #fff; }
@@ -15,7 +14,7 @@
         .stat-item { display: flex; align-items: center; gap: 8px; }
         .stat-value { color: #4ecdc4; font-weight: bold; font-size: 18px; }
         .container { display: flex; height: calc(100vh - 100px); }
-        #cy { flex: 1; background: transparent; }
+        #cy { flex: 1; background: rgba(0,0,0,0.2); }
         .sidebar { width: 380px; background: rgba(0,0,0,0.3); border-left: 1px solid rgba(255,255,255,0.1); padding: 20px; overflow-y: auto; }
         .sidebar h2 { font-size: 16px; color: #4ecdc4; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .node-info { display: none; }
@@ -25,9 +24,7 @@
         .info-value a { color: #4ecdc4; text-decoration: none; }
         .info-value a:hover { text-decoration: underline; }
         .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
-        .tag { background: rgba(78, 205, 196, 0.2); color: #4ecdc4; padding: 3px 8px; border-radius: 10px; font-size: 11px; cursor: pointer; transition: all 0.2s; }
-        .tag:hover { background: rgba(78, 205, 196, 0.4); }
-        .tag.active { background: #4ecdc4; color: #1a1a2e; }
+        .tag { background: rgba(78, 205, 196, 0.2); color: #4ecdc4; padding: 3px 8px; border-radius: 10px; font-size: 11px; }
         .controls { margin-bottom: 20px; }
         .control-group { margin-bottom: 15px; }
         .control-label { font-size: 12px; color: #888; margin-bottom: 5px; }
@@ -40,14 +37,11 @@
         .legend-title { font-size: 12px; color: #888; margin-bottom: 10px; }
         .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; font-size: 12px; cursor: pointer; padding: 3px 5px; border-radius: 4px; transition: all 0.2s; }
         .legend-item:hover { background: rgba(255,255,255,0.1); }
-        .legend-item.active { background: rgba(78, 205, 196, 0.2); }
         .legend-color { width: 12px; height: 12px; border-radius: 50%; }
         .placeholder { color: #666; text-align: center; padding: 40px 20px; }
         .search-box { margin-bottom: 15px; }
         .search-box input { width: 100%; padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff; font-size: 13px; }
         .footer { font-size: 11px; color: #666; margin-top: 20px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); }
-
-        /* Category Panel */
         .category-panel { margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px; }
         .category-title { font-size: 14px; color: #4ecdc4; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .category-list { max-height: 200px; overflow-y: auto; }
@@ -56,15 +50,7 @@
         .category-item.active { background: rgba(78, 205, 196, 0.3); border-left: 3px solid #4ecdc4; }
         .category-name { display: flex; align-items: center; gap: 8px; }
         .category-count { background: rgba(78, 205, 196, 0.2); color: #4ecdc4; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
-
-        /* Cluster Panel */
-        .cluster-panel { margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px; }
-        .cluster-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; margin: 4px 0; background: rgba(255,255,255,0.05); border-radius: 5px; cursor: pointer; transition: all 0.2s; }
-        .cluster-item:hover { background: rgba(255,255,255,0.1); }
-        .cluster-item.active { background: rgba(78, 205, 196, 0.3); border-left: 3px solid #4ecdc4; }
         .cluster-color { width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
-
-        /* Download Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
         .modal-content { background: #1a1a2e; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 25px; width: 500px; max-height: 80vh; overflow-y: auto; }
@@ -77,15 +63,12 @@
         .download-info { flex: 1; }
         .download-name { font-size: 14px; color: #fff; }
         .download-meta { font-size: 11px; color: #888; }
-
-        /* Tabs */
         .tabs { display: flex; gap: 5px; margin-bottom: 15px; }
-        .tab { padding: 8px 16px; background: rgba(255,255,255,0.05); border: none; border-radius: 5px; color: #888; cursor: pointer; font-size: 13px; transition: all 0.2s; }
-        .tab:hover { background: rgba(255,255,255,0.1); color: #fff; }
-        .tab.active { background: #4ecdc4; color: #1a1a2e; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
+        .tab-btn { padding: 8px 16px; background: rgba(255,255,255,0.05); border: none; border-radius: 5px; color: #888; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+        .tab-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .tab-btn.active { background: #4ecdc4; color: #1a1a2e; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
         @media (max-width: 768px) { .container { flex-direction: column; } .sidebar { width: 100%; height: auto; max-height: 300px; } #cy { height: 60vh; } }
     </style>
 </head>
@@ -103,35 +86,33 @@
         <div id="cy"></div>
         <div class="sidebar">
             <div class="tabs">
-                <button class="tab active" data-tab="controls">Controls</button>
-                <button class="tab" data-tab="categories">Categories</button>
-                <button class="tab" data-tab="clusters">Clusters</button>
+                <button class="tab-btn active" id="tab-btn-controls">Controls</button>
+                <button class="tab-btn" id="tab-btn-categories">Categories</button>
+                <button class="tab-btn" id="tab-btn-clusters">Clusters</button>
             </div>
 
-            <!-- Controls Tab -->
-            <div class="tab-content active" id="tab-controls">
+            <div class="tab-panel active" id="panel-controls">
                 <div class="controls">
                     <div class="search-box"><input type="text" id="search" placeholder="Search repositories..."></div>
                     <div class="control-group">
                         <div class="control-label">Layout</div>
                         <select id="layout-select">
-                            <option value="fcose">Force-Directed (Similarity)</option>
+                            <option value="cose" selected>Force-Directed</option>
                             <option value="circle">Circle</option>
                             <option value="concentric">Concentric (by Stars)</option>
                             <option value="grid">Grid</option>
-                            <option value="cose">Clustered</option>
                         </select>
                     </div>
                     <div class="control-group">
-                        <div class="control-label">Similarity Threshold: <span id="threshold-value">0.10</span></div>
-                        <input type="range" id="threshold" min="0.05" max="0.5" step="0.01" value="0.1">
+                        <div class="control-label">Similarity Threshold: <span id="threshold-value">0.00</span></div>
+                        <input type="range" id="threshold" min="0" max="0.5" step="0.01" value="0">
                     </div>
                     <div style="margin-top: 15px;">
-                        <button class="btn" onclick="resetView()">Reset View</button>
-                        <button class="btn secondary" onclick="exportPNG()">Export PNG</button>
+                        <button class="btn" id="btn-reset">Reset View</button>
+                        <button class="btn secondary" id="btn-export">Export PNG</button>
                     </div>
                     <div style="margin-top: 10px;">
-                        <button class="btn" onclick="showDownloadModal()">Download Group</button>
+                        <button class="btn" id="btn-download">Download Group</button>
                     </div>
                 </div>
                 <div class="legend">
@@ -140,39 +121,34 @@
                 </div>
             </div>
 
-            <!-- Categories Tab -->
-            <div class="tab-content" id="tab-categories">
+            <div class="tab-panel" id="panel-categories">
                 <div class="category-panel">
                     <div class="category-title">
                         <span>By Language</span>
-                        <button class="btn secondary" style="padding: 4px 10px; font-size: 11px;" onclick="clearCategoryFilter()">Clear</button>
+                        <button class="btn secondary" style="padding: 4px 10px; font-size: 11px;" id="btn-clear-lang">Clear</button>
                     </div>
                     <div class="category-list" id="language-categories"></div>
                 </div>
                 <div class="category-panel">
-                    <div class="category-title">
-                        <span>By Project Type</span>
-                    </div>
+                    <div class="category-title"><span>By Project Type</span></div>
                     <div class="category-list" id="type-categories"></div>
                 </div>
             </div>
 
-            <!-- Clusters Tab -->
-            <div class="tab-content" id="tab-clusters">
-                <div class="cluster-panel">
+            <div class="tab-panel" id="panel-clusters">
+                <div class="category-panel">
                     <div class="category-title">
                         <span>Connected Groups</span>
-                        <button class="btn secondary" style="padding: 4px 10px; font-size: 11px;" onclick="clearClusterFilter()">Clear</button>
+                        <button class="btn secondary" style="padding: 4px 10px; font-size: 11px;" id="btn-clear-cluster">Clear</button>
                     </div>
                     <div class="category-list" id="cluster-list"></div>
                 </div>
                 <p style="font-size: 12px; color: #888; margin-top: 10px;">
                     Clusters are groups of repositories connected by content similarity.
-                    Click a cluster to highlight and download related CLAUDE.md files.
+                    Increase threshold to see connected groups.
                 </p>
             </div>
 
-            <!-- Node Info -->
             <div id="node-info" class="node-info">
                 <h2>Repository Details</h2>
                 <div class="info-label">Name</div><div class="info-value" id="info-name"></div>
@@ -184,74 +160,175 @@
                 <div class="info-label">Links</div>
                 <div class="info-value"><a id="link-repo" href="#" target="_blank">Repository</a> | <a id="link-file" href="#" target="_blank">CLAUDE.md</a></div>
                 <div style="margin-top: 15px;">
-                    <button class="btn" onclick="showSimilarNodes()">Show Similar</button>
-                    <button class="btn secondary" onclick="downloadSingle()">Download</button>
+                    <button class="btn" id="btn-similar">Show Similar</button>
+                    <button class="btn secondary" id="btn-download-single">Download</button>
                 </div>
             </div>
             <div class="placeholder" id="placeholder">Click a node to see details</div>
-            <div class="footer">KuzuDB Storage | MCP Server Ready | GitHub Pages</div>
+            <div class="footer">KuzuDB Storage | MCP Server Ready</div>
         </div>
     </div>
 
-    <!-- Download Modal -->
     <div class="modal" id="download-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Download CLAUDE.md Files</h3>
-                <button class="modal-close" onclick="closeDownloadModal()">&times;</button>
+                <button class="modal-close" id="btn-close-modal">&times;</button>
             </div>
             <div id="download-list"></div>
             <div style="margin-top: 20px; display: flex; gap: 10px;">
-                <button class="btn" onclick="downloadSelected()">Download Selected</button>
-                <button class="btn secondary" onclick="selectAllDownloads()">Select All</button>
-                <button class="btn secondary" onclick="closeDownloadModal()">Cancel</button>
+                <button class="btn" id="btn-download-selected">Download Selected</button>
+                <button class="btn secondary" id="btn-select-all">Select All</button>
+                <button class="btn secondary" id="btn-cancel-modal">Cancel</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Register fcose layout
-        if (typeof cytoscapeFcose !== 'undefined') {
-            cytoscape.use(cytoscapeFcose);
-        }
-
+    (function() {
         // Data
-        const nodesData = [{"id": "node_0", "label": "QuantumOptics.jl", "full_name": "qojulia/QuantumOptics.jl", "stars": 595, "description": "Library for the numerical simulation of closed as well as open quantum systems.", "url": "https://github.com/qojulia/QuantumOptics.jl/blob/main/CLAUDE.md", "repo_url": "https://github.com/qojulia/QuantumOptics.jl", "language": "Julia", "topics": ["julia", "quantum", "quantum-mechanics", "quantum-optics", "quantum-toolbox"], "keywords": ["quantumopticsjl", "project structure", "development commands", "running tests", "run all tests"], "size": 5753, "summary": "QuantumOptics.jl is a numerical framework written in Julia that makes it easy to simulate various kinds of quantum systems."}, {"id": "node_1", "label": "querydsl", "full_name": "OpenFeign/querydsl", "stars": 542, "description": "Unified Queries for Java", "url": "https://github.com/OpenFeign/querydsl/blob/main/CLAUDE.md", "repo_url": "https://github.com/OpenFeign/querydsl", "language": "Java", "topics": [], "keywords": ["claudemd", "overview", "build commands"], "size": 4858, "summary": "This file provides guidance to Claude Code when working with code in this repository."}, {"id": "node_2", "label": "pixel-banner", "full_name": "jparkerweb/pixel-banner", "stars": 162, "description": "Enhance your Obsidian notes with customizable banner images", "url": "https://github.com/jparkerweb/pixel-banner/blob/main/CLAUDE.md", "repo_url": "https://github.com/jparkerweb/pixel-banner", "language": "JavaScript", "topics": ["obsidian", "plugin", "banner"], "keywords": ["claudemd", "overview", "essential commands"], "size": 9386, "summary": "Obsidian plugin for customizable banner images."}, {"id": "node_3", "label": "microfolio", "full_name": "aker-dev/microfolio", "stars": 125, "description": "A modern static portfolio generator based on SvelteKit 2 and Tailwind CSS 4", "url": "https://github.com/aker-dev/microfolio/blob/main/CLAUDE.md", "repo_url": "https://github.com/aker-dev/microfolio", "language": "Svelte", "topics": ["claude-code", "portfolio-project", "portfolio-template"], "keywords": ["claudemd", "project overview", "development commands"], "size": 4978, "summary": "Modern static portfolio generator."}, {"id": "node_4", "label": "msg-rs", "full_name": "chainbound/msg-rs", "stars": 79, "description": "Messaging library for distributed systems built in Rust", "url": "https://github.com/chainbound/msg-rs/blob/main/CLAUDE.md", "repo_url": "https://github.com/chainbound/msg-rs", "language": "Rust", "topics": ["distributed-systems", "networking", "tokio", "rust"], "keywords": ["claudemd", "development commands", "build and test"], "size": 4138, "summary": "Rust messaging library for distributed systems."}, {"id": "node_5", "label": "video-agent-claude-skill", "full_name": "donghaozhang/video-agent-claude-skill", "stars": 37, "description": "First Python Package for Video Cli Generation and Processing", "url": "https://github.com/donghaozhang/video-agent-claude-skill/blob/main/CLAUDE.md", "repo_url": "https://github.com/donghaozhang/video-agent-claude-skill", "language": "Python", "topics": [], "keywords": ["claudemd", "git workflow commands", "ai content pipeline"], "size": 11956, "summary": "Python package for video CLI generation and processing."}, {"id": "node_6", "label": "whyp", "full_name": "jalanb/whyp", "stars": 18, "description": "whyp extends type, wittily", "url": "https://github.com/jalanb/whyp/blob/main/CLAUDE.md", "repo_url": "https://github.com/jalanb/whyp", "language": "Python", "topics": ["shell", "python"], "keywords": ["claudemd", "project overview", "hybrid architecture"], "size": 3984, "summary": "Shell utility extending type command."}, {"id": "node_7", "label": "kugelpos-backend", "full_name": "kugel-masa/kugelpos-backend", "stars": 4, "description": "Kugel POS Backend Services (API Services for POS Application)", "url": "https://github.com/kugel-masa/kugelpos-backend/blob/main/CLAUDE.md", "repo_url": "https://github.com/kugel-masa/kugelpos-backend", "language": "Python", "topics": [], "keywords": ["claudemd", "project overview", "architecture"], "size": 15204, "summary": "POS Backend Services API."}, {"id": "node_8", "label": "MultiRheoFlow", "full_name": "comphy-lab/MultiRheoFlow", "stars": 4, "description": "An extensible framework for multiphase flows with complex rheology, built on Basilisk C", "url": "https://github.com/comphy-lab/MultiRheoFlow/blob/main/CLAUDE.md", "repo_url": "https://github.com/comphy-lab/MultiRheoFlow", "language": "C", "topics": [], "keywords": ["project structure", "build test commands"], "size": 4701, "summary": "Framework for multiphase flows with complex rheology."}, {"id": "node_9", "label": "simple_mysql_partitioning", "full_name": "Andryu/simple_mysql_partitioning", "stars": 4, "description": "Simple, mysql partition command wrapper for Ruby", "url": "https://github.com/Andryu/simple_mysql_partitioning/blob/main/CLAUDE.md", "repo_url": "https://github.com/Andryu/simple_mysql_partitioning", "language": "Ruby", "topics": [], "keywords": ["claudemd"], "size": 1804, "summary": "MySQL partition command wrapper for Ruby."}, {"id": "node_10", "label": "pr-summary", "full_name": "yan/pr-summary", "stars": 4, "description": "GitHub Action to capture PR activity and store it as git notes", "url": "https://github.com/yan/pr-summary/blob/main/CLAUDE.md", "repo_url": "https://github.com/yan/pr-summary", "language": "Python", "topics": [], "keywords": ["development session documentation", "project overview", "design decisions"], "size": 14075, "summary": "GitHub Action for PR activity capture."}, {"id": "node_11", "label": "vespera-atelier", "full_name": "EchoingVesper/vespera-atelier", "stars": 3, "description": "Vespera Atelier: Intelligent platform for document-centric orchestration", "url": "https://github.com/EchoingVesper/vespera-atelier/blob/main/CLAUDE.md", "repo_url": "https://github.com/EchoingVesper/vespera-atelier", "language": "Python", "topics": [], "keywords": ["monorepo structure", "working in the monorepo"], "size": 24218, "summary": "Intelligent platform for document-centric orchestration."}, {"id": "node_12", "label": "solana-sniper-bot", "full_name": "omkom/solana-sniper-bot", "stars": 2, "description": "Token sniping tool", "url": "https://github.com/omkom/solana-sniper-bot/blob/main/CLAUDE.md", "repo_url": "https://github.com/omkom/solana-sniper-bot", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "security notice", "core objective"], "size": 33522, "summary": "Solana token sniping tool."}, {"id": "node_13", "label": "Monochromatic", "full_name": "Aquaticat/Monochromatic", "stars": 2, "description": "Development guidelines for AI agents", "url": "https://github.com/Aquaticat/Monochromatic/blob/main/CLAUDE.md", "repo_url": "https://github.com/Aquaticat/Monochromatic", "language": "TypeScript", "topics": [], "keywords": ["communication style", "direct communication"], "size": 39052, "summary": "Development guidelines for AI agents."}, {"id": "node_14", "label": "chatkit-link", "full_name": "exiao/chatkit-link", "stars": 1, "description": "Powers chatkit.link with OpenAI agent builder", "url": "https://github.com/exiao/chatkit-link/blob/main/claude.md", "repo_url": "https://github.com/exiao/chatkit-link", "language": "JavaScript", "topics": ["chatkit", "openai"], "keywords": ["development log", "overview", "tech stack"], "size": 7465, "summary": "ChatKit workflow demo application."}, {"id": "node_15", "label": "hkdigital--lib-core", "full_name": "HKdigital/hkdigital--lib-core", "stars": 1, "description": "Base library for SvelteKit projects", "url": "https://github.com/HKdigital/hkdigital--lib-core/blob/main/claude.md", "repo_url": "https://github.com/HKdigital/hkdigital--lib-core", "language": "JavaScript", "topics": [], "keywords": ["sveltekit library", "project overview", "architecture"], "size": 14194, "summary": "SvelteKit library with Svelte 5 and Skeleton.dev."}, {"id": "node_16", "label": "report-generator-agent", "full_name": "ayoubben18/report-generator-agent", "stars": 1, "description": "Report generator agent", "url": "https://github.com/ayoubben18/report-generator-agent/blob/main/CLAUDE.md", "repo_url": "https://github.com/ayoubben18/report-generator-agent", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "development commands"], "size": 3411, "summary": "Report generator agent."}, {"id": "node_17", "label": "ukkin", "full_name": "Skelf-Research/ukkin", "stars": 1, "description": "AI-Agent mobile web browser for everyone", "url": "https://github.com/Skelf-Research/ukkin/blob/main/CLAUDE.md", "repo_url": "https://github.com/Skelf-Research/ukkin", "language": "Dart", "topics": ["agent", "flutter", "generative-ai", "mobile"], "keywords": ["claudemd", "core flutter commands"], "size": 6441, "summary": "AI-Agent mobile web browser."}, {"id": "node_18", "label": "si-systems-v5", "full_name": "daffy0208/si-systems-v5", "stars": 0, "description": "Enhanced AI Interaction Model", "url": "https://github.com/daffy0208/si-systems-v5/blob/main/claude.md", "repo_url": "https://github.com/daffy0208/si-systems-v5", "language": "TypeScript", "topics": [], "keywords": ["archon integration", "task-driven development"], "size": 25750, "summary": "Enhanced AI interaction model with Archon integration."}, {"id": "node_19", "label": "travel-app", "full_name": "markhodierne/travel-app", "stars": 0, "description": "Travel planning application", "url": "https://github.com/markhodierne/travel-app/blob/main/CLAUDE.md", "repo_url": "https://github.com/markhodierne/travel-app", "language": "HTML", "topics": [], "keywords": ["project overview", "tech stack"], "size": 4595, "summary": "Travel planning application."}, {"id": "node_20", "label": "FileManager", "full_name": "oferhr/FileManager", "stars": 0, "description": "Windows Forms file manager", "url": "https://github.com/oferhr/FileManager/blob/main/Claude.md", "repo_url": "https://github.com/oferhr/FileManager", "language": "C#", "topics": [], "keywords": ["filemanager", "project overview", "technology stack"], "size": 5419, "summary": "Windows Forms file manager with Office automation."}, {"id": "node_21", "label": "Farmfolio", "full_name": "chimexy8alluvial/Farmfolio", "stars": 0, "description": "Connect producers with conscious consumers", "url": "https://github.com/chimexy8alluvial/Farmfolio/blob/main/CLAUDE.md", "repo_url": "https://github.com/chimexy8alluvial/Farmfolio", "language": "JavaScript", "topics": [], "keywords": ["claudemd", "project overview", "architecture overview"], "size": 8146, "summary": "Digital storytelling and marketplace platform."}, {"id": "node_22", "label": "dantanner", "full_name": "dtanner/dantanner", "stars": 0, "description": "Personal website", "url": "https://github.com/dtanner/dantanner/blob/main/CLAUDE.md", "repo_url": "https://github.com/dtanner/dantanner", "language": "Nunjucks", "topics": [], "keywords": ["claudemd", "project overview", "deployment"], "size": 2647, "summary": "Personal website project."}, {"id": "node_23", "label": "agentmotion", "full_name": "osobh/agentmotion", "stars": 0, "description": "Universal remote control for AI coding assistants", "url": "https://github.com/osobh/agentmotion/blob/main/claude.md", "repo_url": "https://github.com/osobh/agentmotion", "language": "TypeScript", "topics": [], "keywords": ["workflow", "mobile app react native"], "size": 8061, "summary": "Mobile remote control for AI coding assistants."}, {"id": "node_24", "label": "gitstar_poller", "full_name": "iskng/gitstar_poller", "stars": 0, "description": "GitHub star poller", "url": "https://github.com/iskng/gitstar_poller/blob/main/CLAUDE.md", "repo_url": "https://github.com/iskng/gitstar_poller", "language": "Rust", "topics": [], "keywords": ["claudemd", "development commands", "architecture overview"], "size": 13023, "summary": "GitHub star polling utility."}, {"id": "node_25", "label": "vendoreval4", "full_name": "adamjdavidson/vendoreval4", "stars": 0, "description": "Vendor evaluation tool", "url": "https://github.com/adamjdavidson/vendoreval4/blob/main/claude.md", "repo_url": "https://github.com/adamjdavidson/vendoreval4", "language": "TypeScript", "topics": [], "keywords": ["project context", "spec-driven development"], "size": 25563, "summary": "Vendor evaluation with spec-driven development."}, {"id": "node_26", "label": "KI-SYSTEM", "full_name": "SHP-ART/KI-SYSTEM", "stars": 0, "description": "Self-learning Smart Home System", "url": "https://github.com/SHP-ART/KI-SYSTEM/blob/main/CLAUDE.md", "repo_url": "https://github.com/SHP-ART/KI-SYSTEM", "language": "Python", "topics": [], "keywords": ["claudemd", "project overview", "environment setup"], "size": 16406, "summary": "Self-learning smart home system with ML."}, {"id": "node_27", "label": "verteilte", "full_name": "sheaksadi/verteilte", "stars": 0, "description": "German vocabulary learning app", "url": "https://github.com/sheaksadi/verteilte/blob/main/claude.md", "repo_url": "https://github.com/sheaksadi/verteilte", "language": "Vue", "topics": [], "keywords": ["project structure", "tech stack", "frontend"], "size": 12349, "summary": "Spaced repetition flashcard app for German vocabulary."}, {"id": "node_28", "label": "vim-oracle", "full_name": "misterbuckley/vim-oracle", "stars": 0, "description": "Seamless AI assistance in vim", "url": "https://github.com/misterbuckley/vim-oracle/blob/main/CLAUDE.md", "repo_url": "https://github.com/misterbuckley/vim-oracle", "language": "Vim Script", "topics": [], "keywords": ["testing", "running tests"], "size": 4486, "summary": "AI assistance integration for Vim."}, {"id": "node_29", "label": "etradeTools", "full_name": "trezero/etradeTools", "stars": 0, "description": "E*TRADE tools", "url": "https://github.com/trezero/etradeTools/blob/main/CLAUDE.md", "repo_url": "https://github.com/trezero/etradeTools", "language": "Python", "topics": [], "keywords": ["archon integration", "task-driven development"], "size": 10997, "summary": "E*TRADE trading tools."}, {"id": "node_30", "label": "terminator_task_manager", "full_name": "stibiums/terminator_task_manager", "stars": 0, "description": "Task manager in Rust", "url": "https://github.com/stibiums/terminator_task_manager/blob/main/claude.md", "repo_url": "https://github.com/stibiums/terminator_task_manager", "language": "Rust", "topics": [], "keywords": ["claude code development log"], "size": 8309, "summary": "Task manager developed with Claude Code."}, {"id": "node_31", "label": "Noetic2.0", "full_name": "myspacecornelius/Noetic2.0", "stars": 0, "description": "Investor-ready docs platform", "url": "https://github.com/myspacecornelius/Noetic2.0/blob/main/claude.md", "repo_url": "https://github.com/myspacecornelius/Noetic2.0", "language": "TypeScript", "topics": [], "keywords": ["engineering guide", "runbook"], "size": 7169, "summary": "Next.js + Nextra docs with Thesis Builder."}, {"id": "node_32", "label": "spectralcanvas-pro-v2", "full_name": "1hoookkk/spectralcanvas-pro-v2", "stars": 0, "description": "Real-time spectral synthesis plugin", "url": "https://github.com/1hoookkk/spectralcanvas-pro-v2/blob/main/CLAUDE.md", "repo_url": "https://github.com/1hoookkk/spectralcanvas-pro-v2", "language": "C++", "topics": [], "keywords": ["claudemd", "project overview", "architecture overview"], "size": 7940, "summary": "JUCE 8 compatible spectral synthesis plugin."}, {"id": "node_33", "label": "-Tower-of-Infinity-PT", "full_name": "KORWOT/-Tower-of-Infinity-PT", "stars": 0, "description": "Game prototype", "url": "https://github.com/KORWOT/-Tower-of-Infinity-PT/blob/main/CLAUDE.md", "repo_url": "https://github.com/KORWOT/-Tower-of-Infinity-PT", "language": "C#", "topics": [], "keywords": ["claudemd", "project overview", "architecture"], "size": 4178, "summary": "Game prototype in C#."}, {"id": "node_34", "label": "FlowQ", "full_name": "dev-parvej/FlowQ", "stars": 0, "description": "WordPress Dynamic Survey Plugin", "url": "https://github.com/dev-parvej/FlowQ/blob/main/CLAUDE.md", "repo_url": "https://github.com/dev-parvej/FlowQ", "language": "PHP", "topics": [], "keywords": ["wordpress plugin", "question system"], "size": 14201, "summary": "WordPress dynamic survey plugin."}, {"id": "node_35", "label": "heavens7", "full_name": "daviguides/heavens7", "stars": 0, "description": "Python MCP server for code docs", "url": "https://github.com/daviguides/heavens7/blob/main/Claude.md", "repo_url": "https://github.com/daviguides/heavens7", "language": "Python", "topics": [], "keywords": ["heavens7 mcp python", "overview", "coding standards"], "size": 3204, "summary": "MCP server for Context7 API."}, {"id": "node_36", "label": "DynamicShortlinks", "full_name": "thebenlamm/DynamicShortlinks", "stars": 0, "description": "Dynamic Shortlinks", "url": "https://github.com/thebenlamm/DynamicShortlinks/blob/main/CLAUDE.md", "repo_url": "https://github.com/thebenlamm/DynamicShortlinks", "language": "PHP", "topics": [], "keywords": ["claudemd", "wordpress plugin structure"], "size": 3510, "summary": "WordPress plugin for dynamic shortlinks."}, {"id": "node_37", "label": "formulario-SRT", "full_name": "thiagopvn/formulario-SRT", "stars": 0, "description": "SRT Form", "url": "https://github.com/thiagopvn/formulario-SRT/blob/main/CLAUDE.md", "repo_url": "https://github.com/thiagopvn/formulario-SRT", "language": "JavaScript", "topics": [], "keywords": ["claudemd", "project overview", "frontend structure"], "size": 4802, "summary": "SRT form application."}, {"id": "node_38", "label": "gojjo-mcp", "full_name": "hmesfin/gojjo-mcp", "stars": 0, "description": "Django Vue MCP Documentation Server", "url": "https://github.com/hmesfin/gojjo-mcp/blob/main/CLAUDE.md", "repo_url": "https://github.com/hmesfin/gojjo-mcp", "language": "Python", "topics": [], "keywords": ["gojjo django vue mcp", "overview", "technology stack"], "size": 8976, "summary": "MCP server for Django + Vue.js documentation."}, {"id": "node_39", "label": "podcast-studio", "full_name": "mikkelkrogsholm/podcast-studio", "stars": 0, "description": "Podcast studio", "url": "https://github.com/mikkelkrogsholm/podcast-studio/blob/main/CLAUDE.md", "repo_url": "https://github.com/mikkelkrogsholm/podcast-studio", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "monorepo structure"], "size": 9408, "summary": "Podcast studio monorepo."}, {"id": "node_40", "label": "SQL-Tutorial", "full_name": "li195111/SQL----", "stars": 0, "description": "SQL Tutorial", "url": "https://github.com/li195111/SQL----/blob/main/CLAUDE.md", "repo_url": "https://github.com/li195111/SQL----", "language": "Jupyter Notebook", "topics": [], "keywords": ["ai collaboration guidelines", "project overview"], "size": 9007, "summary": "SQL tutorial with AI collaboration guidelines."}, {"id": "node_41", "label": "event-platform", "full_name": "xavierau/event-platform", "stars": 0, "description": "Laravel Event Platform", "url": "https://github.com/xavierau/event-platform/blob/main/CLAUDE.md", "repo_url": "https://github.com/xavierau/event-platform", "language": "PHP", "topics": [], "keywords": ["claudemd", "tdd with pest php"], "size": 4862, "summary": "Laravel 12 Event Platform with DDD architecture."}, {"id": "node_42", "label": "intelibi", "full_name": "korallis/intelibi", "stars": 0, "description": "AI-Powered Analytics Platform", "url": "https://github.com/korallis/intelibi/blob/main/CLAUDE.md", "repo_url": "https://github.com/korallis/intelibi", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "project structure", "architecture"], "size": 2577, "summary": "AI-powered analytics with natural language."}, {"id": "node_43", "label": "UniMixerServer", "full_name": "bezalel6/UniMixerServer", "stars": 0, "description": "UniMixer Server", "url": "https://github.com/bezalel6/UniMixerServer/blob/main/CLAUDE.md", "repo_url": "https://github.com/bezalel6/UniMixerServer", "language": "C#", "topics": [], "keywords": ["claudemd", "building and running"], "size": 6940, "summary": "UniMixer Server in C#."}, {"id": "node_44", "label": "Anime-Pokemon", "full_name": "hewenyu/Anime-Pok-mon", "stars": 0, "description": "Anime Pokemon battle game", "url": "https://github.com/hewenyu/Anime-Pok-mon/blob/main/CLAUDE.md", "repo_url": "https://github.com/hewenyu/Anime-Pok-mon", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "development environment setup"], "size": 5025, "summary": "Anime-style Pokemon battle game."}, {"id": "node_45", "label": "microblog-to-hugo", "full_name": "shawnyeager/microblog-to-hugo", "stars": 0, "description": "Migrate Micro.blog to Hugo", "url": "https://github.com/shawnyeager/microblog-to-hugo/blob/main/CLAUDE.md", "repo_url": "https://github.com/shawnyeager/microblog-to-hugo", "language": "Python", "topics": [], "keywords": ["claudemd", "core migration pipeline"], "size": 5279, "summary": "Python scripts to migrate Micro.blog to Hugo."}, {"id": "node_46", "label": "KGB", "full_name": "sudoxue/KGB", "stars": 0, "description": "Kubernetes get brain", "url": "https://github.com/sudoxue/KGB/blob/main/CLAUDE.md", "repo_url": "https://github.com/sudoxue/KGB", "language": "Go", "topics": [], "keywords": ["kgb strategic development plan", "constitutional reading protocol"], "size": 13579, "summary": "AWACS/KORGI development roadmap."}, {"id": "node_47", "label": "artifex.ai-studio-pro", "full_name": "ChoonwooLim/artifex.ai-studio-pro", "stars": 0, "description": "AI multimedia content platform", "url": "https://github.com/ChoonwooLim/artifex.ai-studio-pro/blob/main/claude.md", "repo_url": "https://github.com/ChoonwooLim/artifex.ai-studio-pro", "language": "HTML", "topics": [], "keywords": ["project guide"], "size": 21264, "summary": "AI multimedia content generation platform."}, {"id": "node_48", "label": "webhookmaster", "full_name": "awfixer-platform/webhookmaster", "stars": 0, "description": "Webhook master", "url": "https://github.com/awfixer-platform/webhookmaster/blob/main/CLAUDE.md", "repo_url": "https://github.com/awfixer-platform/webhookmaster", "language": "Python", "topics": [], "keywords": [], "size": 9, "summary": "Webhook master utility."}, {"id": "node_49", "label": "node-tree", "full_name": "ruchernchong/node-tree", "stars": 0, "description": "Node tree visualization", "url": "https://github.com/ruchernchong/node-tree/blob/main/CLAUDE.md", "repo_url": "https://github.com/ruchernchong/node-tree", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "tailwind css v4 styling"], "size": 8276, "summary": "Node tree visualization tool."}];
+        const nodesData = [
+            {"id": "node_0", "label": "QuantumOptics.jl", "full_name": "qojulia/QuantumOptics.jl", "stars": 595, "description": "Library for quantum systems simulation", "url": "https://github.com/qojulia/QuantumOptics.jl/blob/main/CLAUDE.md", "repo_url": "https://github.com/qojulia/QuantumOptics.jl", "language": "Julia", "topics": ["quantum"], "keywords": ["quantum", "simulation"]},
+            {"id": "node_1", "label": "querydsl", "full_name": "OpenFeign/querydsl", "stars": 542, "description": "Unified Queries for Java", "url": "https://github.com/OpenFeign/querydsl/blob/main/CLAUDE.md", "repo_url": "https://github.com/OpenFeign/querydsl", "language": "Java", "topics": [], "keywords": ["java", "query"]},
+            {"id": "node_2", "label": "pixel-banner", "full_name": "jparkerweb/pixel-banner", "stars": 162, "description": "Obsidian plugin for banner images", "url": "https://github.com/jparkerweb/pixel-banner/blob/main/CLAUDE.md", "repo_url": "https://github.com/jparkerweb/pixel-banner", "language": "JavaScript", "topics": ["obsidian", "plugin"], "keywords": ["obsidian", "plugin"]},
+            {"id": "node_3", "label": "microfolio", "full_name": "aker-dev/microfolio", "stars": 125, "description": "SvelteKit portfolio generator", "url": "https://github.com/aker-dev/microfolio/blob/main/CLAUDE.md", "repo_url": "https://github.com/aker-dev/microfolio", "language": "Svelte", "topics": ["portfolio"], "keywords": ["svelte", "portfolio"]},
+            {"id": "node_4", "label": "msg-rs", "full_name": "chainbound/msg-rs", "stars": 79, "description": "Rust messaging library", "url": "https://github.com/chainbound/msg-rs/blob/main/CLAUDE.md", "repo_url": "https://github.com/chainbound/msg-rs", "language": "Rust", "topics": ["distributed-systems"], "keywords": ["rust", "messaging"]},
+            {"id": "node_5", "label": "video-agent", "full_name": "donghaozhang/video-agent-claude-skill", "stars": 37, "description": "Python video CLI package", "url": "https://github.com/donghaozhang/video-agent-claude-skill/blob/main/CLAUDE.md", "repo_url": "https://github.com/donghaozhang/video-agent-claude-skill", "language": "Python", "topics": [], "keywords": ["python", "video", "ai"]},
+            {"id": "node_6", "label": "whyp", "full_name": "jalanb/whyp", "stars": 18, "description": "Shell type extension", "url": "https://github.com/jalanb/whyp/blob/main/CLAUDE.md", "repo_url": "https://github.com/jalanb/whyp", "language": "Python", "topics": ["shell"], "keywords": ["python", "shell"]},
+            {"id": "node_7", "label": "kugelpos-backend", "full_name": "kugel-masa/kugelpos-backend", "stars": 4, "description": "POS Backend API", "url": "https://github.com/kugel-masa/kugelpos-backend/blob/main/CLAUDE.md", "repo_url": "https://github.com/kugel-masa/kugelpos-backend", "language": "Python", "topics": [], "keywords": ["python", "api", "backend"]},
+            {"id": "node_8", "label": "MultiRheoFlow", "full_name": "comphy-lab/MultiRheoFlow", "stars": 4, "description": "Multiphase flow framework", "url": "https://github.com/comphy-lab/MultiRheoFlow/blob/main/CLAUDE.md", "repo_url": "https://github.com/comphy-lab/MultiRheoFlow", "language": "C", "topics": [], "keywords": ["c", "simulation"]},
+            {"id": "node_9", "label": "mysql_partitioning", "full_name": "Andryu/simple_mysql_partitioning", "stars": 4, "description": "MySQL partition wrapper", "url": "https://github.com/Andryu/simple_mysql_partitioning/blob/main/CLAUDE.md", "repo_url": "https://github.com/Andryu/simple_mysql_partitioning", "language": "Ruby", "topics": [], "keywords": ["ruby", "mysql"]},
+            {"id": "node_10", "label": "pr-summary", "full_name": "yan/pr-summary", "stars": 4, "description": "GitHub Action for PR capture", "url": "https://github.com/yan/pr-summary/blob/main/CLAUDE.md", "repo_url": "https://github.com/yan/pr-summary", "language": "Python", "topics": [], "keywords": ["python", "github"]},
+            {"id": "node_11", "label": "vespera-atelier", "full_name": "EchoingVesper/vespera-atelier", "stars": 3, "description": "Document orchestration platform", "url": "https://github.com/EchoingVesper/vespera-atelier/blob/main/CLAUDE.md", "repo_url": "https://github.com/EchoingVesper/vespera-atelier", "language": "Python", "topics": [], "keywords": ["python", "platform"]},
+            {"id": "node_12", "label": "solana-sniper", "full_name": "omkom/solana-sniper-bot", "stars": 2, "description": "Solana token tool", "url": "https://github.com/omkom/solana-sniper-bot/blob/main/CLAUDE.md", "repo_url": "https://github.com/omkom/solana-sniper-bot", "language": "TypeScript", "topics": [], "keywords": ["typescript", "solana"]},
+            {"id": "node_13", "label": "Monochromatic", "full_name": "Aquaticat/Monochromatic", "stars": 2, "description": "AI agent guidelines", "url": "https://github.com/Aquaticat/Monochromatic/blob/main/CLAUDE.md", "repo_url": "https://github.com/Aquaticat/Monochromatic", "language": "TypeScript", "topics": [], "keywords": ["typescript", "ai"]},
+            {"id": "node_14", "label": "chatkit-link", "full_name": "exiao/chatkit-link", "stars": 1, "description": "OpenAI workflow demo", "url": "https://github.com/exiao/chatkit-link/blob/main/claude.md", "repo_url": "https://github.com/exiao/chatkit-link", "language": "JavaScript", "topics": ["openai"], "keywords": ["javascript", "openai"]},
+            {"id": "node_15", "label": "hkdigital-lib", "full_name": "HKdigital/hkdigital--lib-core", "stars": 1, "description": "SvelteKit base library", "url": "https://github.com/HKdigital/hkdigital--lib-core/blob/main/claude.md", "repo_url": "https://github.com/HKdigital/hkdigital--lib-core", "language": "JavaScript", "topics": [], "keywords": ["javascript", "svelte"]},
+            {"id": "node_16", "label": "report-agent", "full_name": "ayoubben18/report-generator-agent", "stars": 1, "description": "Report generator agent", "url": "https://github.com/ayoubben18/report-generator-agent/blob/main/CLAUDE.md", "repo_url": "https://github.com/ayoubben18/report-generator-agent", "language": "TypeScript", "topics": [], "keywords": ["typescript", "agent"]},
+            {"id": "node_17", "label": "ukkin", "full_name": "Skelf-Research/ukkin", "stars": 1, "description": "AI mobile web browser", "url": "https://github.com/Skelf-Research/ukkin/blob/main/CLAUDE.md", "repo_url": "https://github.com/Skelf-Research/ukkin", "language": "Dart", "topics": ["flutter", "mobile"], "keywords": ["dart", "flutter", "ai"]},
+            {"id": "node_18", "label": "si-systems-v5", "full_name": "daffy0208/si-systems-v5", "stars": 0, "description": "AI Interaction Model", "url": "https://github.com/daffy0208/si-systems-v5/blob/main/claude.md", "repo_url": "https://github.com/daffy0208/si-systems-v5", "language": "TypeScript", "topics": [], "keywords": ["typescript", "ai"]},
+            {"id": "node_19", "label": "travel-app", "full_name": "markhodierne/travel-app", "stars": 0, "description": "Travel planning app", "url": "https://github.com/markhodierne/travel-app/blob/main/CLAUDE.md", "repo_url": "https://github.com/markhodierne/travel-app", "language": "HTML", "topics": [], "keywords": ["html", "travel"]},
+            {"id": "node_20", "label": "FileManager", "full_name": "oferhr/FileManager", "stars": 0, "description": "Windows file manager", "url": "https://github.com/oferhr/FileManager/blob/main/Claude.md", "repo_url": "https://github.com/oferhr/FileManager", "language": "C#", "topics": [], "keywords": ["csharp", "windows"]},
+            {"id": "node_21", "label": "Farmfolio", "full_name": "chimexy8alluvial/Farmfolio", "stars": 0, "description": "Farm marketplace", "url": "https://github.com/chimexy8alluvial/Farmfolio/blob/main/CLAUDE.md", "repo_url": "https://github.com/chimexy8alluvial/Farmfolio", "language": "JavaScript", "topics": [], "keywords": ["javascript", "marketplace"]},
+            {"id": "node_22", "label": "dantanner", "full_name": "dtanner/dantanner", "stars": 0, "description": "Personal website", "url": "https://github.com/dtanner/dantanner/blob/main/CLAUDE.md", "repo_url": "https://github.com/dtanner/dantanner", "language": "Nunjucks", "topics": [], "keywords": ["nunjucks", "website"]},
+            {"id": "node_23", "label": "agentmotion", "full_name": "osobh/agentmotion", "stars": 0, "description": "AI assistant remote", "url": "https://github.com/osobh/agentmotion/blob/main/claude.md", "repo_url": "https://github.com/osobh/agentmotion", "language": "TypeScript", "topics": [], "keywords": ["typescript", "mobile", "ai"]},
+            {"id": "node_24", "label": "gitstar_poller", "full_name": "iskng/gitstar_poller", "stars": 0, "description": "GitHub star poller", "url": "https://github.com/iskng/gitstar_poller/blob/main/CLAUDE.md", "repo_url": "https://github.com/iskng/gitstar_poller", "language": "Rust", "topics": [], "keywords": ["rust", "github"]},
+            {"id": "node_25", "label": "vendoreval4", "full_name": "adamjdavidson/vendoreval4", "stars": 0, "description": "Vendor evaluation", "url": "https://github.com/adamjdavidson/vendoreval4/blob/main/claude.md", "repo_url": "https://github.com/adamjdavidson/vendoreval4", "language": "TypeScript", "topics": [], "keywords": ["typescript"]},
+            {"id": "node_26", "label": "KI-SYSTEM", "full_name": "SHP-ART/KI-SYSTEM", "stars": 0, "description": "Smart Home System", "url": "https://github.com/SHP-ART/KI-SYSTEM/blob/main/CLAUDE.md", "repo_url": "https://github.com/SHP-ART/KI-SYSTEM", "language": "Python", "topics": [], "keywords": ["python", "iot"]},
+            {"id": "node_27", "label": "verteilte", "full_name": "sheaksadi/verteilte", "stars": 0, "description": "German vocabulary app", "url": "https://github.com/sheaksadi/verteilte/blob/main/claude.md", "repo_url": "https://github.com/sheaksadi/verteilte", "language": "Vue", "topics": [], "keywords": ["vue", "education"]},
+            {"id": "node_28", "label": "vim-oracle", "full_name": "misterbuckley/vim-oracle", "stars": 0, "description": "Vim AI assistance", "url": "https://github.com/misterbuckley/vim-oracle/blob/main/CLAUDE.md", "repo_url": "https://github.com/misterbuckley/vim-oracle", "language": "Vim Script", "topics": [], "keywords": ["vim", "ai"]},
+            {"id": "node_29", "label": "etradeTools", "full_name": "trezero/etradeTools", "stars": 0, "description": "E*TRADE tools", "url": "https://github.com/trezero/etradeTools/blob/main/CLAUDE.md", "repo_url": "https://github.com/trezero/etradeTools", "language": "Python", "topics": [], "keywords": ["python", "trading"]},
+            {"id": "node_30", "label": "terminator_task", "full_name": "stibiums/terminator_task_manager", "stars": 0, "description": "Rust task manager", "url": "https://github.com/stibiums/terminator_task_manager/blob/main/claude.md", "repo_url": "https://github.com/stibiums/terminator_task_manager", "language": "Rust", "topics": [], "keywords": ["rust", "task"]},
+            {"id": "node_31", "label": "Noetic2.0", "full_name": "myspacecornelius/Noetic2.0", "stars": 0, "description": "Docs platform", "url": "https://github.com/myspacecornelius/Noetic2.0/blob/main/claude.md", "repo_url": "https://github.com/myspacecornelius/Noetic2.0", "language": "TypeScript", "topics": [], "keywords": ["typescript", "docs"]},
+            {"id": "node_32", "label": "spectralcanvas", "full_name": "1hoookkk/spectralcanvas-pro-v2", "stars": 0, "description": "Audio synthesis plugin", "url": "https://github.com/1hoookkk/spectralcanvas-pro-v2/blob/main/CLAUDE.md", "repo_url": "https://github.com/1hoookkk/spectralcanvas-pro-v2", "language": "C++", "topics": [], "keywords": ["cpp", "audio"]},
+            {"id": "node_33", "label": "Tower-Infinity", "full_name": "KORWOT/-Tower-of-Infinity-PT", "stars": 0, "description": "Game prototype", "url": "https://github.com/KORWOT/-Tower-of-Infinity-PT/blob/main/CLAUDE.md", "repo_url": "https://github.com/KORWOT/-Tower-of-Infinity-PT", "language": "C#", "topics": [], "keywords": ["csharp", "game"]},
+            {"id": "node_34", "label": "FlowQ", "full_name": "dev-parvej/FlowQ", "stars": 0, "description": "WordPress survey plugin", "url": "https://github.com/dev-parvej/FlowQ/blob/main/CLAUDE.md", "repo_url": "https://github.com/dev-parvej/FlowQ", "language": "PHP", "topics": [], "keywords": ["php", "wordpress"]},
+            {"id": "node_35", "label": "heavens7", "full_name": "daviguides/heavens7", "stars": 0, "description": "Python MCP server", "url": "https://github.com/daviguides/heavens7/blob/main/Claude.md", "repo_url": "https://github.com/daviguides/heavens7", "language": "Python", "topics": [], "keywords": ["python", "mcp"]},
+            {"id": "node_36", "label": "DynamicShortlinks", "full_name": "thebenlamm/DynamicShortlinks", "stars": 0, "description": "WordPress shortlinks", "url": "https://github.com/thebenlamm/DynamicShortlinks/blob/main/CLAUDE.md", "repo_url": "https://github.com/thebenlamm/DynamicShortlinks", "language": "PHP", "topics": [], "keywords": ["php", "wordpress"]},
+            {"id": "node_37", "label": "formulario-SRT", "full_name": "thiagopvn/formulario-SRT", "stars": 0, "description": "SRT Form app", "url": "https://github.com/thiagopvn/formulario-SRT/blob/main/CLAUDE.md", "repo_url": "https://github.com/thiagopvn/formulario-SRT", "language": "JavaScript", "topics": [], "keywords": ["javascript", "form"]},
+            {"id": "node_38", "label": "gojjo-mcp", "full_name": "hmesfin/gojjo-mcp", "stars": 0, "description": "Django Vue MCP server", "url": "https://github.com/hmesfin/gojjo-mcp/blob/main/CLAUDE.md", "repo_url": "https://github.com/hmesfin/gojjo-mcp", "language": "Python", "topics": [], "keywords": ["python", "mcp", "django"]},
+            {"id": "node_39", "label": "podcast-studio", "full_name": "mikkelkrogsholm/podcast-studio", "stars": 0, "description": "Podcast monorepo", "url": "https://github.com/mikkelkrogsholm/podcast-studio/blob/main/CLAUDE.md", "repo_url": "https://github.com/mikkelkrogsholm/podcast-studio", "language": "TypeScript", "topics": [], "keywords": ["typescript", "podcast"]},
+            {"id": "node_40", "label": "SQL-Tutorial", "full_name": "li195111/SQL----", "stars": 0, "description": "SQL tutorial", "url": "https://github.com/li195111/SQL----/blob/main/CLAUDE.md", "repo_url": "https://github.com/li195111/SQL----", "language": "Jupyter Notebook", "topics": [], "keywords": ["jupyter", "sql"]},
+            {"id": "node_41", "label": "event-platform", "full_name": "xavierau/event-platform", "stars": 0, "description": "Laravel event platform", "url": "https://github.com/xavierau/event-platform/blob/main/CLAUDE.md", "repo_url": "https://github.com/xavierau/event-platform", "language": "PHP", "topics": [], "keywords": ["php", "laravel"]},
+            {"id": "node_42", "label": "intelibi", "full_name": "korallis/intelibi", "stars": 0, "description": "AI Analytics", "url": "https://github.com/korallis/intelibi/blob/main/CLAUDE.md", "repo_url": "https://github.com/korallis/intelibi", "language": "TypeScript", "topics": [], "keywords": ["typescript", "ai"]},
+            {"id": "node_43", "label": "UniMixerServer", "full_name": "bezalel6/UniMixerServer", "stars": 0, "description": "UniMixer Server", "url": "https://github.com/bezalel6/UniMixerServer/blob/main/CLAUDE.md", "repo_url": "https://github.com/bezalel6/UniMixerServer", "language": "C#", "topics": [], "keywords": ["csharp", "server"]},
+            {"id": "node_44", "label": "Anime-Pokemon", "full_name": "hewenyu/Anime-Pok-mon", "stars": 0, "description": "Pokemon battle game", "url": "https://github.com/hewenyu/Anime-Pok-mon/blob/main/CLAUDE.md", "repo_url": "https://github.com/hewenyu/Anime-Pok-mon", "language": "TypeScript", "topics": [], "keywords": ["typescript", "game"]},
+            {"id": "node_45", "label": "microblog-hugo", "full_name": "shawnyeager/microblog-to-hugo", "stars": 0, "description": "Micro.blog to Hugo", "url": "https://github.com/shawnyeager/microblog-to-hugo/blob/main/CLAUDE.md", "repo_url": "https://github.com/shawnyeager/microblog-to-hugo", "language": "Python", "topics": [], "keywords": ["python", "migration"]},
+            {"id": "node_46", "label": "KGB", "full_name": "sudoxue/KGB", "stars": 0, "description": "Kubernetes tool", "url": "https://github.com/sudoxue/KGB/blob/main/CLAUDE.md", "repo_url": "https://github.com/sudoxue/KGB", "language": "Go", "topics": [], "keywords": ["go", "kubernetes"]},
+            {"id": "node_47", "label": "artifex-studio", "full_name": "ChoonwooLim/artifex.ai-studio-pro", "stars": 0, "description": "AI content platform", "url": "https://github.com/ChoonwooLim/artifex.ai-studio-pro/blob/main/claude.md", "repo_url": "https://github.com/ChoonwooLim/artifex.ai-studio-pro", "language": "HTML", "topics": [], "keywords": ["html", "ai"]},
+            {"id": "node_48", "label": "webhookmaster", "full_name": "awfixer-platform/webhookmaster", "stars": 0, "description": "Webhook utility", "url": "https://github.com/awfixer-platform/webhookmaster/blob/main/CLAUDE.md", "repo_url": "https://github.com/awfixer-platform/webhookmaster", "language": "Python", "topics": [], "keywords": ["python", "webhook"]},
+            {"id": "node_49", "label": "node-tree", "full_name": "ruchernchong/node-tree", "stars": 0, "description": "Node tree visualization", "url": "https://github.com/ruchernchong/node-tree/blob/main/CLAUDE.md", "repo_url": "https://github.com/ruchernchong/node-tree", "language": "TypeScript", "topics": [], "keywords": ["typescript", "visualization"]}
+        ];
 
-        const edgesData = [{"source": "node_14", "target": "node_39", "similarity": 0.105}, {"source": "node_14", "target": "node_21", "similarity": 0.111}, {"source": "node_2", "target": "node_5", "similarity": 0.114}, {"source": "node_7", "target": "node_23", "similarity": 0.101}, {"source": "node_18", "target": "node_29", "similarity": 0.869}, {"source": "node_19", "target": "node_10", "similarity": 0.1}, {"source": "node_19", "target": "node_38", "similarity": 0.279}, {"source": "node_19", "target": "node_5", "similarity": 0.13}, {"source": "node_19", "target": "node_15", "similarity": 0.103}, {"source": "node_20", "target": "node_37", "similarity": 0.115}, {"source": "node_21", "target": "node_49", "similarity": 0.158}, {"source": "node_21", "target": "node_44", "similarity": 0.105}, {"source": "node_15", "target": "node_3", "similarity": 0.186}, {"source": "node_15", "target": "node_13", "similarity": 0.209}, {"source": "node_15", "target": "node_42", "similarity": 0.104}, {"source": "node_5", "target": "node_10", "similarity": 0.14}, {"source": "node_5", "target": "node_13", "similarity": 0.104}, {"source": "node_5", "target": "node_47", "similarity": 0.237}, {"source": "node_5", "target": "node_26", "similarity": 0.109}, {"source": "node_5", "target": "node_23", "similarity": 0.139}, {"source": "node_22", "target": "node_3", "similarity": 0.194}, {"source": "node_22", "target": "node_45", "similarity": 0.175}, {"source": "node_23", "target": "node_10", "similarity": 0.113}, {"source": "node_23", "target": "node_11", "similarity": 0.136}, {"source": "node_23", "target": "node_46", "similarity": 0.104}, {"source": "node_23", "target": "node_38", "similarity": 0.148}, {"source": "node_23", "target": "node_35", "similarity": 0.141}, {"source": "node_23", "target": "node_17", "similarity": 0.123}, {"source": "node_12", "target": "node_24", "similarity": 0.102}, {"source": "node_24", "target": "node_10", "similarity": 0.19}, {"source": "node_24", "target": "node_49", "similarity": 0.106}, {"source": "node_24", "target": "node_4", "similarity": 0.111}, {"source": "node_25", "target": "node_13", "similarity": 0.105}, {"source": "node_25", "target": "node_40", "similarity": 0.103}, {"source": "node_25", "target": "node_29", "similarity": 0.115}, {"source": "node_26", "target": "node_10", "similarity": 0.105}, {"source": "node_26", "target": "node_49", "similarity": 0.101}, {"source": "node_16", "target": "node_3", "similarity": 0.136}, {"source": "node_16", "target": "node_39", "similarity": 0.138}, {"source": "node_31", "target": "node_47", "similarity": 0.172}, {"source": "node_31", "target": "node_42", "similarity": 0.119}, {"source": "node_17", "target": "node_46", "similarity": 0.131}, {"source": "node_33", "target": "node_44", "similarity": 0.116}, {"source": "node_34", "target": "node_49", "similarity": 0.125}, {"source": "node_34", "target": "node_41", "similarity": 0.12}, {"source": "node_34", "target": "node_37", "similarity": 0.189}, {"source": "node_34", "target": "node_36", "similarity": 0.168}, {"source": "node_35", "target": "node_11", "similarity": 0.127}, {"source": "node_35", "target": "node_38", "similarity": 0.154}, {"source": "node_37", "target": "node_49", "similarity": 0.19}, {"source": "node_38", "target": "node_11", "similarity": 0.137}, {"source": "node_39", "target": "node_3", "similarity": 0.104}, {"source": "node_39", "target": "node_43", "similarity": 0.117}, {"source": "node_40", "target": "node_47", "similarity": 0.101}, {"source": "node_42", "target": "node_3", "similarity": 0.105}, {"source": "node_42", "target": "node_44", "similarity": 0.136}, {"source": "node_45", "target": "node_3", "similarity": 0.132}, {"source": "node_13", "target": "node_10", "similarity": 0.116}];
+        const edgesData = [
+            {"source": "node_18", "target": "node_29", "similarity": 0.87},
+            {"source": "node_19", "target": "node_38", "similarity": 0.28},
+            {"source": "node_5", "target": "node_47", "similarity": 0.24},
+            {"source": "node_15", "target": "node_13", "similarity": 0.21},
+            {"source": "node_22", "target": "node_3", "similarity": 0.19},
+            {"source": "node_24", "target": "node_10", "similarity": 0.19},
+            {"source": "node_37", "target": "node_49", "similarity": 0.19},
+            {"source": "node_34", "target": "node_37", "similarity": 0.19},
+            {"source": "node_15", "target": "node_3", "similarity": 0.19},
+            {"source": "node_22", "target": "node_45", "similarity": 0.18},
+            {"source": "node_31", "target": "node_47", "similarity": 0.17},
+            {"source": "node_34", "target": "node_36", "similarity": 0.17},
+            {"source": "node_21", "target": "node_49", "similarity": 0.16},
+            {"source": "node_35", "target": "node_38", "similarity": 0.15},
+            {"source": "node_23", "target": "node_38", "similarity": 0.15},
+            {"source": "node_5", "target": "node_10", "similarity": 0.14},
+            {"source": "node_23", "target": "node_35", "similarity": 0.14},
+            {"source": "node_5", "target": "node_23", "similarity": 0.14},
+            {"source": "node_16", "target": "node_39", "similarity": 0.14},
+            {"source": "node_38", "target": "node_11", "similarity": 0.14},
+            {"source": "node_23", "target": "node_11", "similarity": 0.14},
+            {"source": "node_16", "target": "node_3", "similarity": 0.14},
+            {"source": "node_42", "target": "node_44", "similarity": 0.14},
+            {"source": "node_17", "target": "node_46", "similarity": 0.13},
+            {"source": "node_45", "target": "node_3", "similarity": 0.13},
+            {"source": "node_35", "target": "node_11", "similarity": 0.13},
+            {"source": "node_23", "target": "node_17", "similarity": 0.12},
+            {"source": "node_34", "target": "node_41", "similarity": 0.12},
+            {"source": "node_34", "target": "node_49", "similarity": 0.13},
+            {"source": "node_31", "target": "node_42", "similarity": 0.12},
+            {"source": "node_39", "target": "node_43", "similarity": 0.12},
+            {"source": "node_33", "target": "node_44", "similarity": 0.12},
+            {"source": "node_13", "target": "node_10", "similarity": 0.12},
+            {"source": "node_25", "target": "node_29", "similarity": 0.12},
+            {"source": "node_2", "target": "node_5", "similarity": 0.11},
+            {"source": "node_20", "target": "node_37", "similarity": 0.12},
+            {"source": "node_24", "target": "node_4", "similarity": 0.11},
+            {"source": "node_14", "target": "node_21", "similarity": 0.11},
+            {"source": "node_23", "target": "node_10", "similarity": 0.11},
+            {"source": "node_5", "target": "node_26", "similarity": 0.11},
+            {"source": "node_14", "target": "node_39", "similarity": 0.11},
+            {"source": "node_24", "target": "node_49", "similarity": 0.11},
+            {"source": "node_21", "target": "node_44", "similarity": 0.11},
+            {"source": "node_25", "target": "node_13", "similarity": 0.11},
+            {"source": "node_26", "target": "node_10", "similarity": 0.11},
+            {"source": "node_42", "target": "node_3", "similarity": 0.11},
+            {"source": "node_5", "target": "node_13", "similarity": 0.10},
+            {"source": "node_15", "target": "node_42", "similarity": 0.10},
+            {"source": "node_23", "target": "node_46", "similarity": 0.10},
+            {"source": "node_39", "target": "node_3", "similarity": 0.10},
+            {"source": "node_19", "target": "node_10", "similarity": 0.10},
+            {"source": "node_19", "target": "node_5", "similarity": 0.13},
+            {"source": "node_19", "target": "node_15", "similarity": 0.10},
+            {"source": "node_7", "target": "node_23", "similarity": 0.10},
+            {"source": "node_12", "target": "node_24", "similarity": 0.10},
+            {"source": "node_25", "target": "node_40", "similarity": 0.10},
+            {"source": "node_26", "target": "node_49", "similarity": 0.10},
+            {"source": "node_40", "target": "node_47", "similarity": 0.10}
+        ];
 
-        // Language colors
         const languageColors = {
             'TypeScript': '#3178c6', 'JavaScript': '#f7df1e', 'Python': '#3776ab',
             'Rust': '#dea584', 'Go': '#00add8', 'Java': '#b07219', 'Ruby': '#cc342d',
             'PHP': '#4f5d95', 'C#': '#178600', 'C++': '#f34b7d', 'C': '#555555',
             'Svelte': '#ff3e00', 'Vue': '#41b883', 'Julia': '#9558b2', 'Dart': '#0175c2',
-            'HTML': '#e34c26', 'Jupyter Notebook': '#f37626', 'Nunjucks': '#1c4913',
-            'Vim Script': '#019833'
+            'HTML': '#e34c26', 'Jupyter Notebook': '#f37626', 'Nunjucks': '#1c4913', 'Vim Script': '#019833'
         };
 
-        // State
-        let currentThreshold = 0.1;
+        let currentThreshold = 0;
         let selectedNode = null;
         let clusters = [];
         let currentFilter = { type: null, value: null };
+        let cy;
 
-        // Categorize by project type based on keywords and description
         function categorizeProject(node) {
-            const text = (node.description + ' ' + (node.keywords || []).join(' ')).toLowerCase();
-            if (text.includes('mcp') || text.includes('model context protocol')) return 'MCP Server';
-            if (text.includes('plugin') || text.includes('obsidian')) return 'Plugin/Extension';
+            const text = ((node.description || '') + ' ' + (node.keywords || []).join(' ')).toLowerCase();
+            if (text.includes('mcp')) return 'MCP Server';
+            if (text.includes('plugin') || text.includes('obsidian')) return 'Plugin';
             if (text.includes('api') || text.includes('backend') || text.includes('server')) return 'Backend/API';
-            if (text.includes('frontend') || text.includes('react') || text.includes('vue') || text.includes('svelte')) return 'Frontend';
+            if (text.includes('vue') || text.includes('svelte') || text.includes('react')) return 'Frontend';
             if (text.includes('cli') || text.includes('command')) return 'CLI Tool';
             if (text.includes('agent') || text.includes('ai')) return 'AI/Agent';
             if (text.includes('game') || text.includes('pokemon')) return 'Game';
-            if (text.includes('mobile') || text.includes('flutter')) return 'Mobile App';
-            if (text.includes('wordpress')) return 'WordPress';
+            if (text.includes('mobile') || text.includes('flutter')) return 'Mobile';
+            if (text.includes('wordpress') || text.includes('php')) return 'WordPress/PHP';
             return 'Other';
         }
 
-        // Find connected components (clusters)
         function findClusters(threshold) {
             const adj = {};
             nodesData.forEach(n => adj[n.id] = []);
@@ -259,10 +336,8 @@
                 adj[e.source].push(e.target);
                 adj[e.target].push(e.source);
             });
-
             const visited = new Set();
-            const clusters = [];
-
+            const result = [];
             nodesData.forEach(n => {
                 if (visited.has(n.id)) return;
                 const cluster = [];
@@ -272,148 +347,114 @@
                     if (visited.has(curr)) continue;
                     visited.add(curr);
                     cluster.push(curr);
-                    adj[curr].forEach(neighbor => {
-                        if (!visited.has(neighbor)) queue.push(neighbor);
-                    });
+                    adj[curr].forEach(neighbor => { if (!visited.has(neighbor)) queue.push(neighbor); });
                 }
-                clusters.push(cluster);
+                result.push(cluster);
             });
-
-            return clusters.sort((a, b) => b.length - a.length);
+            return result.sort((a, b) => b.length - a.length);
         }
 
-        // Initialize
-        function getNodeColor(node) {
-            return languageColors[node.language] || '#4ecdc4';
-        }
-
-        function getNodeSize(stars) {
-            return Math.max(20, Math.min(80, 15 + Math.log10(stars + 1) * 15));
-        }
+        function getNodeColor(node) { return languageColors[node.language] || '#4ecdc4'; }
+        function getNodeSize(stars) { return Math.max(25, Math.min(80, 20 + Math.log10(stars + 1) * 18)); }
 
         function createElements(threshold) {
-            const nodes = nodesData.map(n => ({
-                data: { id: n.id, label: n.label, ...n, category: categorizeProject(n) }
-            }));
+            const nodes = nodesData.map(n => ({ data: { id: n.id, label: n.label, ...n, category: categorizeProject(n) } }));
             const edges = edgesData.filter(e => e.similarity >= threshold).map(e => ({
                 data: { id: e.source + '-' + e.target, source: e.source, target: e.target, similarity: e.similarity }
             }));
             return [...nodes, ...edges];
         }
 
-        let cy = cytoscape({
-            container: document.getElementById('cy'),
-            elements: createElements(currentThreshold),
-            style: [
-                {
-                    selector: 'node',
-                    style: {
-                        'label': 'data(label)',
-                        'width': function(ele) { return getNodeSize(ele.data('stars')); },
-                        'height': function(ele) { return getNodeSize(ele.data('stars')); },
-                        'background-color': function(ele) { return getNodeColor(ele.data()); },
-                        'border-width': 2,
-                        'border-color': '#fff',
-                        'color': '#fff',
-                        'font-size': '10px',
-                        'text-valign': 'bottom',
-                        'text-margin-y': 5,
-                        'text-outline-width': 2,
-                        'text-outline-color': '#1a1a2e'
-                    }
-                },
-                {
-                    selector: 'edge',
-                    style: {
-                        'width': function(ele) { return 1 + ele.data('similarity') * 5; },
-                        'line-color': 'rgba(78, 205, 196, 0.4)',
-                        'curve-style': 'bezier',
-                        'opacity': function(ele) { return 0.3 + ele.data('similarity') * 0.5; }
-                    }
-                },
-                { selector: '.faded', style: { 'opacity': 0.15 } },
-                { selector: '.highlighted', style: { 'border-color': '#ff6b6b', 'border-width': 4 } }
-            ],
-            layout: { name: 'fcose', animate: true, randomize: true, nodeDimensionsIncludeLabels: true, idealEdgeLength: 150, nodeRepulsion: 8000 }
-        });
+        function initGraph() {
+            cy = cytoscape({
+                container: document.getElementById('cy'),
+                elements: createElements(currentThreshold),
+                style: [
+                    { selector: 'node', style: {
+                        'label': 'data(label)', 'width': ele => getNodeSize(ele.data('stars')),
+                        'height': ele => getNodeSize(ele.data('stars')), 'background-color': ele => getNodeColor(ele.data()),
+                        'border-width': 2, 'border-color': '#fff', 'color': '#fff', 'font-size': '10px',
+                        'text-valign': 'bottom', 'text-margin-y': 5, 'text-outline-width': 2, 'text-outline-color': '#1a1a2e'
+                    }},
+                    { selector: 'edge', style: {
+                        'width': ele => 1 + ele.data('similarity') * 5, 'line-color': 'rgba(78, 205, 196, 0.5)',
+                        'curve-style': 'bezier', 'opacity': ele => 0.3 + ele.data('similarity') * 0.5
+                    }},
+                    { selector: '.faded', style: { 'opacity': 0.15 } },
+                    { selector: '.highlighted', style: { 'border-color': '#ff6b6b', 'border-width': 4 } }
+                ],
+                layout: { name: 'cose', animate: false, nodeRepulsion: 15000, idealEdgeLength: 120, gravity: 0.3 }
+            });
 
-        // Update clusters
+            cy.on('tap', 'node', function(evt) {
+                selectedNode = evt.target.data();
+                document.getElementById('info-name').innerHTML = '<a href="' + selectedNode.repo_url + '" target="_blank">' + selectedNode.full_name + '</a>';
+                document.getElementById('info-stars').textContent = selectedNode.stars + ' stars';
+                document.getElementById('info-language').textContent = selectedNode.language || 'Unknown';
+                document.getElementById('info-description').textContent = selectedNode.description || '';
+                document.getElementById('info-topics').innerHTML = (selectedNode.topics || []).map(t => '<span class="tag">' + t + '</span>').join('');
+                document.getElementById('info-keywords').innerHTML = (selectedNode.keywords || []).slice(0, 5).map(k => '<span class="tag">' + k + '</span>').join('');
+                document.getElementById('link-repo').href = selectedNode.repo_url;
+                document.getElementById('link-file').href = selectedNode.url;
+                document.getElementById('node-info').classList.add('active');
+                document.getElementById('placeholder').style.display = 'none';
+                cy.elements().removeClass('faded highlighted');
+                const neighborhood = evt.target.neighborhood().add(evt.target);
+                cy.elements().not(neighborhood).addClass('faded');
+                evt.target.addClass('highlighted');
+            });
+
+            cy.on('tap', function(evt) {
+                if (evt.target === cy) {
+                    cy.elements().removeClass('faded highlighted');
+                    reapplyFilter();
+                }
+            });
+        }
+
         function updateClusters() {
             clusters = findClusters(currentThreshold);
             document.getElementById('stat-clusters').textContent = clusters.filter(c => c.length > 1).length;
             renderClusterList();
         }
 
-        // Render category lists
         function renderCategories() {
-            // By Language
             const langCounts = {};
-            nodesData.forEach(n => {
-                langCounts[n.language] = (langCounts[n.language] || 0) + 1;
-            });
+            nodesData.forEach(n => { langCounts[n.language] = (langCounts[n.language] || 0) + 1; });
             const langSorted = Object.entries(langCounts).sort((a, b) => b[1] - a[1]);
+            document.getElementById('language-categories').innerHTML = langSorted.map(([lang, count]) =>
+                '<div class="category-item" data-lang="' + lang + '"><div class="category-name"><div style="width:10px;height:10px;border-radius:50%;background:' + (languageColors[lang] || '#4ecdc4') + '"></div><span>' + lang + '</span></div><span class="category-count">' + count + '</span></div>'
+            ).join('');
 
-            document.getElementById('language-categories').innerHTML = langSorted.map(([lang, count]) => `
-                <div class="category-item" onclick="filterByLanguage('${lang}')">
-                    <div class="category-name">
-                        <div style="width:10px;height:10px;border-radius:50%;background:${languageColors[lang] || '#4ecdc4'}"></div>
-                        <span>${lang}</span>
-                    </div>
-                    <span class="category-count">${count}</span>
-                </div>
-            `).join('');
-
-            // By Type
             const typeCounts = {};
-            nodesData.forEach(n => {
-                const type = categorizeProject(n);
-                typeCounts[type] = (typeCounts[type] || 0) + 1;
-            });
+            nodesData.forEach(n => { const t = categorizeProject(n); typeCounts[t] = (typeCounts[t] || 0) + 1; });
             const typeSorted = Object.entries(typeCounts).sort((a, b) => b[1] - a[1]);
+            document.getElementById('type-categories').innerHTML = typeSorted.map(([type, count]) =>
+                '<div class="category-item" data-type="' + type + '"><div class="category-name"><span>' + type + '</span></div><span class="category-count">' + count + '</span></div>'
+            ).join('');
 
-            document.getElementById('type-categories').innerHTML = typeSorted.map(([type, count]) => `
-                <div class="category-item" onclick="filterByType('${type}')">
-                    <div class="category-name"><span>${type}</span></div>
-                    <span class="category-count">${count}</span>
-                </div>
-            `).join('');
-
-            // Language legend
-            document.getElementById('language-legend').innerHTML = langSorted.slice(0, 8).map(([lang, count]) => `
-                <div class="legend-item" onclick="filterByLanguage('${lang}')">
-                    <div class="legend-color" style="background:${languageColors[lang] || '#4ecdc4'}"></div>
-                    <span>${lang} (${count})</span>
-                </div>
-            `).join('');
+            document.getElementById('language-legend').innerHTML = langSorted.slice(0, 8).map(([lang, count]) =>
+                '<div class="legend-item" data-lang="' + lang + '"><div class="legend-color" style="background:' + (languageColors[lang] || '#4ecdc4') + '"></div><span>' + lang + ' (' + count + ')</span></div>'
+            ).join('');
         }
 
         function renderClusterList() {
-            const clusterColors = ['#4ecdc4', '#ff6b6b', '#feca57', '#a55eea', '#26de81', '#fd9644', '#45aaf2', '#fc5c65'];
+            const colors = ['#4ecdc4', '#ff6b6b', '#feca57', '#a55eea', '#26de81', '#fd9644', '#45aaf2'];
             const html = clusters.filter(c => c.length > 1).map((cluster, i) => {
                 const nodes = cluster.map(id => nodesData.find(n => n.id === id));
-                const names = nodes.slice(0, 3).map(n => n.label).join(', ');
-                const more = nodes.length > 3 ? ` +${nodes.length - 3}` : '';
-                return `
-                    <div class="cluster-item" onclick="filterByCluster(${i})" data-cluster="${i}">
-                        <div class="category-name">
-                            <div class="cluster-color" style="background:${clusterColors[i % clusterColors.length]}"></div>
-                            <span>${names}${more}</span>
-                        </div>
-                        <span class="category-count">${cluster.length}</span>
-                    </div>
-                `;
+                const names = nodes.slice(0, 2).map(n => n.label).join(', ');
+                const more = nodes.length > 2 ? ' +' + (nodes.length - 2) : '';
+                return '<div class="category-item" data-cluster="' + i + '"><div class="category-name"><div class="cluster-color" style="background:' + colors[i % colors.length] + '"></div><span>' + names + more + '</span></div><span class="category-count">' + cluster.length + '</span></div>';
             }).join('');
-            document.getElementById('cluster-list').innerHTML = html || '<p style="color:#666;font-size:12px;">No clusters at this threshold</p>';
+            document.getElementById('cluster-list').innerHTML = html || '<p style="color:#666;font-size:12px;">Increase threshold to see clusters</p>';
         }
 
-        // Filter functions
         function filterByLanguage(lang) {
             currentFilter = { type: 'language', value: lang };
             cy.elements().removeClass('faded highlighted');
             const matches = cy.nodes().filter(n => n.data('language') === lang);
             cy.elements().not(matches).not(matches.connectedEdges()).addClass('faded');
             matches.addClass('highlighted');
-            updateCategoryActive('language', lang);
         }
 
         function filterByType(type) {
@@ -422,214 +463,162 @@
             const matches = cy.nodes().filter(n => n.data('category') === type);
             cy.elements().not(matches).not(matches.connectedEdges()).addClass('faded');
             matches.addClass('highlighted');
-            updateCategoryActive('type', type);
         }
 
         function filterByCluster(index) {
             currentFilter = { type: 'cluster', value: index };
             cy.elements().removeClass('faded highlighted');
-            const clusterIds = clusters[index];
-            const matches = cy.nodes().filter(n => clusterIds.includes(n.id()));
+            const ids = clusters[index];
+            const matches = cy.nodes().filter(n => ids.includes(n.id()));
             cy.elements().not(matches).not(matches.connectedEdges()).addClass('faded');
             matches.addClass('highlighted');
-            document.querySelectorAll('.cluster-item').forEach(el => el.classList.remove('active'));
-            document.querySelector(`.cluster-item[data-cluster="${index}"]`)?.classList.add('active');
         }
 
-        function updateCategoryActive(type, value) {
+        function clearFilter() {
+            currentFilter = { type: null, value: null };
+            cy.elements().removeClass('faded highlighted');
             document.querySelectorAll('.category-item').forEach(el => el.classList.remove('active'));
         }
 
-        function clearCategoryFilter() {
-            currentFilter = { type: null, value: null };
-            cy.elements().removeClass('faded highlighted');
-            document.querySelectorAll('.category-item, .cluster-item').forEach(el => el.classList.remove('active'));
+        function reapplyFilter() {
+            if (!currentFilter.type) return;
+            if (currentFilter.type === 'language') filterByLanguage(currentFilter.value);
+            else if (currentFilter.type === 'type') filterByType(currentFilter.value);
+            else if (currentFilter.type === 'cluster') filterByCluster(currentFilter.value);
         }
 
-        function clearClusterFilter() {
-            clearCategoryFilter();
-        }
-
-        // Tab switching
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-                document.getElementById('tab-' + this.dataset.tab).classList.add('active');
-            });
-        });
-
-        // Node click
-        cy.on('tap', 'node', function(evt) {
-            selectedNode = evt.target.data();
-            document.getElementById('info-name').innerHTML = `<a href="${selectedNode.repo_url}" target="_blank">${selectedNode.full_name}</a>`;
-            document.getElementById('info-stars').textContent = selectedNode.stars.toLocaleString() + ' stars';
-            document.getElementById('info-language').textContent = selectedNode.language || 'Unknown';
-            document.getElementById('info-description').textContent = selectedNode.description || 'No description';
-            document.getElementById('info-topics').innerHTML = (selectedNode.topics || []).map(t => `<span class="tag">${t}</span>`).join('');
-            document.getElementById('info-keywords').innerHTML = (selectedNode.keywords || []).slice(0, 5).map(k => `<span class="tag">${k}</span>`).join('');
-            document.getElementById('link-repo').href = selectedNode.repo_url;
-            document.getElementById('link-file').href = selectedNode.url;
-            document.getElementById('node-info').classList.add('active');
-            document.getElementById('placeholder').style.display = 'none';
-
-            cy.elements().removeClass('faded highlighted');
-            const neighborhood = evt.target.neighborhood().add(evt.target);
-            cy.elements().not(neighborhood).addClass('faded');
-            evt.target.addClass('highlighted');
-        });
-
-        cy.on('tap', function(evt) {
-            if (evt.target === cy) {
-                cy.elements().removeClass('faded highlighted');
-                if (currentFilter.type) {
-                    // Reapply current filter
-                    if (currentFilter.type === 'language') filterByLanguage(currentFilter.value);
-                    else if (currentFilter.type === 'type') filterByType(currentFilter.value);
-                    else if (currentFilter.type === 'cluster') filterByCluster(currentFilter.value);
-                }
-            }
-        });
-
-        // Controls
-        document.getElementById('layout-select').addEventListener('change', function() {
-            const name = this.value;
-            let layout;
-            if (name === 'concentric') {
-                layout = { name: 'concentric', concentric: n => n.data('stars'), levelWidth: () => 2, animate: true };
-            } else if (name === 'cose') {
-                layout = { name: 'cose', animate: true, nodeRepulsion: 10000, idealEdgeLength: 100 };
-            } else {
-                layout = { name, animate: true };
-            }
-            cy.layout(layout).run();
-        });
-
-        document.getElementById('threshold').addEventListener('input', function() {
-            currentThreshold = parseFloat(this.value);
-            document.getElementById('threshold-value').textContent = currentThreshold.toFixed(2);
-            cy.edges().remove();
-            cy.add(edgesData.filter(e => e.similarity >= currentThreshold).map(e => ({
-                data: { id: e.source + '-' + e.target, source: e.source, target: e.target, similarity: e.similarity }
-            })));
-            document.getElementById('stat-edges').textContent = edgesData.filter(e => e.similarity >= currentThreshold).length;
-            updateClusters();
-        });
-
-        document.getElementById('search').addEventListener('input', function() {
-            const q = this.value.toLowerCase();
-            if (!q) { cy.elements().removeClass('faded highlighted'); return; }
-            const matches = cy.nodes().filter(n =>
-                n.data('label').toLowerCase().includes(q) ||
-                n.data('full_name').toLowerCase().includes(q) ||
-                (n.data('description') || '').toLowerCase().includes(q)
-            );
-            cy.elements().addClass('faded');
-            matches.removeClass('faded').addClass('highlighted');
-            matches.neighborhood().removeClass('faded');
-        });
-
-        function resetView() {
-            cy.fit();
-            cy.elements().removeClass('faded highlighted');
-            document.getElementById('search').value = '';
-            currentFilter = { type: null, value: null };
-            document.querySelectorAll('.category-item, .cluster-item').forEach(el => el.classList.remove('active'));
-        }
-
-        function exportPNG() {
-            const png = cy.png({ output: 'blob', bg: '#1a1a2e', scale: 2 });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(png);
-            link.download = 'claude-md-graph.png';
-            link.click();
-        }
-
-        function showSimilarNodes() {
-            if (!selectedNode) return;
-            const node = cy.getElementById(selectedNode.id);
-            const neighborhood = node.neighborhood().add(node);
-            cy.elements().addClass('faded');
-            neighborhood.removeClass('faded');
-            node.addClass('highlighted');
-        }
-
-        // Download functions
         function showDownloadModal() {
             let nodes;
-            if (currentFilter.type === 'cluster') {
-                nodes = clusters[currentFilter.value].map(id => nodesData.find(n => n.id === id));
-            } else if (currentFilter.type === 'language') {
-                nodes = nodesData.filter(n => n.language === currentFilter.value);
-            } else if (currentFilter.type === 'type') {
-                nodes = nodesData.filter(n => categorizeProject(n) === currentFilter.value);
-            } else {
-                // Get highlighted nodes or all nodes
-                const highlighted = cy.nodes('.highlighted');
-                if (highlighted.length > 0) {
-                    nodes = highlighted.map(n => n.data());
-                } else {
-                    nodes = nodesData;
-                }
+            if (currentFilter.type === 'cluster') nodes = clusters[currentFilter.value].map(id => nodesData.find(n => n.id === id));
+            else if (currentFilter.type === 'language') nodes = nodesData.filter(n => n.language === currentFilter.value);
+            else if (currentFilter.type === 'type') nodes = nodesData.filter(n => categorizeProject(n) === currentFilter.value);
+            else {
+                const h = cy.nodes('.highlighted');
+                nodes = h.length > 0 ? h.map(n => n.data()) : nodesData;
             }
-
-            document.getElementById('download-list').innerHTML = nodes.map(n => `
-                <div class="download-item">
-                    <input type="checkbox" id="dl-${n.id}" value="${n.url}" checked>
-                    <div class="download-info">
-                        <div class="download-name">${n.label}</div>
-                        <div class="download-meta">${n.language} | ${n.stars} stars</div>
-                    </div>
-                </div>
-            `).join('');
-
+            document.getElementById('download-list').innerHTML = nodes.map(n =>
+                '<div class="download-item"><input type="checkbox" value="' + n.url + '" checked><div class="download-info"><div class="download-name">' + n.label + '</div><div class="download-meta">' + n.language + ' | ' + n.stars + ' stars</div></div></div>'
+            ).join('');
             document.getElementById('download-modal').classList.add('active');
         }
 
-        function closeDownloadModal() {
-            document.getElementById('download-modal').classList.remove('active');
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            initGraph();
+            renderCategories();
+            updateClusters();
 
-        function selectAllDownloads() {
-            document.querySelectorAll('#download-list input[type="checkbox"]').forEach(cb => cb.checked = true);
-        }
+            // Tab buttons
+            document.getElementById('tab-btn-controls').addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('panel-controls').classList.add('active');
+            });
+            document.getElementById('tab-btn-categories').addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('panel-categories').classList.add('active');
+            });
+            document.getElementById('tab-btn-clusters').addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('panel-clusters').classList.add('active');
+            });
 
-        function downloadSelected() {
-            const urls = Array.from(document.querySelectorAll('#download-list input[type="checkbox"]:checked'))
-                .map(cb => cb.value);
+            // Category clicks
+            document.getElementById('language-categories').addEventListener('click', function(e) {
+                const item = e.target.closest('.category-item');
+                if (item) filterByLanguage(item.dataset.lang);
+            });
+            document.getElementById('type-categories').addEventListener('click', function(e) {
+                const item = e.target.closest('.category-item');
+                if (item) filterByType(item.dataset.type);
+            });
+            document.getElementById('cluster-list').addEventListener('click', function(e) {
+                const item = e.target.closest('.category-item');
+                if (item) filterByCluster(parseInt(item.dataset.cluster));
+            });
+            document.getElementById('language-legend').addEventListener('click', function(e) {
+                const item = e.target.closest('.legend-item');
+                if (item) filterByLanguage(item.dataset.lang);
+            });
 
-            if (urls.length === 0) {
-                alert('No files selected');
-                return;
-            }
+            // Controls
+            document.getElementById('layout-select').addEventListener('change', function() {
+                const name = this.value;
+                let layout = name === 'concentric' ?
+                    { name: 'concentric', concentric: n => n.data('stars'), levelWidth: () => 2, animate: true } :
+                    { name, animate: true, nodeRepulsion: 15000 };
+                cy.layout(layout).run();
+            });
 
-            // Open each URL in a new tab (user can save them)
-            if (urls.length <= 5) {
-                urls.forEach(url => window.open(url, '_blank'));
-            } else {
-                // Create a text file with URLs for bulk download
-                const content = urls.join('\n');
-                const blob = new Blob([content], { type: 'text/plain' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = 'claude-md-urls.txt';
-                link.click();
-                alert(`${urls.length} URLs saved to file. You can use wget or curl to download them.`);
-            }
+            document.getElementById('threshold').addEventListener('input', function() {
+                currentThreshold = parseFloat(this.value);
+                document.getElementById('threshold-value').textContent = currentThreshold.toFixed(2);
+                cy.edges().remove();
+                cy.add(edgesData.filter(e => e.similarity >= currentThreshold).map(e => ({
+                    data: { id: e.source + '-' + e.target, source: e.source, target: e.target, similarity: e.similarity }
+                })));
+                document.getElementById('stat-edges').textContent = edgesData.filter(e => e.similarity >= currentThreshold).length;
+                updateClusters();
+            });
 
-            closeDownloadModal();
-        }
+            document.getElementById('search').addEventListener('input', function() {
+                const q = this.value.toLowerCase();
+                if (!q) { cy.elements().removeClass('faded highlighted'); return; }
+                const matches = cy.nodes().filter(n =>
+                    n.data('label').toLowerCase().includes(q) ||
+                    n.data('full_name').toLowerCase().includes(q) ||
+                    (n.data('description') || '').toLowerCase().includes(q)
+                );
+                cy.elements().addClass('faded');
+                matches.removeClass('faded').addClass('highlighted');
+                matches.neighborhood().removeClass('faded');
+            });
 
-        function downloadSingle() {
-            if (selectedNode) {
-                window.open(selectedNode.url, '_blank');
-            }
-        }
+            document.getElementById('btn-reset').addEventListener('click', function() {
+                cy.fit(); clearFilter(); document.getElementById('search').value = '';
+            });
+            document.getElementById('btn-export').addEventListener('click', function() {
+                const png = cy.png({ output: 'blob', bg: '#1a1a2e', scale: 2 });
+                const link = document.createElement('a'); link.href = URL.createObjectURL(png);
+                link.download = 'claude-md-graph.png'; link.click();
+            });
+            document.getElementById('btn-download').addEventListener('click', showDownloadModal);
+            document.getElementById('btn-similar').addEventListener('click', function() {
+                if (!selectedNode) return;
+                const node = cy.getElementById(selectedNode.id);
+                const neighborhood = node.neighborhood().add(node);
+                cy.elements().addClass('faded'); neighborhood.removeClass('faded'); node.addClass('highlighted');
+            });
+            document.getElementById('btn-download-single').addEventListener('click', function() {
+                if (selectedNode) window.open(selectedNode.url, '_blank');
+            });
+            document.getElementById('btn-clear-lang').addEventListener('click', clearFilter);
+            document.getElementById('btn-clear-cluster').addEventListener('click', clearFilter);
 
-        // Initialize
-        renderCategories();
-        updateClusters();
+            // Modal
+            document.getElementById('btn-close-modal').addEventListener('click', function() { document.getElementById('download-modal').classList.remove('active'); });
+            document.getElementById('btn-cancel-modal').addEventListener('click', function() { document.getElementById('download-modal').classList.remove('active'); });
+            document.getElementById('btn-select-all').addEventListener('click', function() {
+                document.querySelectorAll('#download-list input[type="checkbox"]').forEach(cb => cb.checked = true);
+            });
+            document.getElementById('btn-download-selected').addEventListener('click', function() {
+                const urls = Array.from(document.querySelectorAll('#download-list input[type="checkbox"]:checked')).map(cb => cb.value);
+                if (urls.length === 0) { alert('No files selected'); return; }
+                if (urls.length <= 5) urls.forEach(url => window.open(url, '_blank'));
+                else {
+                    const blob = new Blob([urls.join('\n')], { type: 'text/plain' });
+                    const link = document.createElement('a'); link.href = URL.createObjectURL(blob);
+                    link.download = 'claude-md-urls.txt'; link.click();
+                    alert(urls.length + ' URLs saved to file.');
+                }
+                document.getElementById('download-modal').classList.remove('active');
+            });
+        });
+    })();
     </script>
 </body>
 </html>
