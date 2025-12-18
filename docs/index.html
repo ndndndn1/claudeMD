@@ -305,7 +305,13 @@
         }
 
         function getNodeColor(node) { return languageColors[node.language] || '#4ecdc4'; }
-        function getNodeSize(stars) { return Math.max(25, Math.min(80, 20 + Math.log10(stars + 1) * 18)); }
+        // Node size: star=0 is smallest, star>=1 starts differentiating
+        function getNodeSize(stars) {
+            if (stars === 0) return 15;  // Smallest for zero stars
+            if (stars === 1) return 22;
+            // For stars >= 2, scale logarithmically
+            return Math.min(90, 25 + Math.log10(stars) * 25);
+        }
 
         function createElements(threshold, k) {
             const nodes = nodesData.map(n => ({ data: { id: n.id, label: n.label, ...n, category: categorizeProject(n) } }));
@@ -341,7 +347,23 @@
                     { selector: '.faded', style: { 'opacity': 0.15 } },
                     { selector: '.highlighted', style: { 'border-color': '#ff6b6b', 'border-width': 4 } }
                 ],
-                layout: { name: 'cose', animate: false, nodeRepulsion: 15000, idealEdgeLength: 120, gravity: 0.3 },
+                layout: {
+                    name: 'cose',
+                    animate: false,
+                    nodeRepulsion: 50000,        // Increased for more spacing
+                    idealEdgeLength: 180,        // Longer edges
+                    gravity: 0.2,                // Less gravity = more spread
+                    nodeDimensionsIncludeLabels: true,
+                    nodeOverlap: 30,             // Minimum node separation
+                    nestingFactor: 1.2
+                },
+                // Zoom settings
+                minZoom: 0.1,
+                maxZoom: 5,
+                wheelSensitivity: 0.15,          // Finer zoom steps (default 1)
+                zoomingEnabled: true,
+                userZoomingEnabled: true,
+                panningEnabled: true,
                 // Performance optimization for large graphs
                 textureOnViewport: true,
                 hideEdgesOnViewport: true,
