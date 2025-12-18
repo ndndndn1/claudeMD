@@ -15,14 +15,15 @@
         .stat-value { color: #4ecdc4; font-weight: bold; font-size: 18px; }
         .container { display: flex; height: calc(100vh - 100px); }
         #cy { flex: 1; background: rgba(0,0,0,0.2); }
-        .sidebar { width: 380px; background: rgba(0,0,0,0.3); border-left: 1px solid rgba(255,255,255,0.1); padding: 20px; overflow-y: auto; }
+        .sidebar { width: 400px; background: rgba(0,0,0,0.3); border-left: 1px solid rgba(255,255,255,0.1); padding: 20px; overflow-y: auto; }
         .sidebar h2 { font-size: 16px; color: #4ecdc4; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .node-info { display: none; }
         .node-info.active { display: block; }
-        .info-label { font-size: 12px; color: #888; margin-top: 15px; margin-bottom: 5px; }
-        .info-value { font-size: 14px; color: #fff; word-break: break-word; }
+        .info-label { font-size: 12px; color: #888; margin-top: 12px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-value { font-size: 14px; color: #fff; word-break: break-word; line-height: 1.5; }
         .info-value a { color: #4ecdc4; text-decoration: none; }
         .info-value a:hover { text-decoration: underline; }
+        .summary-box { background: rgba(78, 205, 196, 0.1); border: 1px solid rgba(78, 205, 196, 0.3); border-radius: 8px; padding: 12px; margin-top: 8px; font-size: 13px; line-height: 1.6; color: #ddd; }
         .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
         .tag { background: rgba(78, 205, 196, 0.2); color: #4ecdc4; padding: 3px 8px; border-radius: 10px; font-size: 11px; }
         .controls { margin-bottom: 20px; }
@@ -69,6 +70,8 @@
         .tab-btn.active { background: #4ecdc4; color: #1a1a2e; }
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
+        .loading { text-align: center; padding: 50px; color: #888; }
+        .optimization-note { font-size: 11px; color: #666; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 5px; margin-top: 10px; }
         @media (max-width: 768px) { .container { flex-direction: column; } .sidebar { width: 100%; height: auto; max-height: 300px; } #cy { height: 60vh; } }
     </style>
 </head>
@@ -76,14 +79,13 @@
     <div class="header">
         <h1>CLAUDE.md Relationship Graph</h1>
         <div class="stats">
-            <div class="stat-item"><span>Repositories:</span><span class="stat-value" id="stat-repos">50</span></div>
-            <div class="stat-item"><span>Connections:</span><span class="stat-value" id="stat-edges">58</span></div>
+            <div class="stat-item"><span>Repositories:</span><span class="stat-value" id="stat-repos">-</span></div>
+            <div class="stat-item"><span>Connections:</span><span class="stat-value" id="stat-edges">-</span></div>
             <div class="stat-item"><span>Clusters:</span><span class="stat-value" id="stat-clusters">0</span></div>
-            <div class="stat-item"><span>Total Stars:</span><span class="stat-value">1,585</span></div>
         </div>
     </div>
     <div class="container">
-        <div id="cy"></div>
+        <div id="cy"><div class="loading">Loading graph data...</div></div>
         <div class="sidebar">
             <div class="tabs">
                 <button class="tab-btn active" id="tab-btn-controls">Controls</button>
@@ -107,6 +109,10 @@
                         <div class="control-label">Similarity Threshold: <span id="threshold-value">0.00</span></div>
                         <input type="range" id="threshold" min="0" max="0.5" step="0.01" value="0">
                     </div>
+                    <div class="control-group">
+                        <div class="control-label">Max Neighbors per Node (KNN): <span id="knn-value">10</span></div>
+                        <input type="range" id="knn-limit" min="3" max="20" step="1" value="10">
+                    </div>
                     <div style="margin-top: 15px;">
                         <button class="btn" id="btn-reset">Reset View</button>
                         <button class="btn secondary" id="btn-export">Export PNG</button>
@@ -118,6 +124,10 @@
                 <div class="legend">
                     <div class="legend-title">Node Size = Stars | Color = Language</div>
                     <div id="language-legend"></div>
+                </div>
+                <div class="optimization-note">
+                    <strong>Scalability:</strong> Using KNN to limit edges per node.
+                    With 1000 nodes and K=10, only ~10K edges instead of 500K.
                 </div>
             </div>
 
@@ -155,6 +165,8 @@
                 <div class="info-label">Stars</div><div class="info-value" id="info-stars"></div>
                 <div class="info-label">Language</div><div class="info-value" id="info-language"></div>
                 <div class="info-label">Description</div><div class="info-value" id="info-description"></div>
+                <div class="info-label">CLAUDE.md Summary</div>
+                <div class="summary-box" id="info-summary">No summary available</div>
                 <div class="info-label">Topics</div><div class="tags" id="info-topics"></div>
                 <div class="info-label">Keywords</div><div class="tags" id="info-keywords"></div>
                 <div class="info-label">Links</div>
@@ -165,7 +177,7 @@
                 </div>
             </div>
             <div class="placeholder" id="placeholder">Click a node to see details</div>
-            <div class="footer">KuzuDB Storage | MCP Server Ready</div>
+            <div class="footer">KNN-optimized Graph | O(n*k) edges</div>
         </div>
     </div>
 
@@ -186,121 +198,6 @@
 
     <script>
     (function() {
-        // Data
-        const nodesData = [
-            {"id": "node_0", "label": "QuantumOptics.jl", "full_name": "qojulia/QuantumOptics.jl", "stars": 595, "description": "Library for quantum systems simulation", "url": "https://github.com/qojulia/QuantumOptics.jl/blob/main/CLAUDE.md", "repo_url": "https://github.com/qojulia/QuantumOptics.jl", "language": "Julia", "topics": ["quantum"], "keywords": ["quantum", "simulation"]},
-            {"id": "node_1", "label": "querydsl", "full_name": "OpenFeign/querydsl", "stars": 542, "description": "Unified Queries for Java", "url": "https://github.com/OpenFeign/querydsl/blob/main/CLAUDE.md", "repo_url": "https://github.com/OpenFeign/querydsl", "language": "Java", "topics": [], "keywords": ["java", "query"]},
-            {"id": "node_2", "label": "pixel-banner", "full_name": "jparkerweb/pixel-banner", "stars": 162, "description": "Obsidian plugin for banner images", "url": "https://github.com/jparkerweb/pixel-banner/blob/main/CLAUDE.md", "repo_url": "https://github.com/jparkerweb/pixel-banner", "language": "JavaScript", "topics": ["obsidian", "plugin"], "keywords": ["obsidian", "plugin"]},
-            {"id": "node_3", "label": "microfolio", "full_name": "aker-dev/microfolio", "stars": 125, "description": "SvelteKit portfolio generator", "url": "https://github.com/aker-dev/microfolio/blob/main/CLAUDE.md", "repo_url": "https://github.com/aker-dev/microfolio", "language": "Svelte", "topics": ["portfolio"], "keywords": ["svelte", "portfolio"]},
-            {"id": "node_4", "label": "msg-rs", "full_name": "chainbound/msg-rs", "stars": 79, "description": "Rust messaging library", "url": "https://github.com/chainbound/msg-rs/blob/main/CLAUDE.md", "repo_url": "https://github.com/chainbound/msg-rs", "language": "Rust", "topics": ["distributed-systems"], "keywords": ["rust", "messaging"]},
-            {"id": "node_5", "label": "video-agent", "full_name": "donghaozhang/video-agent-claude-skill", "stars": 37, "description": "Python video CLI package", "url": "https://github.com/donghaozhang/video-agent-claude-skill/blob/main/CLAUDE.md", "repo_url": "https://github.com/donghaozhang/video-agent-claude-skill", "language": "Python", "topics": [], "keywords": ["python", "video", "ai"]},
-            {"id": "node_6", "label": "whyp", "full_name": "jalanb/whyp", "stars": 18, "description": "Shell type extension", "url": "https://github.com/jalanb/whyp/blob/main/CLAUDE.md", "repo_url": "https://github.com/jalanb/whyp", "language": "Python", "topics": ["shell"], "keywords": ["python", "shell"]},
-            {"id": "node_7", "label": "kugelpos-backend", "full_name": "kugel-masa/kugelpos-backend", "stars": 4, "description": "POS Backend API", "url": "https://github.com/kugel-masa/kugelpos-backend/blob/main/CLAUDE.md", "repo_url": "https://github.com/kugel-masa/kugelpos-backend", "language": "Python", "topics": [], "keywords": ["python", "api", "backend"]},
-            {"id": "node_8", "label": "MultiRheoFlow", "full_name": "comphy-lab/MultiRheoFlow", "stars": 4, "description": "Multiphase flow framework", "url": "https://github.com/comphy-lab/MultiRheoFlow/blob/main/CLAUDE.md", "repo_url": "https://github.com/comphy-lab/MultiRheoFlow", "language": "C", "topics": [], "keywords": ["c", "simulation"]},
-            {"id": "node_9", "label": "mysql_partitioning", "full_name": "Andryu/simple_mysql_partitioning", "stars": 4, "description": "MySQL partition wrapper", "url": "https://github.com/Andryu/simple_mysql_partitioning/blob/main/CLAUDE.md", "repo_url": "https://github.com/Andryu/simple_mysql_partitioning", "language": "Ruby", "topics": [], "keywords": ["ruby", "mysql"]},
-            {"id": "node_10", "label": "pr-summary", "full_name": "yan/pr-summary", "stars": 4, "description": "GitHub Action for PR capture", "url": "https://github.com/yan/pr-summary/blob/main/CLAUDE.md", "repo_url": "https://github.com/yan/pr-summary", "language": "Python", "topics": [], "keywords": ["python", "github"]},
-            {"id": "node_11", "label": "vespera-atelier", "full_name": "EchoingVesper/vespera-atelier", "stars": 3, "description": "Document orchestration platform", "url": "https://github.com/EchoingVesper/vespera-atelier/blob/main/CLAUDE.md", "repo_url": "https://github.com/EchoingVesper/vespera-atelier", "language": "Python", "topics": [], "keywords": ["python", "platform"]},
-            {"id": "node_12", "label": "solana-sniper", "full_name": "omkom/solana-sniper-bot", "stars": 2, "description": "Solana token tool", "url": "https://github.com/omkom/solana-sniper-bot/blob/main/CLAUDE.md", "repo_url": "https://github.com/omkom/solana-sniper-bot", "language": "TypeScript", "topics": [], "keywords": ["typescript", "solana"]},
-            {"id": "node_13", "label": "Monochromatic", "full_name": "Aquaticat/Monochromatic", "stars": 2, "description": "AI agent guidelines", "url": "https://github.com/Aquaticat/Monochromatic/blob/main/CLAUDE.md", "repo_url": "https://github.com/Aquaticat/Monochromatic", "language": "TypeScript", "topics": [], "keywords": ["typescript", "ai"]},
-            {"id": "node_14", "label": "chatkit-link", "full_name": "exiao/chatkit-link", "stars": 1, "description": "OpenAI workflow demo", "url": "https://github.com/exiao/chatkit-link/blob/main/claude.md", "repo_url": "https://github.com/exiao/chatkit-link", "language": "JavaScript", "topics": ["openai"], "keywords": ["javascript", "openai"]},
-            {"id": "node_15", "label": "hkdigital-lib", "full_name": "HKdigital/hkdigital--lib-core", "stars": 1, "description": "SvelteKit base library", "url": "https://github.com/HKdigital/hkdigital--lib-core/blob/main/claude.md", "repo_url": "https://github.com/HKdigital/hkdigital--lib-core", "language": "JavaScript", "topics": [], "keywords": ["javascript", "svelte"]},
-            {"id": "node_16", "label": "report-agent", "full_name": "ayoubben18/report-generator-agent", "stars": 1, "description": "Report generator agent", "url": "https://github.com/ayoubben18/report-generator-agent/blob/main/CLAUDE.md", "repo_url": "https://github.com/ayoubben18/report-generator-agent", "language": "TypeScript", "topics": [], "keywords": ["typescript", "agent"]},
-            {"id": "node_17", "label": "ukkin", "full_name": "Skelf-Research/ukkin", "stars": 1, "description": "AI mobile web browser", "url": "https://github.com/Skelf-Research/ukkin/blob/main/CLAUDE.md", "repo_url": "https://github.com/Skelf-Research/ukkin", "language": "Dart", "topics": ["flutter", "mobile"], "keywords": ["dart", "flutter", "ai"]},
-            {"id": "node_18", "label": "si-systems-v5", "full_name": "daffy0208/si-systems-v5", "stars": 0, "description": "AI Interaction Model", "url": "https://github.com/daffy0208/si-systems-v5/blob/main/claude.md", "repo_url": "https://github.com/daffy0208/si-systems-v5", "language": "TypeScript", "topics": [], "keywords": ["typescript", "ai"]},
-            {"id": "node_19", "label": "travel-app", "full_name": "markhodierne/travel-app", "stars": 0, "description": "Travel planning app", "url": "https://github.com/markhodierne/travel-app/blob/main/CLAUDE.md", "repo_url": "https://github.com/markhodierne/travel-app", "language": "HTML", "topics": [], "keywords": ["html", "travel"]},
-            {"id": "node_20", "label": "FileManager", "full_name": "oferhr/FileManager", "stars": 0, "description": "Windows file manager", "url": "https://github.com/oferhr/FileManager/blob/main/Claude.md", "repo_url": "https://github.com/oferhr/FileManager", "language": "C#", "topics": [], "keywords": ["csharp", "windows"]},
-            {"id": "node_21", "label": "Farmfolio", "full_name": "chimexy8alluvial/Farmfolio", "stars": 0, "description": "Farm marketplace", "url": "https://github.com/chimexy8alluvial/Farmfolio/blob/main/CLAUDE.md", "repo_url": "https://github.com/chimexy8alluvial/Farmfolio", "language": "JavaScript", "topics": [], "keywords": ["javascript", "marketplace"]},
-            {"id": "node_22", "label": "dantanner", "full_name": "dtanner/dantanner", "stars": 0, "description": "Personal website", "url": "https://github.com/dtanner/dantanner/blob/main/CLAUDE.md", "repo_url": "https://github.com/dtanner/dantanner", "language": "Nunjucks", "topics": [], "keywords": ["nunjucks", "website"]},
-            {"id": "node_23", "label": "agentmotion", "full_name": "osobh/agentmotion", "stars": 0, "description": "AI assistant remote", "url": "https://github.com/osobh/agentmotion/blob/main/claude.md", "repo_url": "https://github.com/osobh/agentmotion", "language": "TypeScript", "topics": [], "keywords": ["typescript", "mobile", "ai"]},
-            {"id": "node_24", "label": "gitstar_poller", "full_name": "iskng/gitstar_poller", "stars": 0, "description": "GitHub star poller", "url": "https://github.com/iskng/gitstar_poller/blob/main/CLAUDE.md", "repo_url": "https://github.com/iskng/gitstar_poller", "language": "Rust", "topics": [], "keywords": ["rust", "github"]},
-            {"id": "node_25", "label": "vendoreval4", "full_name": "adamjdavidson/vendoreval4", "stars": 0, "description": "Vendor evaluation", "url": "https://github.com/adamjdavidson/vendoreval4/blob/main/claude.md", "repo_url": "https://github.com/adamjdavidson/vendoreval4", "language": "TypeScript", "topics": [], "keywords": ["typescript"]},
-            {"id": "node_26", "label": "KI-SYSTEM", "full_name": "SHP-ART/KI-SYSTEM", "stars": 0, "description": "Smart Home System", "url": "https://github.com/SHP-ART/KI-SYSTEM/blob/main/CLAUDE.md", "repo_url": "https://github.com/SHP-ART/KI-SYSTEM", "language": "Python", "topics": [], "keywords": ["python", "iot"]},
-            {"id": "node_27", "label": "verteilte", "full_name": "sheaksadi/verteilte", "stars": 0, "description": "German vocabulary app", "url": "https://github.com/sheaksadi/verteilte/blob/main/claude.md", "repo_url": "https://github.com/sheaksadi/verteilte", "language": "Vue", "topics": [], "keywords": ["vue", "education"]},
-            {"id": "node_28", "label": "vim-oracle", "full_name": "misterbuckley/vim-oracle", "stars": 0, "description": "Vim AI assistance", "url": "https://github.com/misterbuckley/vim-oracle/blob/main/CLAUDE.md", "repo_url": "https://github.com/misterbuckley/vim-oracle", "language": "Vim Script", "topics": [], "keywords": ["vim", "ai"]},
-            {"id": "node_29", "label": "etradeTools", "full_name": "trezero/etradeTools", "stars": 0, "description": "E*TRADE tools", "url": "https://github.com/trezero/etradeTools/blob/main/CLAUDE.md", "repo_url": "https://github.com/trezero/etradeTools", "language": "Python", "topics": [], "keywords": ["python", "trading"]},
-            {"id": "node_30", "label": "terminator_task", "full_name": "stibiums/terminator_task_manager", "stars": 0, "description": "Rust task manager", "url": "https://github.com/stibiums/terminator_task_manager/blob/main/claude.md", "repo_url": "https://github.com/stibiums/terminator_task_manager", "language": "Rust", "topics": [], "keywords": ["rust", "task"]},
-            {"id": "node_31", "label": "Noetic2.0", "full_name": "myspacecornelius/Noetic2.0", "stars": 0, "description": "Docs platform", "url": "https://github.com/myspacecornelius/Noetic2.0/blob/main/claude.md", "repo_url": "https://github.com/myspacecornelius/Noetic2.0", "language": "TypeScript", "topics": [], "keywords": ["typescript", "docs"]},
-            {"id": "node_32", "label": "spectralcanvas", "full_name": "1hoookkk/spectralcanvas-pro-v2", "stars": 0, "description": "Audio synthesis plugin", "url": "https://github.com/1hoookkk/spectralcanvas-pro-v2/blob/main/CLAUDE.md", "repo_url": "https://github.com/1hoookkk/spectralcanvas-pro-v2", "language": "C++", "topics": [], "keywords": ["cpp", "audio"]},
-            {"id": "node_33", "label": "Tower-Infinity", "full_name": "KORWOT/-Tower-of-Infinity-PT", "stars": 0, "description": "Game prototype", "url": "https://github.com/KORWOT/-Tower-of-Infinity-PT/blob/main/CLAUDE.md", "repo_url": "https://github.com/KORWOT/-Tower-of-Infinity-PT", "language": "C#", "topics": [], "keywords": ["csharp", "game"]},
-            {"id": "node_34", "label": "FlowQ", "full_name": "dev-parvej/FlowQ", "stars": 0, "description": "WordPress survey plugin", "url": "https://github.com/dev-parvej/FlowQ/blob/main/CLAUDE.md", "repo_url": "https://github.com/dev-parvej/FlowQ", "language": "PHP", "topics": [], "keywords": ["php", "wordpress"]},
-            {"id": "node_35", "label": "heavens7", "full_name": "daviguides/heavens7", "stars": 0, "description": "Python MCP server", "url": "https://github.com/daviguides/heavens7/blob/main/Claude.md", "repo_url": "https://github.com/daviguides/heavens7", "language": "Python", "topics": [], "keywords": ["python", "mcp"]},
-            {"id": "node_36", "label": "DynamicShortlinks", "full_name": "thebenlamm/DynamicShortlinks", "stars": 0, "description": "WordPress shortlinks", "url": "https://github.com/thebenlamm/DynamicShortlinks/blob/main/CLAUDE.md", "repo_url": "https://github.com/thebenlamm/DynamicShortlinks", "language": "PHP", "topics": [], "keywords": ["php", "wordpress"]},
-            {"id": "node_37", "label": "formulario-SRT", "full_name": "thiagopvn/formulario-SRT", "stars": 0, "description": "SRT Form app", "url": "https://github.com/thiagopvn/formulario-SRT/blob/main/CLAUDE.md", "repo_url": "https://github.com/thiagopvn/formulario-SRT", "language": "JavaScript", "topics": [], "keywords": ["javascript", "form"]},
-            {"id": "node_38", "label": "gojjo-mcp", "full_name": "hmesfin/gojjo-mcp", "stars": 0, "description": "Django Vue MCP server", "url": "https://github.com/hmesfin/gojjo-mcp/blob/main/CLAUDE.md", "repo_url": "https://github.com/hmesfin/gojjo-mcp", "language": "Python", "topics": [], "keywords": ["python", "mcp", "django"]},
-            {"id": "node_39", "label": "podcast-studio", "full_name": "mikkelkrogsholm/podcast-studio", "stars": 0, "description": "Podcast monorepo", "url": "https://github.com/mikkelkrogsholm/podcast-studio/blob/main/CLAUDE.md", "repo_url": "https://github.com/mikkelkrogsholm/podcast-studio", "language": "TypeScript", "topics": [], "keywords": ["typescript", "podcast"]},
-            {"id": "node_40", "label": "SQL-Tutorial", "full_name": "li195111/SQL----", "stars": 0, "description": "SQL tutorial", "url": "https://github.com/li195111/SQL----/blob/main/CLAUDE.md", "repo_url": "https://github.com/li195111/SQL----", "language": "Jupyter Notebook", "topics": [], "keywords": ["jupyter", "sql"]},
-            {"id": "node_41", "label": "event-platform", "full_name": "xavierau/event-platform", "stars": 0, "description": "Laravel event platform", "url": "https://github.com/xavierau/event-platform/blob/main/CLAUDE.md", "repo_url": "https://github.com/xavierau/event-platform", "language": "PHP", "topics": [], "keywords": ["php", "laravel"]},
-            {"id": "node_42", "label": "intelibi", "full_name": "korallis/intelibi", "stars": 0, "description": "AI Analytics", "url": "https://github.com/korallis/intelibi/blob/main/CLAUDE.md", "repo_url": "https://github.com/korallis/intelibi", "language": "TypeScript", "topics": [], "keywords": ["typescript", "ai"]},
-            {"id": "node_43", "label": "UniMixerServer", "full_name": "bezalel6/UniMixerServer", "stars": 0, "description": "UniMixer Server", "url": "https://github.com/bezalel6/UniMixerServer/blob/main/CLAUDE.md", "repo_url": "https://github.com/bezalel6/UniMixerServer", "language": "C#", "topics": [], "keywords": ["csharp", "server"]},
-            {"id": "node_44", "label": "Anime-Pokemon", "full_name": "hewenyu/Anime-Pok-mon", "stars": 0, "description": "Pokemon battle game", "url": "https://github.com/hewenyu/Anime-Pok-mon/blob/main/CLAUDE.md", "repo_url": "https://github.com/hewenyu/Anime-Pok-mon", "language": "TypeScript", "topics": [], "keywords": ["typescript", "game"]},
-            {"id": "node_45", "label": "microblog-hugo", "full_name": "shawnyeager/microblog-to-hugo", "stars": 0, "description": "Micro.blog to Hugo", "url": "https://github.com/shawnyeager/microblog-to-hugo/blob/main/CLAUDE.md", "repo_url": "https://github.com/shawnyeager/microblog-to-hugo", "language": "Python", "topics": [], "keywords": ["python", "migration"]},
-            {"id": "node_46", "label": "KGB", "full_name": "sudoxue/KGB", "stars": 0, "description": "Kubernetes tool", "url": "https://github.com/sudoxue/KGB/blob/main/CLAUDE.md", "repo_url": "https://github.com/sudoxue/KGB", "language": "Go", "topics": [], "keywords": ["go", "kubernetes"]},
-            {"id": "node_47", "label": "artifex-studio", "full_name": "ChoonwooLim/artifex.ai-studio-pro", "stars": 0, "description": "AI content platform", "url": "https://github.com/ChoonwooLim/artifex.ai-studio-pro/blob/main/claude.md", "repo_url": "https://github.com/ChoonwooLim/artifex.ai-studio-pro", "language": "HTML", "topics": [], "keywords": ["html", "ai"]},
-            {"id": "node_48", "label": "webhookmaster", "full_name": "awfixer-platform/webhookmaster", "stars": 0, "description": "Webhook utility", "url": "https://github.com/awfixer-platform/webhookmaster/blob/main/CLAUDE.md", "repo_url": "https://github.com/awfixer-platform/webhookmaster", "language": "Python", "topics": [], "keywords": ["python", "webhook"]},
-            {"id": "node_49", "label": "node-tree", "full_name": "ruchernchong/node-tree", "stars": 0, "description": "Node tree visualization", "url": "https://github.com/ruchernchong/node-tree/blob/main/CLAUDE.md", "repo_url": "https://github.com/ruchernchong/node-tree", "language": "TypeScript", "topics": [], "keywords": ["typescript", "visualization"]}
-        ];
-
-        const edgesData = [
-            {"source": "node_18", "target": "node_29", "similarity": 0.87},
-            {"source": "node_19", "target": "node_38", "similarity": 0.28},
-            {"source": "node_5", "target": "node_47", "similarity": 0.24},
-            {"source": "node_15", "target": "node_13", "similarity": 0.21},
-            {"source": "node_22", "target": "node_3", "similarity": 0.19},
-            {"source": "node_24", "target": "node_10", "similarity": 0.19},
-            {"source": "node_37", "target": "node_49", "similarity": 0.19},
-            {"source": "node_34", "target": "node_37", "similarity": 0.19},
-            {"source": "node_15", "target": "node_3", "similarity": 0.19},
-            {"source": "node_22", "target": "node_45", "similarity": 0.18},
-            {"source": "node_31", "target": "node_47", "similarity": 0.17},
-            {"source": "node_34", "target": "node_36", "similarity": 0.17},
-            {"source": "node_21", "target": "node_49", "similarity": 0.16},
-            {"source": "node_35", "target": "node_38", "similarity": 0.15},
-            {"source": "node_23", "target": "node_38", "similarity": 0.15},
-            {"source": "node_5", "target": "node_10", "similarity": 0.14},
-            {"source": "node_23", "target": "node_35", "similarity": 0.14},
-            {"source": "node_5", "target": "node_23", "similarity": 0.14},
-            {"source": "node_16", "target": "node_39", "similarity": 0.14},
-            {"source": "node_38", "target": "node_11", "similarity": 0.14},
-            {"source": "node_23", "target": "node_11", "similarity": 0.14},
-            {"source": "node_16", "target": "node_3", "similarity": 0.14},
-            {"source": "node_42", "target": "node_44", "similarity": 0.14},
-            {"source": "node_17", "target": "node_46", "similarity": 0.13},
-            {"source": "node_45", "target": "node_3", "similarity": 0.13},
-            {"source": "node_35", "target": "node_11", "similarity": 0.13},
-            {"source": "node_23", "target": "node_17", "similarity": 0.12},
-            {"source": "node_34", "target": "node_41", "similarity": 0.12},
-            {"source": "node_34", "target": "node_49", "similarity": 0.13},
-            {"source": "node_31", "target": "node_42", "similarity": 0.12},
-            {"source": "node_39", "target": "node_43", "similarity": 0.12},
-            {"source": "node_33", "target": "node_44", "similarity": 0.12},
-            {"source": "node_13", "target": "node_10", "similarity": 0.12},
-            {"source": "node_25", "target": "node_29", "similarity": 0.12},
-            {"source": "node_2", "target": "node_5", "similarity": 0.11},
-            {"source": "node_20", "target": "node_37", "similarity": 0.12},
-            {"source": "node_24", "target": "node_4", "similarity": 0.11},
-            {"source": "node_14", "target": "node_21", "similarity": 0.11},
-            {"source": "node_23", "target": "node_10", "similarity": 0.11},
-            {"source": "node_5", "target": "node_26", "similarity": 0.11},
-            {"source": "node_14", "target": "node_39", "similarity": 0.11},
-            {"source": "node_24", "target": "node_49", "similarity": 0.11},
-            {"source": "node_21", "target": "node_44", "similarity": 0.11},
-            {"source": "node_25", "target": "node_13", "similarity": 0.11},
-            {"source": "node_26", "target": "node_10", "similarity": 0.11},
-            {"source": "node_42", "target": "node_3", "similarity": 0.11},
-            {"source": "node_5", "target": "node_13", "similarity": 0.10},
-            {"source": "node_15", "target": "node_42", "similarity": 0.10},
-            {"source": "node_23", "target": "node_46", "similarity": 0.10},
-            {"source": "node_39", "target": "node_3", "similarity": 0.10},
-            {"source": "node_19", "target": "node_10", "similarity": 0.10},
-            {"source": "node_19", "target": "node_5", "similarity": 0.13},
-            {"source": "node_19", "target": "node_15", "similarity": 0.10},
-            {"source": "node_7", "target": "node_23", "similarity": 0.10},
-            {"source": "node_12", "target": "node_24", "similarity": 0.10},
-            {"source": "node_25", "target": "node_40", "similarity": 0.10},
-            {"source": "node_26", "target": "node_49", "similarity": 0.10},
-            {"source": "node_40", "target": "node_47", "similarity": 0.10}
-        ];
-
         const languageColors = {
             'TypeScript': '#3178c6', 'JavaScript': '#f7df1e', 'Python': '#3776ab',
             'Rust': '#dea584', 'Go': '#00add8', 'Java': '#b07219', 'Ruby': '#cc342d',
@@ -309,11 +206,31 @@
             'HTML': '#e34c26', 'Jupyter Notebook': '#f37626', 'Nunjucks': '#1c4913', 'Vim Script': '#019833'
         };
 
+        let nodesData = [];
+        let edgesData = [];
         let currentThreshold = 0;
+        let knnLimit = 10;
         let selectedNode = null;
         let clusters = [];
         let currentFilter = { type: null, value: null };
         let cy;
+
+        // Load data from JSON file
+        async function loadData() {
+            try {
+                const response = await fetch('graph_data.json');
+                const data = await response.json();
+                nodesData = data.nodes;
+                edgesData = data.edges;
+                document.getElementById('stat-repos').textContent = nodesData.length;
+                initGraph();
+                renderCategories();
+                updateClusters();
+            } catch (error) {
+                console.error('Failed to load data:', error);
+                document.getElementById('cy').innerHTML = '<div class="loading">Failed to load data</div>';
+            }
+        }
 
         function categorizeProject(node) {
             const text = ((node.description || '') + ' ' + (node.keywords || []).join(' ')).toLowerCase();
@@ -329,10 +246,42 @@
             return 'Other';
         }
 
-        function findClusters(threshold) {
+        // KNN-based edge filtering: keep only top K neighbors per node
+        function getKNNEdges(threshold, k) {
+            // Filter by threshold first
+            const thresholdEdges = edgesData.filter(e => e.similarity >= threshold);
+
+            // Build adjacency with similarities
+            const nodeEdges = {};
+            nodesData.forEach(n => nodeEdges[n.id] = []);
+
+            thresholdEdges.forEach(e => {
+                nodeEdges[e.source].push({ target: e.target, similarity: e.similarity, edge: e });
+                nodeEdges[e.target].push({ target: e.source, similarity: e.similarity, edge: e });
+            });
+
+            // Keep only top K for each node
+            const selectedEdges = new Set();
+            Object.keys(nodeEdges).forEach(nodeId => {
+                const neighbors = nodeEdges[nodeId];
+                neighbors.sort((a, b) => b.similarity - a.similarity);
+                neighbors.slice(0, k).forEach(n => {
+                    const edgeKey = [n.edge.source, n.edge.target].sort().join('-');
+                    selectedEdges.add(edgeKey);
+                });
+            });
+
+            // Return unique edges
+            return thresholdEdges.filter(e => {
+                const key = [e.source, e.target].sort().join('-');
+                return selectedEdges.has(key);
+            });
+        }
+
+        function findClusters(edges) {
             const adj = {};
             nodesData.forEach(n => adj[n.id] = []);
-            edgesData.filter(e => e.similarity >= threshold).forEach(e => {
+            edges.forEach(e => {
                 adj[e.source].push(e.target);
                 adj[e.target].push(e.source);
             });
@@ -357,18 +306,22 @@
         function getNodeColor(node) { return languageColors[node.language] || '#4ecdc4'; }
         function getNodeSize(stars) { return Math.max(25, Math.min(80, 20 + Math.log10(stars + 1) * 18)); }
 
-        function createElements(threshold) {
+        function createElements(threshold, k) {
             const nodes = nodesData.map(n => ({ data: { id: n.id, label: n.label, ...n, category: categorizeProject(n) } }));
-            const edges = edgesData.filter(e => e.similarity >= threshold).map(e => ({
+            const filteredEdges = getKNNEdges(threshold, k);
+            const edges = filteredEdges.map(e => ({
                 data: { id: e.source + '-' + e.target, source: e.source, target: e.target, similarity: e.similarity }
             }));
-            return [...nodes, ...edges];
+            return { nodes, edges, edgeCount: filteredEdges.length };
         }
 
         function initGraph() {
+            const { nodes, edges, edgeCount } = createElements(currentThreshold, knnLimit);
+            document.getElementById('stat-edges').textContent = edgeCount;
+
             cy = cytoscape({
                 container: document.getElementById('cy'),
-                elements: createElements(currentThreshold),
+                elements: [...nodes, ...edges],
                 style: [
                     { selector: 'node', style: {
                         'label': 'data(label)', 'width': ele => getNodeSize(ele.data('stars')),
@@ -383,7 +336,11 @@
                     { selector: '.faded', style: { 'opacity': 0.15 } },
                     { selector: '.highlighted', style: { 'border-color': '#ff6b6b', 'border-width': 4 } }
                 ],
-                layout: { name: 'cose', animate: false, nodeRepulsion: 15000, idealEdgeLength: 120, gravity: 0.3 }
+                layout: { name: 'cose', animate: false, nodeRepulsion: 15000, idealEdgeLength: 120, gravity: 0.3 },
+                // Performance optimization for large graphs
+                textureOnViewport: true,
+                hideEdgesOnViewport: true,
+                motionBlur: true
             });
 
             cy.on('tap', 'node', function(evt) {
@@ -391,7 +348,13 @@
                 document.getElementById('info-name').innerHTML = '<a href="' + selectedNode.repo_url + '" target="_blank">' + selectedNode.full_name + '</a>';
                 document.getElementById('info-stars').textContent = selectedNode.stars + ' stars';
                 document.getElementById('info-language').textContent = selectedNode.language || 'Unknown';
-                document.getElementById('info-description').textContent = selectedNode.description || '';
+                document.getElementById('info-description').textContent = selectedNode.description || 'No description';
+
+                // Show summary (truncate to ~3 lines)
+                const summary = selectedNode.summary || 'No summary available';
+                const truncatedSummary = summary.length > 300 ? summary.substring(0, 300) + '...' : summary;
+                document.getElementById('info-summary').textContent = truncatedSummary;
+
                 document.getElementById('info-topics').innerHTML = (selectedNode.topics || []).map(t => '<span class="tag">' + t + '</span>').join('');
                 document.getElementById('info-keywords').innerHTML = (selectedNode.keywords || []).slice(0, 5).map(k => '<span class="tag">' + k + '</span>').join('');
                 document.getElementById('link-repo').href = selectedNode.repo_url;
@@ -412,8 +375,18 @@
             });
         }
 
+        function updateGraph() {
+            if (!cy) return;
+            const { edges, edgeCount } = createElements(currentThreshold, knnLimit);
+            cy.edges().remove();
+            cy.add(edges);
+            document.getElementById('stat-edges').textContent = edgeCount;
+            updateClusters();
+        }
+
         function updateClusters() {
-            clusters = findClusters(currentThreshold);
+            const filteredEdges = getKNNEdges(currentThreshold, knnLimit);
+            clusters = findClusters(filteredEdges);
             document.getElementById('stat-clusters').textContent = clusters.filter(c => c.length > 1).length;
             renderClusterList();
         }
@@ -503,9 +476,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            initGraph();
-            renderCategories();
-            updateClusters();
+            loadData();
 
             // Tab buttons
             document.getElementById('tab-btn-controls').addEventListener('click', function() {
@@ -557,12 +528,13 @@
             document.getElementById('threshold').addEventListener('input', function() {
                 currentThreshold = parseFloat(this.value);
                 document.getElementById('threshold-value').textContent = currentThreshold.toFixed(2);
-                cy.edges().remove();
-                cy.add(edgesData.filter(e => e.similarity >= currentThreshold).map(e => ({
-                    data: { id: e.source + '-' + e.target, source: e.source, target: e.target, similarity: e.similarity }
-                })));
-                document.getElementById('stat-edges').textContent = edgesData.filter(e => e.similarity >= currentThreshold).length;
-                updateClusters();
+                updateGraph();
+            });
+
+            document.getElementById('knn-limit').addEventListener('input', function() {
+                knnLimit = parseInt(this.value);
+                document.getElementById('knn-value').textContent = knnLimit;
+                updateGraph();
             });
 
             document.getElementById('search').addEventListener('input', function() {
@@ -571,7 +543,8 @@
                 const matches = cy.nodes().filter(n =>
                     n.data('label').toLowerCase().includes(q) ||
                     n.data('full_name').toLowerCase().includes(q) ||
-                    (n.data('description') || '').toLowerCase().includes(q)
+                    (n.data('description') || '').toLowerCase().includes(q) ||
+                    (n.data('summary') || '').toLowerCase().includes(q)
                 );
                 cy.elements().addClass('faded');
                 matches.removeClass('faded').addClass('highlighted');

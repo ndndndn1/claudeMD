@@ -41,7 +41,7 @@ dependencies = [
 claude-md = "claude_md_analyzer.cli:app"
 
 [project.urls]
-Homepage = "https://github.com/claudeMD/claude-md-analyzer"
+Homepage = "https://ndndndn1.github.io/claudeMD/"
 
 [tool.setuptools.packages.find]
 where = ["."]
