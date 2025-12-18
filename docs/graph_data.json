@@ -1,0 +1,1104 @@
+{
+  "nodes": [
+    {
+      "id": "node_0",
+      "label": "QuantumOptics.jl",
+      "full_name": "qojulia/QuantumOptics.jl",
+      "stars": 595,
+      "description": "Library for the numerical simulation of closed as well as open quantum systems.",
+      "url": "https://github.com/qojulia/QuantumOptics.jl/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/qojulia/QuantumOptics.jl",
+      "language": "Julia",
+      "topics": [
+        "julia",
+        "quantum",
+        "quantum-mechanics",
+        "quantum-optics",
+        "quantum-toolbox"
+      ],
+      "keywords": [
+        "quantumopticsjl",
+        "project structure",
+        "development commands",
+        "running tests",
+        "run all tests"
+      ],
+      "size": 5753,
+      "summary": "QuantumOptics.jl is a numerical framework written in Julia that makes it easy to simulate various kinds of quantum systems. It builds on QuantumOpticsBase.jl and provides dynamic solvers for time evol..."
+    },
+    {
+      "id": "node_1",
+      "label": "querydsl",
+      "full_name": "OpenFeign/querydsl",
+      "stars": 542,
+      "description": "Unified Queries for Java",
+      "url": "https://github.com/OpenFeign/querydsl/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/OpenFeign/querydsl",
+      "language": "Java",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "overview",
+        "build commands",
+        "basic build",
+        "quick build skip tests and checks"
+      ],
+      "size": 4858,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_2",
+      "label": "chatkit-link",
+      "full_name": "exiao/chatkit-link",
+      "stars": 1,
+      "description": "Powers chatkit.link. Try out workflows built with OpenAI's new agent builder.",
+      "url": "https://github.com/exiao/chatkit-link/blob/main/claude.md",
+      "repo_url": "https://github.com/exiao/chatkit-link",
+      "language": "JavaScript",
+      "topics": [
+        "chatkit",
+        "openai"
+      ],
+      "keywords": [
+        "chatkit link development log",
+        "overview",
+        "tech stack",
+        "key features",
+        "1 sidebar workflow management"
+      ],
+      "size": 7465,
+      "summary": "ChatKit Link is a web application that allows users to demo their ChatKit workflows by providing a workflow ID and OpenAI API key. Built with FastAPI backend and Vite + React frontend."
+    },
+    {
+      "id": "node_3",
+      "label": "pixel-banner",
+      "full_name": "jparkerweb/pixel-banner",
+      "stars": 162,
+      "description": "🚩 Enhance your Obsidian notes with customizable banner images, including AI-generated designs and a curated store of downloadable banners. Transform your workspace with visually stunning headers that add context, improve aesthetics, and take your note-taking beyond the ordinary.",
+      "url": "https://github.com/jparkerweb/pixel-banner/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/jparkerweb/pixel-banner",
+      "language": "JavaScript",
+      "topics": [
+        "obsidian",
+        "pexels-api",
+        "plugin",
+        "banner",
+        "banner-image"
+      ],
+      "keywords": [
+        "claudemd",
+        "overview",
+        "essential commands",
+        "development",
+        "install dependencies"
+      ],
+      "size": 9386,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_4",
+      "label": "kugelpos-backend",
+      "full_name": "kugel-masa/kugelpos-backend",
+      "stars": 4,
+      "description": "Kugel POS Backend Services (API Services for POS Application)",
+      "url": "https://github.com/kugel-masa/kugelpos-backend/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/kugel-masa/kugelpos-backend",
+      "language": "Python",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "project overview",
+        "architecture",
+        "core services",
+        "key technologies"
+      ],
+      "size": 15204,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_5",
+      "label": "si-systems-v5",
+      "full_name": "daffy0208/si-systems-v5",
+      "stars": 0,
+      "description": "Enhanced AI Interaction Model",
+      "url": "https://github.com/daffy0208/si-systems-v5/blob/main/claude.md",
+      "repo_url": "https://github.com/daffy0208/si-systems-v5",
+      "language": "TypeScript",
+      "topics": [],
+      "keywords": [
+        "critical archonfirst rule  read this first",
+        "archon integration  workflow",
+        "core archon workflow principles",
+        "the golden rule taskdriven development with archon",
+        "project scenarios  initialization"
+      ],
+      "size": 25750,
+      "summary": "BEFORE doing ANYTHING else, when you see ANY task management scenario: 1. STOP and check if Archon MCP server is available 2. Use Archon task management as PRIMARY system 3. TodoWrite is ONLY for pers..."
+    },
+    {
+      "id": "node_6",
+      "label": "travel-app",
+      "full_name": "markhodierne/travel-app",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/markhodierne/travel-app/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/markhodierne/travel-app",
+      "language": "HTML",
+      "topics": [],
+      "keywords": [
+        "project travel planning application cl",
+        "project overview clovw",
+        "tech stack cltech",
+        "code style  conventions clstyle",
+        "importmodule standards clstyleimp"
+      ],
+      "size": 4595,
+      "summary": "**IMPORTANT FOR CLAUDE: Reference this file before implementing anything**"
+    },
+    {
+      "id": "node_7",
+      "label": "FileManager",
+      "full_name": "oferhr/FileManager",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/oferhr/FileManager/blob/main/Claude.md",
+      "repo_url": "https://github.com/oferhr/FileManager",
+      "language": "C#",
+      "topics": [],
+      "keywords": [
+        "filemanager",
+        "project overview",
+        "technology stack",
+        "project structure",
+        "key features"
+      ],
+      "size": 5419,
+      "summary": "A Windows Forms application for managing files with integrated Microsoft Office automation capabilities."
+    },
+    {
+      "id": "node_8",
+      "label": "Farmfolio",
+      "full_name": "chimexy8alluvial/Farmfolio",
+      "stars": 0,
+      "description": "Connect producers with conscious consumers through digital storytelling and marketplace discovery.",
+      "url": "https://github.com/chimexy8alluvial/Farmfolio/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/chimexy8alluvial/Farmfolio",
+      "language": "JavaScript",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "project overview",
+        "development commands",
+        "architecture overview",
+        "core stack"
+      ],
+      "size": 8146,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_9",
+      "label": "hkdigital--lib-core",
+      "full_name": "HKdigital/hkdigital--lib-core",
+      "stars": 1,
+      "description": "Base library that we use to power up our Sveltekit projects",
+      "url": "https://github.com/HKdigital/hkdigital--lib-core/blob/main/claude.md",
+      "repo_url": "https://github.com/HKdigital/hkdigital--lib-core",
+      "language": "JavaScript",
+      "topics": [],
+      "keywords": [
+        "sveltekit library",
+        "project overview",
+        "architecture  structure",
+        "key technical decisions",
+        "component patterns"
+      ],
+      "size": 14194,
+      "summary": "This is a modern SvelteKit library built with Svelte 5 and Skeleton.dev v3 components. The project emphasizes accessibility, clean code standards, and modern JavaScript patterns."
+    },
+    {
+      "id": "node_10",
+      "label": "video-agent-claude-skill",
+      "full_name": "donghaozhang/video-agent-claude-skill",
+      "stars": 37,
+      "description": "First Python Package for Video Cli Generation and Processing",
+      "url": "https://github.com/donghaozhang/video-agent-claude-skill/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/donghaozhang/video-agent-claude-skill",
+      "language": "Python",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "git workflow commands",
+        "project overview",
+        "ai content pipeline package",
+        "environment setup"
+      ],
+      "size": 11956,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_11",
+      "label": "dantanner",
+      "full_name": "dtanner/dantanner",
+      "stars": 0,
+      "description": "personal website",
+      "url": "https://github.com/dtanner/dantanner/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/dtanner/dantanner",
+      "language": "Nunjucks",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "project overview",
+        "development commands",
+        "build and development",
+        "deployment"
+      ],
+      "size": 2647,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_12",
+      "label": "agentmotion",
+      "full_name": "osobh/agentmotion",
+      "stars": 0,
+      "description": "Remove Control Agents",
+      "url": "https://github.com/osobh/agentmotion/blob/main/claude.md",
+      "repo_url": "https://github.com/osobh/agentmotion",
+      "language": "TypeScript",
+      "topics": [],
+      "keywords": [
+        "project agentmotion  universal remote control for ai coding assistants",
+        "workflow",
+        "update triggers",
+        "key project commands",
+        "mobile app react native expo"
+      ],
+      "size": 8061,
+      "summary": "AgentMotion is a mobile-first remote control system for AI coding assistants that enables developers to respond to AI prompts from anywhere. Built with React Native Expo for mobile, Python for both de..."
+    },
+    {
+      "id": "node_13",
+      "label": "solana-sniper-bot",
+      "full_name": "omkom/solana-sniper-bot",
+      "stars": 2,
+      "description": "",
+      "url": "https://github.com/omkom/solana-sniper-bot/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/omkom/solana-sniper-bot",
+      "language": "TypeScript",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "important security notice",
+        "core objective",
+        "technical stack  standards",
+        "language  typing"
+      ],
+      "size": 33522,
+      "summary": "This file provides comprehensive guidance to Claude Code (claude.ai/code) when working with this hyper-efficient token sniping tool."
+    },
+    {
+      "id": "node_14",
+      "label": "gitstar_poller",
+      "full_name": "iskng/gitstar_poller",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/iskng/gitstar_poller/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/iskng/gitstar_poller",
+      "language": "Rust",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "development commands",
+        "architecture overview",
+        "project structure",
+        "key features"
+      ],
+      "size": 13023,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_15",
+      "label": "vendoreval4",
+      "full_name": "adamjdavidson/vendoreval4",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/adamjdavidson/vendoreval4/blob/main/claude.md",
+      "repo_url": "https://github.com/adamjdavidson/vendoreval4",
+      "language": "TypeScript",
+      "topics": [],
+      "keywords": [
+        "project context vendoreval3",
+        "project structure",
+        "communication guidelines",
+        "be direct and honest",
+        "mandatory message start protocol"
+      ],
+      "size": 25563,
+      "summary": "This project uses Spec-Driven Development with Beads for issue tracking. Follow the workflows and guidelines defined below."
+    },
+    {
+      "id": "node_16",
+      "label": "KI-SYSTEM",
+      "full_name": "SHP-ART/KI-SYSTEM",
+      "stars": 0,
+      "description": "Selbstlernendes Smart Home System mit Web-Dashboard, Badezimmer-Automatisierung und Machine Learning. Unterstützt Home Assistant & Homey Pro.",
+      "url": "https://github.com/SHP-ART/KI-SYSTEM/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/SHP-ART/KI-SYSTEM",
+      "language": "Python",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "project overview",
+        "development commands",
+        "environment setup",
+        "create and activate virtual environment"
+      ],
+      "size": 16406,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_17",
+      "label": "verteilte",
+      "full_name": "sheaksadi/verteilte",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/sheaksadi/verteilte/blob/main/claude.md",
+      "repo_url": "https://github.com/sheaksadi/verteilte",
+      "language": "Vue",
+      "topics": [],
+      "keywords": [
+        "verteilte  german vocabulary learning app",
+        "project structure",
+        "tech stack",
+        "frontend",
+        "backend"
+      ],
+      "size": 12349,
+      "summary": "A spaced repetition flashcard app for learning German vocabulary, built with Tauri 2, Vue 3, and TypeScript."
+    },
+    {
+      "id": "node_18",
+      "label": "vim-oracle",
+      "full_name": "misterbuckley/vim-oracle",
+      "stars": 0,
+      "description": "Seamless AI assistance without leaving vim",
+      "url": "https://github.com/misterbuckley/vim-oracle/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/misterbuckley/vim-oracle",
+      "language": "Vim Script",
+      "topics": [],
+      "keywords": [
+        "vimoracle development guide",
+        "testing",
+        "running tests",
+        "test structure",
+        "adding new tests"
+      ],
+      "size": 4486,
+      "summary": "To run the basic functionality tests:"
+    },
+    {
+      "id": "node_19",
+      "label": "etradeTools",
+      "full_name": "trezero/etradeTools",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/trezero/etradeTools/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/trezero/etradeTools",
+      "language": "Python",
+      "topics": [],
+      "keywords": [
+        "critical archonfirst rule  read this first",
+        "archon integration  workflow",
+        "core archon workflow principles",
+        "the golden rule taskdriven development with archon",
+        "project scenarios  initialization"
+      ],
+      "size": 10997,
+      "summary": "BEFORE doing ANYTHING else, when you see ANY task management scenario: 1. STOP and check if Archon MCP server is available 2. Use Archon task management as PRIMARY system 3. TodoWrite is ONLY for pers..."
+    },
+    {
+      "id": "node_20",
+      "label": "terminator_task_manager",
+      "full_name": "stibiums/terminator_task_manager",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/stibiums/terminator_task_manager/blob/main/claude.md",
+      "repo_url": "https://github.com/stibiums/terminator_task_manager",
+      "language": "Rust",
+      "topics": [],
+      "keywords": [
+        "claude code 开发日志",
+        "项目信息",
+        "开发过程",
+        "第一阶段需求分析与架构设计 30分钟",
+        "第二阶段项目初始化 15分钟"
+      ],
+      "size": 8309,
+      "summary": "本项目使用 **Claude Code** 辅助开发完成。"
+    },
+    {
+      "id": "node_21",
+      "label": "report-generator-agent",
+      "full_name": "ayoubben18/report-generator-agent",
+      "stars": 1,
+      "description": "",
+      "url": "https://github.com/ayoubben18/report-generator-agent/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/ayoubben18/report-generator-agent",
+      "language": "TypeScript",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "development commands",
+        "install dependencies always use pnpm",
+        "start development server",
+        "start convex backend required for realtime features"
+      ],
+      "size": 3411,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_22",
+      "label": "Noetic2.0",
+      "full_name": "myspacecornelius/Noetic2.0",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/myspacecornelius/Noetic2.0/blob/main/claude.md",
+      "repo_url": "https://github.com/myspacecornelius/Noetic2.0",
+      "language": "TypeScript",
+      "topics": [],
+      "keywords": [
+        "claudemd  engineering guide",
+        "project overview",
+        "runbook",
+        "dev server troubleshooting",
+        "security  dependency issues"
+      ],
+      "size": 7169,
+      "summary": "- Stack: Next.js 13 (pages router) + Nextra v3 (docs theme) + TypeScript - Purpose: Investor‑ready docs with charts and a \"Thesis Builder\" for exportable presentations - Branding: Noetic 2.0 — profess..."
+    },
+    {
+      "id": "node_23",
+      "label": "ukkin",
+      "full_name": "Skelf-Research/ukkin",
+      "stars": 1,
+      "description": "AI-Agent mobile web browser for everyone",
+      "url": "https://github.com/Skelf-Research/ukkin/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/Skelf-Research/ukkin",
+      "language": "Dart",
+      "topics": [
+        "agent",
+        "flutter",
+        "generative-ai",
+        "mobile",
+        "webbrowser"
+      ],
+      "keywords": [
+        "claudemd",
+        "development commands",
+        "core flutter commands",
+        "testing and quality",
+        "platformspecific development"
+      ],
+      "size": 6441,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_24",
+      "label": "spectralcanvas-pro-v2",
+      "full_name": "1hoookkk/spectralcanvas-pro-v2",
+      "stars": 0,
+      "description": "Real-time spectral synthesis plugin with paint-to-audio interface - JUCE 8 compatible",
+      "url": "https://github.com/1hoookkk/spectralcanvas-pro-v2/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/1hoookkk/spectralcanvas-pro-v2",
+      "language": "C++",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "project overview",
+        "nonnegotiable rules",
+        "architecture overview",
+        "key constants  data structures"
+      ],
+      "size": 7940,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_25",
+      "label": "-Tower-of-Infinity-PT",
+      "full_name": "KORWOT/-Tower-of-Infinity-PT",
+      "stars": 0,
+      "description": "게임프로토타입",
+      "url": "https://github.com/KORWOT/-Tower-of-Infinity-PT/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/KORWOT/-Tower-of-Infinity-PT",
+      "language": "C#",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "project overview",
+        "development commands",
+        "architecture  code structure",
+        "core architecture pattern"
+      ],
+      "size": 4178,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_26",
+      "label": "FlowQ",
+      "full_name": "dev-parvej/FlowQ",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/dev-parvej/FlowQ/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/dev-parvej/FlowQ",
+      "language": "PHP",
+      "topics": [],
+      "keywords": [
+        "wordpress dynamic survey plugin  current implementation",
+        "whats currently implemented",
+        "core plugin structure",
+        "question system",
+        "answer system"
+      ],
+      "size": 14201,
+      "summary": "- WordPress plugin with proper activation/deactivation hooks - Database migration system with custom tables - Internationalization support (text domain: 'flowq') - Security measures (nonce verificatio..."
+    },
+    {
+      "id": "node_27",
+      "label": "heavens7",
+      "full_name": "daviguides/heavens7",
+      "stars": 0,
+      "description": "Python MCP server for code docs, inspired by Context7 — fastmcp + Pydantic v2.",
+      "url": "https://github.com/daviguides/heavens7/blob/main/Claude.md",
+      "repo_url": "https://github.com/daviguides/heavens7",
+      "language": "Python",
+      "topics": [],
+      "keywords": [
+        "heavens7 mcp python",
+        "overview",
+        "motivation",
+        "coding standards",
+        "summary of main rules"
+      ],
+      "size": 3204,
+      "summary": "**Heavens7** is a Python-based implementation of a Model Context Protocol (MCP) server designed to connect with the [Context7](https://github.com/upstash/context7) API. It begins as a faithful rewrite..."
+    },
+    {
+      "id": "node_28",
+      "label": "DynamicShortlinks",
+      "full_name": "thebenlamm/DynamicShortlinks",
+      "stars": 0,
+      "description": "Dynamic Shortlinks",
+      "url": "https://github.com/thebenlamm/DynamicShortlinks/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/thebenlamm/DynamicShortlinks",
+      "language": "PHP",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "project overview",
+        "repository structure",
+        "architecture",
+        "wordpress plugin structure"
+      ],
+      "size": 3510,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_29",
+      "label": "formulario-SRT",
+      "full_name": "thiagopvn/formulario-SRT",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/thiagopvn/formulario-SRT/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/thiagopvn/formulario-SRT",
+      "language": "JavaScript",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "project overview",
+        "architecture",
+        "frontend structure",
+        "key files"
+      ],
+      "size": 4802,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_30",
+      "label": "gojjo-mcp",
+      "full_name": "hmesfin/gojjo-mcp",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/hmesfin/gojjo-mcp/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/hmesfin/gojjo-mcp",
+      "language": "Python",
+      "topics": [],
+      "keywords": [
+        "gojjo django vue mcp documentation server",
+        "overview",
+        "problem solved",
+        "technology stack covered",
+        "django backend"
+      ],
+      "size": 8976,
+      "summary": "This project creates a custom Model Context Protocol (MCP) server that provides Claude Code with up-to-date documentation for a specific Django + Vue.js technology stack. The server automatically fetc..."
+    },
+    {
+      "id": "node_31",
+      "label": "podcast-studio",
+      "full_name": "mikkelkrogsholm/podcast-studio",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/mikkelkrogsholm/podcast-studio/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/mikkelkrogsholm/podcast-studio",
+      "language": "TypeScript",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "project overview",
+        "architecture",
+        "monorepo structure",
+        "core technologies"
+      ],
+      "size": 9408,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_32",
+      "label": "SQL----",
+      "full_name": "li195111/SQL----",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/li195111/SQL----/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/li195111/SQL----",
+      "language": "Jupyter Notebook",
+      "topics": [],
+      "keywords": [
+        "qchoice ai collaboration guidelines for sql教學文件專案 claude version",
+        "專案概述 project overview",
+        "架構 architecture",
+        "開發工作流程 development workflow",
+        "核心原則規格驅動開發 specificationdriven development"
+      ],
+      "size": 9007,
+      "summary": "- 使用 `source ~/.zshrc` 來載入環境變數 - 使用 `conda activate fju` 來啟動 Python 環境"
+    },
+    {
+      "id": "node_33",
+      "label": "event-platform",
+      "full_name": "xavierau/event-platform",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/xavierau/event-platform/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/xavierau/event-platform",
+      "language": "PHP",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "development rules",
+        "tdd with pest php",
+        "critical always run tests after any code change",
+        "run specific tests"
+      ],
+      "size": 4862,
+      "summary": "**Laravel 12 Event Platform** - DDD modular monolithic architecture for event management with organizers, venues, ticketing, bookings, and multilingual support."
+    },
+    {
+      "id": "node_34",
+      "label": "intelibi",
+      "full_name": "korallis/intelibi",
+      "stars": 0,
+      "description": "AI-Powered Analytics Platform - Transform your data into intelligent dashboards through natural language conversations",
+      "url": "https://github.com/korallis/intelibi/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/korallis/intelibi",
+      "language": "TypeScript",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "project structure",
+        "key directories",
+        "architecture",
+        "development commands"
+      ],
+      "size": 2577,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_35",
+      "label": "UniMixerServer",
+      "full_name": "bezalel6/UniMixerServer",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/bezalel6/UniMixerServer/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/bezalel6/UniMixerServer",
+      "language": "C#",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "project overview",
+        "development commands",
+        "building and running",
+        "build the project"
+      ],
+      "size": 6940,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_36",
+      "label": "msg-rs",
+      "full_name": "chainbound/msg-rs",
+      "stars": 79,
+      "description": "Messaging library for distributed systems built in Rust",
+      "url": "https://github.com/chainbound/msg-rs/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/chainbound/msg-rs",
+      "language": "Rust",
+      "topics": [
+        "distributed-systems",
+        "networking",
+        "tokio",
+        "rust"
+      ],
+      "keywords": [
+        "claudemd",
+        "development commands",
+        "build and test",
+        "primary commands using just",
+        "alternative cargo commands"
+      ],
+      "size": 4138,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_37",
+      "label": "Anime-Pok-mon",
+      "full_name": "hewenyu/Anime-Pok-mon",
+      "stars": 0,
+      "description": "二次元宝可梦对战",
+      "url": "https://github.com/hewenyu/Anime-Pok-mon/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/hewenyu/Anime-Pok-mon",
+      "language": "TypeScript",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "project overview",
+        "development environment setup",
+        "common commands",
+        "code quality"
+      ],
+      "size": 5025,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_38",
+      "label": "microblog-to-hugo",
+      "full_name": "shawnyeager/microblog-to-hugo",
+      "stars": 0,
+      "description": "Python scripts to migrate and refactor content from Micro.blog to Hugo",
+      "url": "https://github.com/shawnyeager/microblog-to-hugo/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/shawnyeager/microblog-to-hugo",
+      "language": "Python",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "project overview",
+        "architecture",
+        "core migration pipeline",
+        "script relationships"
+      ],
+      "size": 5279,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_39",
+      "label": "KGB",
+      "full_name": "sudoxue/KGB",
+      "stars": 0,
+      "description": "kubernetes get brain",
+      "url": "https://github.com/sudoxue/KGB/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/sudoxue/KGB",
+      "language": "Go",
+      "topics": [],
+      "keywords": [
+        "kgb strategic development plan",
+        "constitutional reading protocol",
+        "core constitutional principles",
+        "development journal system",
+        "revolutionary documentation protocol"
+      ],
+      "size": 13579,
+      "summary": "*Strategic roadmap and technical guidance for AWACS/KORGI development*"
+    },
+    {
+      "id": "node_40",
+      "label": "vespera-atelier",
+      "full_name": "EchoingVesper/vespera-atelier",
+      "stars": 3,
+      "description": "Vespera Atelier: Intelligent platform for document-centric orchestration, task management, and creative workflows",
+      "url": "https://github.com/EchoingVesper/vespera-atelier/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/EchoingVesper/vespera-atelier",
+      "language": "Python",
+      "topics": [],
+      "keywords": [
+        "claudemd  vespera atelier monorepo",
+        "monorepo structure",
+        "working in the monorepo",
+        "important automatic directory switching",
+        "if you need monorepo root context be explicit"
+      ],
+      "size": 24218,
+      "summary": "This file provides guidance to Claude Code when working in the Vespera Atelier monorepo."
+    },
+    {
+      "id": "node_41",
+      "label": "MultiRheoFlow",
+      "full_name": "comphy-lab/MultiRheoFlow",
+      "stars": 4,
+      "description": "An extensible framework for multiphase flows with complex rheology, built on Basilisk C",
+      "url": "https://github.com/comphy-lab/MultiRheoFlow/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/comphy-lab/MultiRheoFlow",
+      "language": "C",
+      "topics": [],
+      "keywords": [
+        "viscoelastic3d development guidelines",
+        "project structure",
+        "some selected files inside basilisksrc",
+        "project structure",
+        "build  test commands"
+      ],
+      "size": 4701,
+      "summary": "├-- `basilisk/src/`: Core Basilisk CFD library (reference only, do not modify) <- This contains the codebase for Basilisk C--a wrapper around C to do computational fluid dynamics. │   ├── `navier-stok..."
+    },
+    {
+      "id": "node_42",
+      "label": "artifex.ai-studio-pro",
+      "full_name": "ChoonwooLim/artifex.ai-studio-pro",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/ChoonwooLim/artifex.ai-studio-pro/blob/main/claude.md",
+      "repo_url": "https://github.com/ChoonwooLim/artifex.ai-studio-pro",
+      "language": "HTML",
+      "topics": [],
+      "keywords": [
+        "artifexai studio pro  종합 프로젝트 개발 가이드",
+        "프로젝트 개요",
+        "핵심 가치",
+        "날짜 및 시간대 인식",
+        "중요 정확한 날짜 확인"
+      ],
+      "size": 21264,
+      "summary": "**프로젝트명**: Artifex.AI Studio Pro **버전**: 0.0.0 **타입**: AI 기반 멀티미디어 콘텐츠 생성 플랫폼 **기술 스택**: React 19 + TypeScript + Vite + Google Generative AI"
+    },
+    {
+      "id": "node_43",
+      "label": "webhookmaster",
+      "full_name": "awfixer-platform/webhookmaster",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/awfixer-platform/webhookmaster/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/awfixer-platform/webhookmaster",
+      "language": "Python",
+      "topics": [],
+      "keywords": [],
+      "size": 9,
+      "summary": "./LLM.md"
+    },
+    {
+      "id": "node_44",
+      "label": "node-tree",
+      "full_name": "ruchernchong/node-tree",
+      "stars": 0,
+      "description": "",
+      "url": "https://github.com/ruchernchong/node-tree/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/ruchernchong/node-tree",
+      "language": "TypeScript",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "common commands",
+        "code style guidelines",
+        "tailwind css v4 styling",
+        "typescript conventions"
+      ],
+      "size": 8276,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_45",
+      "label": "simple_mysql_partitioning",
+      "full_name": "Andryu/simple_mysql_partitioning",
+      "stars": 4,
+      "description": "Simple, mysql partition command wrapper for Ruby",
+      "url": "https://github.com/Andryu/simple_mysql_partitioning/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/Andryu/simple_mysql_partitioning",
+      "language": "Ruby",
+      "topics": [],
+      "keywords": [
+        "claudemd",
+        "コマンド",
+        "テスト",
+        "docker開発"
+      ],
+      "size": 1804,
+      "summary": "このファイルは、このリポジトリでコードを扱う際のClaude Code (claude.ai/code)向けのガイダンスを提供します。"
+    },
+    {
+      "id": "node_46",
+      "label": "Monochromatic",
+      "full_name": "Aquaticat/Monochromatic",
+      "stars": 2,
+      "description": "",
+      "url": "https://github.com/Aquaticat/Monochromatic/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/Aquaticat/Monochromatic",
+      "language": "TypeScript",
+      "topics": [],
+      "keywords": [
+        "agentsmd  development guidelines for ai agents",
+        "communication style",
+        "direct communication",
+        "forbidden language patterns",
+        "forbidden acknowledgment patterns"
+      ],
+      "size": 39052,
+      "summary": "<!-- Canon source: .kilocode/rules/* - This file consolidates all rules from the kilocode rules directory -->"
+    },
+    {
+      "id": "node_47",
+      "label": "whyp",
+      "full_name": "jalanb/whyp",
+      "stars": 18,
+      "description": "whyp extends type, wittily",
+      "url": "https://github.com/jalanb/whyp/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/jalanb/whyp",
+      "language": "Python",
+      "topics": [
+        "shell",
+        "python"
+      ],
+      "keywords": [
+        "claudemd",
+        "project overview",
+        "hybrid architecture",
+        "core integration pattern",
+        "critical integration points"
+      ],
+      "size": 3984,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_48",
+      "label": "microfolio",
+      "full_name": "aker-dev/microfolio",
+      "stars": 125,
+      "description": "A modern static portfolio generator based on SvelteKit 2 and Tailwind CSS 4",
+      "url": "https://github.com/aker-dev/microfolio/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/aker-dev/microfolio",
+      "language": "Svelte",
+      "topics": [
+        "claude-code",
+        "designer",
+        "portfolio-project",
+        "portfolio-site",
+        "portfolio-template"
+      ],
+      "keywords": [
+        "claudemd",
+        "project overview",
+        "development commands",
+        "essential commands",
+        "development server"
+      ],
+      "size": 4978,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_49",
+      "label": "pr-summary",
+      "full_name": "yan/pr-summary",
+      "stars": 4,
+      "description": "GitHub Action to capture PR activity and store it as git notes",
+      "url": "https://github.com/yan/pr-summary/blob/main/CLAUDE.md",
+      "repo_url": "https://github.com/yan/pr-summary",
+      "language": "Python",
+      "topics": [],
+      "keywords": [
+        "claudemd  development session documentation",
+        "project overview",
+        "design decisions",
+        "1 storage strategy git notes",
+        "2 implementation language python with type annotations"
+      ],
+      "size": 14075,
+      "summary": "This document captures the design decisions, architecture, and development process for the PR Summary GitHub Action."
+    }
+  ],
+  "edges": [
+    {
+      "source": "node_5",
+      "target": "node_19",
+      "similarity": 0.869
+    },
+    {
+      "source": "node_6",
+      "target": "node_30",
+      "similarity": 0.279
+    },
+    {
+      "source": "node_8",
+      "target": "node_44",
+      "similarity": 0.158
+    },
+    {
+      "source": "node_9",
+      "target": "node_46",
+      "similarity": 0.209
+    },
+    {
+      "source": "node_9",
+      "target": "node_48",
+      "similarity": 0.186
+    },
+    {
+      "source": "node_10",
+      "target": "node_42",
+      "similarity": 0.237
+    },
+    {
+      "source": "node_11",
+      "target": "node_38",
+      "similarity": 0.175
+    },
+    {
+      "source": "node_11",
+      "target": "node_48",
+      "similarity": 0.194
+    },
+    {
+      "source": "node_14",
+      "target": "node_49",
+      "similarity": 0.19
+    },
+    {
+      "source": "node_22",
+      "target": "node_42",
+      "similarity": 0.172
+    },
+    {
+      "source": "node_26",
+      "target": "node_28",
+      "similarity": 0.168
+    },
+    {
+      "source": "node_26",
+      "target": "node_29",
+      "similarity": 0.189
+    },
+    {
+      "source": "node_27",
+      "target": "node_30",
+      "similarity": 0.154
+    },
+    {
+      "source": "node_29",
+      "target": "node_44",
+      "similarity": 0.19
+    }
+  ]
+}
