@@ -145,11 +145,11 @@ def calculate_tfidf_similarity(contents):
     return similarity
 
 
-def collect_and_store(max_results=50, min_stars=0, db_path="./data/kuzu_db"):
+def collect_and_store(target_count=100, min_stars=0, db_path="./data/kuzu_db"):
     """Collect CLAUDE.md files and store in KùzuDB."""
     print("=" * 60)
     print("CLAUDE.md Collector - KùzuDB Storage")
-    print(f"  Min Stars: {min_stars} | Max Results: {max_results}")
+    print(f"  Min Stars: {min_stars} | Target: {target_count} new repos")
     print("=" * 60)
     print()
 
@@ -158,98 +158,135 @@ def collect_and_store(max_results=50, min_stars=0, db_path="./data/kuzu_db"):
     storage = KuzuStorage(db_path)
     print(f"  ✓ Database path: {db_path}")
 
-    # Search for CLAUDE.md files
-    print()
-    print("🔍 Searching GitHub for CLAUDE.md files...")
-    results = run_gh_command([
-        'search', 'code', 'filename:CLAUDE.md',
-        '--limit', str(max_results),
-        '--json', 'repository,path'
-    ])
+    # Get existing repos to skip duplicates
+    existing_repos = set()
+    try:
+        for repo in storage.get_all_repositories():
+            existing_repos.add(repo.get('repo_id') or repo.get('full_name'))
+    except:
+        pass
+    print(f"  ✓ Existing repos: {len(existing_repos)}")
 
-    if not results:
-        print("❌ No files found or GitHub CLI error")
-        return
-
-    print(f"  ✓ Found {len(results)} search results")
-
-    # Process each result
-    print()
-    print("📥 Collecting files...")
     collected = []
     contents = []
     repo_ids = []
 
-    for item in results:
-        repo_name = item['repository']['nameWithOwner']
-        print(f"  Processing: {repo_name}...", end=" ")
+    # Different search queries to get more results
+    search_queries = [
+        'filename:CLAUDE.md',
+        'filename:CLAUDE.md path:/',
+        'filename:claude.md',
+        'CLAUDE.md in:path',
+        '"# CLAUDE" filename:md',
+    ]
 
-        # Get repo details
-        repo_info = run_gh_command([
-            'repo', 'view', repo_name,
-            '--json', 'name,owner,stargazerCount,description,primaryLanguage,repositoryTopics,url'
+    for query_idx, query in enumerate(search_queries):
+        if len(collected) >= target_count:
+            break
+
+        # Search for CLAUDE.md files
+        print()
+        print(f"🔍 Searching GitHub (query {query_idx + 1}/{len(search_queries)}): {query}")
+        results = run_gh_command([
+            'search', 'code', query,
+            '--limit', '100',
+            '--json', 'repository,path'
         ])
 
-        if not repo_info:
-            print("❌ Failed")
+        if not results:
+            print("❌ No results for this query")
             continue
 
-        # Filter by minimum stars
-        stars = repo_info.get('stargazerCount', 0)
-        if stars < min_stars:
-            print(f"⏭️ Skipped ({stars} ⭐ < {min_stars})")
-            continue
+        print(f"  ✓ Found {len(results)} search results")
 
-        # Get file content
-        try:
-            content_result = subprocess.run(
-                ['gh', 'api', f'/repos/{repo_name}/contents/{item["path"]}',
-                 '--jq', '.content'],
-                capture_output=True,
-                text=True,
-                timeout=30
+        # Process each result
+        print()
+        print("📥 Collecting files...")
+        new_in_page = 0
+
+        for item in results:
+            if len(collected) >= target_count:
+                break
+
+            repo_name = item['repository']['nameWithOwner']
+
+            # Skip if already exists
+            if repo_name in existing_repos:
+                print(f"  {repo_name}... ⏭️ Already exists")
+                continue
+
+            print(f"  Processing: {repo_name}...", end=" ")
+
+            # Get repo details
+            repo_info = run_gh_command([
+                'repo', 'view', repo_name,
+                '--json', 'name,owner,stargazerCount,description,primaryLanguage,repositoryTopics,url'
+            ])
+
+            if not repo_info:
+                print("❌ Failed")
+                continue
+
+            # Filter by minimum stars
+            stars = repo_info.get('stargazerCount', 0)
+            if stars < min_stars:
+                print(f"⏭️ Skipped ({stars} ⭐ < {min_stars})")
+                continue
+
+            # Get file content
+            try:
+                content_result = subprocess.run(
+                    ['gh', 'api', f'/repos/{repo_name}/contents/{item["path"]}',
+                     '--jq', '.content'],
+                    capture_output=True,
+                    text=True,
+                    timeout=30
+                )
+                content = ""
+                if content_result.returncode == 0 and content_result.stdout:
+                    try:
+                        content = base64.b64decode(content_result.stdout.strip()).decode('utf-8')
+                    except:
+                        content = ""
+            except:
+                content = ""
+
+            repo_topics = repo_info.get('repositoryTopics') or []
+            topics = [t['name'] for t in repo_topics if t and 'name' in t][:5]
+            language = repo_info.get('primaryLanguage') or {}
+            language_name = language.get('name', 'Unknown') if language else 'Unknown'
+
+            repo = RepoNode(
+                repo_id=repo_name,
+                name=repo_info.get('name', ''),
+                full_name=repo_name,
+                stars=repo_info.get('stargazerCount', 0),
+                description=repo_info.get('description', '') or '',
+                url=f"https://github.com/{repo_name}/blob/main/{item['path']}",
+                repo_url=repo_info.get('url', f"https://github.com/{repo_name}"),
+                language=language_name,
+                topics=topics,
+                keywords=extract_keywords(content),
+                content=content,
+                summary=extract_project_overview(content),
+                size=len(content),
+                collected_at=datetime.now().isoformat()
             )
-            content = ""
-            if content_result.returncode == 0 and content_result.stdout:
-                try:
-                    content = base64.b64decode(content_result.stdout.strip()).decode('utf-8')
-                except:
-                    content = ""
-        except:
-            content = ""
 
-        repo_topics = repo_info.get('repositoryTopics') or []
-        topics = [t['name'] for t in repo_topics if t and 'name' in t][:5]
-        language = repo_info.get('primaryLanguage') or {}
-        language_name = language.get('name', 'Unknown') if language else 'Unknown'
+            if storage.add_repository(repo):
+                collected.append(repo_name)
+                contents.append(content)
+                repo_ids.append(repo_name)
+                existing_repos.add(repo_name)
+                new_in_page += 1
+                print(f"✓ ({repo_info.get('stargazerCount', 0)} ⭐) [{len(collected)}/{target_count}]")
+            else:
+                print("❌ Failed to store")
 
-        repo = RepoNode(
-            repo_id=repo_name,
-            name=repo_info.get('name', ''),
-            full_name=repo_name,
-            stars=repo_info.get('stargazerCount', 0),
-            description=repo_info.get('description', '') or '',
-            url=f"https://github.com/{repo_name}/blob/main/{item['path']}",
-            repo_url=repo_info.get('url', f"https://github.com/{repo_name}"),
-            language=language_name,
-            topics=topics,
-            keywords=extract_keywords(content),
-            content=content,
-            summary=extract_project_overview(content),
-            size=len(content),
-            collected_at=datetime.now().isoformat()
-        )
-
-        if storage.add_repository(repo):
-            collected.append(repo_name)
-            contents.append(content)
-            repo_ids.append(repo_name)
-            print(f"✓ ({repo_info.get('stargazerCount', 0)} ⭐)")
-        else:
-            print("❌ Failed to store")
+        print(f"  ✓ {new_in_page} new repos from this query")
 
     print()
-    print(f"📊 Collected {len(collected)} files")
+    print(f"📊 Collected {len(collected)} new files (total: {len(existing_repos)})")
 
     # Calculate and store similarities
     if len(contents) > 1:
@@ -274,10 +311,10 @@ def collect_and_store(max_results=50, min_stars=0, db_path="./data/kuzu_db"):
     storage.export_to_json("./docs/graph_data.json")
     print("  ✓ Exported to ./docs/graph_data.json")
 
-    # Generate HTML visualization
-    print("🎨 Generating visualization...")
-    generate_html_visualization(storage)
-    print("  ✓ Generated ./docs/index.html")
+    # Generate HTML visualization (disabled - use existing index.html)
+    # print("🎨 Generating visualization...")
+    # generate_html_visualization(storage)
+    # print("  ✓ Generated ./docs/index.html")
 
     # Show stats
     print()
@@ -473,4 +510,4 @@ def generate_html_visualization(storage):
 
 
 if __name__ == "__main__":
-    collect_and_store(max_results=200, min_stars=30)
+    collect_and_store(target_count=100, min_stars=30)

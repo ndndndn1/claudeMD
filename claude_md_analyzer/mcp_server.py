@@ -317,6 +317,93 @@ async def list_tools() -> List[Tool]:
                     }
                 }
             }
+        ),
+        Tool(
+            name="list_repositories",
+            description="List all repositories in the database",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results",
+                        "default": 50
+                    },
+                    "sort_by": {
+                        "type": "string",
+                        "description": "Sort by field (stars, name, collected_at)",
+                        "default": "stars"
+                    }
+                }
+            }
+        ),
+        Tool(
+            name="get_clusters",
+            description="Get clusters of similar repositories",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "min_similarity": {
+                        "type": "number",
+                        "description": "Minimum similarity threshold",
+                        "default": 0.15
+                    }
+                }
+            }
+        ),
+        Tool(
+            name="filter_by_language",
+            description="Get repositories by programming language",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "language": {
+                        "type": "string",
+                        "description": "Programming language (TypeScript, Python, etc.)"
+                    }
+                },
+                "required": ["language"]
+            }
+        ),
+        Tool(
+            name="filter_by_stars",
+            description="Get repositories by star count range",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "min_stars": {
+                        "type": "integer",
+                        "description": "Minimum stars",
+                        "default": 0
+                    },
+                    "max_stars": {
+                        "type": "integer",
+                        "description": "Maximum stars (optional)"
+                    }
+                }
+            }
+        ),
+        Tool(
+            name="get_languages",
+            description="Get list of all languages with counts",
+            inputSchema={
+                "type": "object",
+                "properties": {}
+            }
+        ),
+        Tool(
+            name="recalculate_similarities",
+            description="Recalculate all similarity relationships",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "min_similarity": {
+                        "type": "number",
+                        "description": "Minimum similarity to store",
+                        "default": 0.1
+                    }
+                }
+            }
         )
     ]
 
@@ -384,6 +471,41 @@ async def call_tool(name: str, arguments: Dict[str, Any]) -> List[TextContent]:
         return await export_json(
             db,
             arguments.get("output_path", "./claude_md_data.json")
+        )
+
+    elif name == "list_repositories":
+        return await list_repositories(
+            db,
+            arguments.get("limit", 50),
+            arguments.get("sort_by", "stars")
+        )
+
+    elif name == "get_clusters":
+        return await get_clusters(
+            db,
+            arguments.get("min_similarity", 0.15)
+        )
+
+    elif name == "filter_by_language":
+        return await filter_by_language(
+            db,
+            arguments["language"]
+        )
+
+    elif name == "filter_by_stars":
+        return await filter_by_stars(
+            db,
+            arguments.get("min_stars", 0),
+            arguments.get("max_stars")
+        )
+
+    elif name == "get_languages":
+        return await get_languages(db)
+
+    elif name == "recalculate_similarities":
+        return await recalculate_similarities(
+            db,
+            arguments.get("min_similarity", 0.1)
         )
 
     else:
@@ -731,6 +853,218 @@ async def export_json(db: KuzuStorage, output_path: str) -> List[TextContent]:
             return [TextContent(type="text", text="Export failed")]
     except Exception as e:
         return [TextContent(type="text", text=f"Error exporting: {str(e)}")]
+
+
+async def list_repositories(
+    db: KuzuStorage,
+    limit: int,
+    sort_by: str
+) -> List[TextContent]:
+    """List all repositories."""
+    try:
+        repos = db.get_all_repositories()
+
+        # Sort
+        if sort_by == "stars":
+            repos.sort(key=lambda x: x.get("stars", 0), reverse=True)
+        elif sort_by == "name":
+            repos.sort(key=lambda x: x.get("full_name", "").lower())
+        elif sort_by == "collected_at":
+            repos.sort(key=lambda x: x.get("collected_at", ""), reverse=True)
+
+        repos = repos[:limit]
+
+        result = {
+            "total": len(db.get_all_repositories()),
+            "showing": len(repos),
+            "sort_by": sort_by,
+            "repositories": [
+                {
+                    "name": r.get("full_name", ""),
+                    "stars": r.get("stars", 0),
+                    "language": r.get("language", "Unknown"),
+                    "description": (r.get("description", "") or "")[:80]
+                }
+                for r in repos
+            ]
+        }
+        return [TextContent(type="text", text=json.dumps(result, indent=2))]
+    except Exception as e:
+        return [TextContent(type="text", text=f"Error listing repos: {str(e)}")]
+
+
+async def get_clusters(db: KuzuStorage, min_similarity: float) -> List[TextContent]:
+    """Get clusters of similar repositories."""
+    try:
+        graph = db.get_graph_data(min_similarity)
+        nodes = {n["id"]: n for n in graph.get("nodes", [])}
+        edges = graph.get("edges", [])
+
+        # Build adjacency list
+        adj = {}
+        for edge in edges:
+            src, tgt = edge["source"], edge["target"]
+            if src not in adj:
+                adj[src] = set()
+            if tgt not in adj:
+                adj[tgt] = set()
+            adj[src].add(tgt)
+            adj[tgt].add(src)
+
+        # Find connected components
+        visited = set()
+        clusters = []
+
+        def dfs(node, cluster):
+            if node in visited:
+                return
+            visited.add(node)
+            cluster.append(node)
+            for neighbor in adj.get(node, []):
+                dfs(neighbor, cluster)
+
+        for node_id in adj.keys():
+            if node_id not in visited:
+                cluster = []
+                dfs(node_id, cluster)
+                if len(cluster) >= 2:
+                    clusters.append(cluster)
+
+        # Sort clusters by size
+        clusters.sort(key=len, reverse=True)
+
+        result = {
+            "min_similarity": min_similarity,
+            "cluster_count": len(clusters),
+            "clusters": [
+                {
+                    "size": len(c),
+                    "repositories": [
+                        {
+                            "name": nodes[nid].get("label", nid),
+                            "stars": nodes[nid].get("stars", 0),
+                            "language": nodes[nid].get("language", "Unknown")
+                        }
+                        for nid in c if nid in nodes
+                    ]
+                }
+                for c in clusters[:10]
+            ]
+        }
+        return [TextContent(type="text", text=json.dumps(result, indent=2))]
+    except Exception as e:
+        return [TextContent(type="text", text=f"Error getting clusters: {str(e)}")]
+
+
+async def filter_by_language(db: KuzuStorage, language: str) -> List[TextContent]:
+    """Filter repositories by language."""
+    try:
+        repos = db.get_all_repositories()
+        filtered = [
+            r for r in repos
+            if r.get("language", "").lower() == language.lower()
+        ]
+        filtered.sort(key=lambda x: x.get("stars", 0), reverse=True)
+
+        result = {
+            "language": language,
+            "count": len(filtered),
+            "repositories": [
+                {
+                    "name": r.get("full_name", ""),
+                    "stars": r.get("stars", 0),
+                    "description": (r.get("description", "") or "")[:80]
+                }
+                for r in filtered
+            ]
+        }
+        return [TextContent(type="text", text=json.dumps(result, indent=2))]
+    except Exception as e:
+        return [TextContent(type="text", text=f"Error filtering: {str(e)}")]
+
+
+async def filter_by_stars(
+    db: KuzuStorage,
+    min_stars: int,
+    max_stars: Optional[int]
+) -> List[TextContent]:
+    """Filter repositories by star count range."""
+    try:
+        repos = db.get_all_repositories()
+        filtered = [r for r in repos if r.get("stars", 0) >= min_stars]
+        if max_stars is not None:
+            filtered = [r for r in filtered if r.get("stars", 0) <= max_stars]
+        filtered.sort(key=lambda x: x.get("stars", 0), reverse=True)
+
+        result = {
+            "min_stars": min_stars,
+            "max_stars": max_stars,
+            "count": len(filtered),
+            "repositories": [
+                {
+                    "name": r.get("full_name", ""),
+                    "stars": r.get("stars", 0),
+                    "language": r.get("language", "Unknown")
+                }
+                for r in filtered
+            ]
+        }
+        return [TextContent(type="text", text=json.dumps(result, indent=2))]
+    except Exception as e:
+        return [TextContent(type="text", text=f"Error filtering: {str(e)}")]
+
+
+async def get_languages(db: KuzuStorage) -> List[TextContent]:
+    """Get all languages with counts."""
+    try:
+        repos = db.get_all_repositories()
+        lang_count = Counter(r.get("language", "Unknown") for r in repos)
+
+        result = {
+            "total_repos": len(repos),
+            "languages": [
+                {"language": lang, "count": count}
+                for lang, count in lang_count.most_common()
+            ]
+        }
+        return [TextContent(type="text", text=json.dumps(result, indent=2))]
+    except Exception as e:
+        return [TextContent(type="text", text=f"Error getting languages: {str(e)}")]
+
+
+async def recalculate_similarities(
+    db: KuzuStorage,
+    min_similarity: float
+) -> List[TextContent]:
+    """Recalculate all similarity relationships."""
+    try:
+        repos = db.get_all_repositories()
+        contents = [r.get("content", "") for r in repos]
+        repo_ids = [r.get("repo_id") or r.get("full_name") for r in repos]
+
+        if len(contents) < 2:
+            return [TextContent(type="text", text="Not enough repositories for similarity calculation")]
+
+        # Calculate similarity matrix
+        similarity_matrix = calculate_tfidf_similarity(contents)
+
+        # Store similarities
+        edge_count = 0
+        for i in range(len(repo_ids)):
+            for j in range(i + 1, len(repo_ids)):
+                sim = similarity_matrix[i][j]
+                if sim >= min_similarity:
+                    db.add_similarity(repo_ids[i], repo_ids[j], sim)
+                    edge_count += 1
+
+        result = {
+            "repositories": len(repos),
+            "new_relationships": edge_count,
+            "min_similarity": min_similarity
+        }
+        return [TextContent(type="text", text=json.dumps(result, indent=2))]
+    except Exception as e:
+        return [TextContent(type="text", text=f"Error recalculating: {str(e)}")]
 
 
 # ==================== MAIN ====================

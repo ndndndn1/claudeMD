@@ -214,6 +214,58 @@
     },
     {
       "id": "node_9",
+      "label": "GPTPortal",
+      "full_name": "Zaki-1052/GPTPortal",
+      "stars": 398,
+      "description": "A feature-rich portal to chat with GPT-4, Claude, Gemini, Mistral, & OpenAI Assistant APIs via a lightweight Node.js web app; supports customizable multimodality for voice, images, & files.",
+      "url": "https://github.com/Zaki-1052/GPTPortal/blob/main/RULES.md",
+      "repo_url": "https://github.com/Zaki-1052/GPTPortal",
+      "language": "JavaScript",
+      "topics": [
+        "ai",
+        "api",
+        "generative-ai",
+        "gpt",
+        "gpt-4"
+      ],
+      "keywords": [
+        "claude coding assistant",
+        "core identity  expertise",
+        "development partnership philosophy",
+        "core workflow research  plan  implement  validate",
+        "critical methodologies"
+      ],
+      "size": 9795,
+      "summary": "You are an expert Python backend and JavaScript web full-stack developer skilled in various programming tasks, acting as my senior pair programmer. I am an undergraduate familiar with Python, JS, TS, R, Java, Rust, Bash, Git, Vim, CLI, etc."
+    },
+    {
+      "id": "node_10",
+      "label": "livehd",
+      "full_name": "masc-ucsc/livehd",
+      "stars": 230,
+      "description": "Live Hardware Development (LiveHD), a productive infrastructure for Synthesis and Simulation",
+      "url": "https://github.com/masc-ucsc/livehd/blob/main/AGENT.md",
+      "repo_url": "https://github.com/masc-ucsc/livehd",
+      "language": "C++",
+      "topics": [
+        "live",
+        "synthesis",
+        "fpga",
+        "asic",
+        "simulation"
+      ],
+      "keywords": [
+        "claudemd",
+        "build system",
+        "core commands",
+        "test categories",
+        "architecture overview"
+      ],
+      "size": 4946,
+      "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "node_11",
       "label": "rooch",
       "full_name": "rooch-network/rooch",
       "stars": 183,
@@ -239,7 +291,7 @@
       "summary": "Rooch Network is a Bitcoin-focused Layer 2 blockchain solution positioned as a \"VApp (Verifiable Application) Container\" with the Move programming language. The project aims to provide verifiability of both computations and states within applications, ensuring transparency and reliability of operati..."
     },
     {
-      "id": "node_10",
+      "id": "node_12",
       "label": "blog",
       "full_name": "jxnl/blog",
       "stars": 173,
@@ -259,7 +311,7 @@
       "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
     },
     {
-      "id": "node_11",
+      "id": "node_13",
       "label": "pixel-banner",
       "full_name": "jparkerweb/pixel-banner",
       "stars": 162,
@@ -285,7 +337,27 @@
       "summary": "Pixel Banner is an Obsidian plugin that adds customizable banner images to notes. It supports AI-generated banners via Pixel Banner Plus, local images/videos, and integrations with multiple image APIs (Pexels, Pixabay, Flickr, Unsplash). **Target Obsidian Version**: 1.6.0+ **Language**: JavaScript (..."
     },
     {
-      "id": "node_12",
+      "id": "node_14",
+      "label": "Claude-Codex",
+      "full_name": "Pluviobyte/Claude-Codex",
+      "stars": 131,
+      "description": "Framework for Claude-driven task execution with Codex.",
+      "url": "https://github.com/Pluviobyte/Claude-Codex/blob/main/INDEX.md",
+      "repo_url": "https://github.com/Pluviobyte/Claude-Codex",
+      "language": "Shell",
+      "topics": [],
+      "keywords": [
+        "claude code  codex 协作开发环境",
+        "项目结构",
+        "快速开始",
+        "3步配置5分钟上手",
+        "文档说明"
+      ],
+      "size": 1885,
+      "summary": "``` claude+codex/ ├── README.md                    # 主要使用指南"
+    },
+    {
+      "id": "node_15",
       "label": "microfolio",
       "full_name": "aker-dev/microfolio",
       "stars": 125,
@@ -311,7 +383,33 @@
       "summary": "microfolio is a modern static portfolio generator built with SvelteKit 2 and Tailwind CSS 4. It features a file-based content management system using folders and Markdown files, perfect for showcasing creative work. The project is developed by AKER and includes features like multiple view modes, int..."
     },
     {
-      "id": "node_13",
+      "id": "node_16",
+      "label": "claude-code-manager",
+      "full_name": "MarkShawn2020/claude-code-manager",
+      "stars": 84,
+      "description": "CCM: Claude Code Management All In One.",
+      "url": "https://github.com/MarkShawn2020/claude-code-manager/blob/main/PR.md",
+      "repo_url": "https://github.com/MarkShawn2020/claude-code-manager",
+      "language": "HTML",
+      "topics": [
+        "analytics",
+        "claude-code",
+        "cli-tool",
+        "developer-tools",
+        "nodejs"
+      ],
+      "keywords": [
+        "claude code manager pr 文档",
+        "核心信息",
+        "最新更新dashboard 服务器模式  api",
+        "核心升级",
+        "api 端点"
+      ],
+      "size": 1507,
+      "summary": "<!-- metadata for LLM updates version: 2.10.0 last_updated: 2025-08-27"
+    },
+    {
+      "id": "node_17",
       "label": "claude-md-examples",
       "full_name": "ArthurClune/claude-md-examples",
       "stars": 80,
@@ -331,7 +429,7 @@
       "summary": "This project is a Hugo personal blog, follwing the standard Hugo conventions Posts go in `content/posts`"
     },
     {
-      "id": "node_14",
+      "id": "node_18",
       "label": "msg-rs",
       "full_name": "chainbound/msg-rs",
       "stars": 79,
@@ -356,7 +454,7 @@
       "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
     },
     {
-      "id": "node_15",
+      "id": "node_19",
       "label": "poykott",
       "full_name": "TheBSD/poykott",
       "stars": 39,
@@ -376,7 +474,7 @@
       "summary": "<laravel-boost-guidelines> === foundation rules ==="
     },
     {
-      "id": "node_16",
+      "id": "node_20",
       "label": "video-agent-claude-skill",
       "full_name": "donghaozhang/video-agent-claude-skill",
       "stars": 37,
@@ -394,26 +492,76 @@
       ],
       "size": 11956,
       "summary": "This is the **AI Content Pipeline** - a unified Python package for multi-modal AI content generation."
+    },
+    {
+      "id": "node_21",
+      "label": "Synaptic",
+      "full_name": "Synaptic-MCP/Synaptic",
+      "stars": 35,
+      "description": "Decentralized AI Memory Connection Protocol - Making AI Truly Yours. A revolutionary protocol that gives you complete control over your AI memories and interactions across all platforms.",
+      "url": "https://github.com/Synaptic-MCP/Synaptic/blob/main/SETUP.md",
+      "repo_url": "https://github.com/Synaptic-MCP/Synaptic",
+      "language": "TypeScript",
+      "topics": [
+        "artificial-intelligence",
+        "blockchain",
+        "decentralized",
+        "memory-protocol",
+        "privacy"
+      ],
+      "keywords": [
+        "synaptic mcp setup guide",
+        "prerequisites installation",
+        "1 install nodejs",
+        "windows recommended method",
+        "alternative using chocolatey windows package manager"
+      ],
+      "size": 4395,
+      "summary": "1. Visit [Node.js official website](https://nodejs.org/) 2. Download the LTS version (18.x or higher) 3. Run the installer and follow the setup wizard"
+    },
+    {
+      "id": "node_22",
+      "label": "code-pilot",
+      "full_name": "ysicing/code-pilot",
+      "stars": 33,
+      "description": "claude code workflow",
+      "url": "https://github.com/ysicing/code-pilot/blob/main/MCP.md",
+      "repo_url": "https://github.com/ysicing/code-pilot",
+      "language": "Shell",
+      "topics": [
+        "claude",
+        "claude-code",
+        "spec",
+        "workflow"
+      ],
+      "keywords": [
+        "常用mcp推荐",
+        "其他有趣玩法",
+        "分步骤思考",
+        "codex 为主调用 claude code"
+      ],
+      "size": 932,
+      "summary": "- deepwiki - context7 - playwright(有人推荐[mcp-chrome](https://github.com/hangwin/mcp-chrome))"
     }
   ],
   "edges": [
     {
-      "source": "node_11",
-      "target": "node_16",
+      "source": "node_13",
+      "target": "node_20",
       "similarity": 0.126
     },
     {
-      "source": "node_16",
+      "source": "node_20",
       "target": "node_7",
       "similarity": 0.158
     },
     {
-      "source": "node_14",
-      "target": "node_9",
+      "source": "node_18",
+      "target": "node_11",
       "similarity": 0.115
     },
     {
-      "source": "node_15",
+      "source": "node_19",
       "target": "node_1",
       "similarity": 0.105
     },
@@ -428,9 +576,29 @@
       "similarity": 0.131
     },
     {
-      "source": "node_13",
-      "target": "node_10",
+      "source": "node_17",
+      "target": "node_12",
       "similarity": 0.259
+    },
+    {
+      "source": "node_10",
+      "target": "node_9",
+      "similarity": 0.121
+    },
+    {
+      "source": "node_21",
+      "target": "node_9",
+      "similarity": 0.126
+    },
+    {
+      "source": "node_21",
+      "target": "node_14",
+      "similarity": 0.124
+    },
+    {
+      "source": "node_14",
+      "target": "node_22",
+      "similarity": 0.189
     }
   ]
 }

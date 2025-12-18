@@ -123,7 +123,7 @@
                     </div>
                 </div>
                 <div class="legend">
-                    <div class="legend-title">Node Size = Stars | Color = Language</div>
+                    <div class="legend-title">Node Size: S(&lt;100⭐) M(100~999⭐) L(1000+⭐) | Color = Language</div>
                     <div id="language-legend"></div>
                 </div>
                 <div class="optimization-note">
@@ -305,12 +305,11 @@
         }
 
         function getNodeColor(node) { return languageColors[node.language] || '#4ecdc4'; }
-        // Node size: star=0 is smallest, star>=1 starts differentiating
+        // Node size by star ranges: 0~99 small, 100~999 medium, 1000+ large
         function getNodeSize(stars) {
-            if (stars === 0) return 15;  // Smallest for zero stars
-            if (stars === 1) return 22;
-            // For stars >= 2, scale logarithmically
-            return Math.min(90, 25 + Math.log10(stars) * 25);
+            if (stars < 100) return 20;       // Small: 0~99 stars
+            if (stars < 1000) return 40;      // Medium: 100~999 stars
+            return 70;                         // Large: 1000+ stars
         }
 
         function createElements(threshold, k) {
