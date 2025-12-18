@@ -37,7 +37,6 @@
       "language": "Java",
       "topics": [],
       "keywords": [
-        "claudemd",
         "overview",
         "build commands",
         "basic build",
@@ -63,7 +62,6 @@
         "banner-image"
       ],
       "keywords": [
-        "claudemd",
         "overview",
         "essential commands",
         "development",
@@ -82,14 +80,12 @@
       "repo_url": "https://github.com/aker-dev/microfolio",
       "language": "Svelte",
       "topics": [
-        "claude-code",
         "designer",
         "portfolio-project",
         "portfolio-site",
         "portfolio-template"
       ],
       "keywords": [
-        "claudemd",
         "project overview",
         "development commands",
         "essential commands",
@@ -114,7 +110,6 @@
         "rust"
       ],
       "keywords": [
-        "claudemd",
         "development commands",
         "build and test",
         "primary commands using just",
@@ -134,7 +129,6 @@
       "language": "Python",
       "topics": [],
       "keywords": [
-        "claudemd",
         "git workflow commands",
         "project overview",
         "ai content pipeline package",
@@ -157,7 +151,6 @@
         "python"
       ],
       "keywords": [
-        "claudemd",
         "project overview",
         "hybrid architecture",
         "core integration pattern",
@@ -177,7 +170,6 @@
       "language": "Python",
       "topics": [],
       "keywords": [
-        "claudemd",
         "project overview",
         "architecture",
         "core services",
@@ -217,7 +209,6 @@
       "language": "Ruby",
       "topics": [],
       "keywords": [
-        "claudemd",
         "\u30b3\u30de\u30f3\u30c9",
         "\u30c6\u30b9\u30c8",
         "docker\u958b\u767a"
@@ -236,7 +227,6 @@
       "language": "Python",
       "topics": [],
       "keywords": [
-        "claudemd  development session documentation",
         "project overview",
         "design decisions",
         "1 storage strategy git notes",
@@ -256,7 +246,6 @@
       "language": "Python",
       "topics": [],
       "keywords": [
-        "claudemd  vespera atelier monorepo",
         "monorepo structure",
         "working in the monorepo",
         "important automatic directory switching",
@@ -276,7 +265,6 @@
       "language": "TypeScript",
       "topics": [],
       "keywords": [
-        "claudemd",
         "important security notice",
         "core objective",
         "technical stack  standards",
@@ -359,7 +347,6 @@
       "language": "TypeScript",
       "topics": [],
       "keywords": [
-        "claudemd",
         "development commands",
         "install dependencies always use pnpm",
         "start development server",
@@ -385,7 +372,6 @@
         "webbrowser"
       ],
       "keywords": [
-        "claudemd",
         "development commands",
         "core flutter commands",
         "testing and quality",
@@ -465,7 +451,6 @@
       "language": "JavaScript",
       "topics": [],
       "keywords": [
-        "claudemd",
         "project overview",
         "development commands",
         "architecture overview",
@@ -485,7 +470,6 @@
       "language": "Nunjucks",
       "topics": [],
       "keywords": [
-        "claudemd",
         "project overview",
         "development commands",
         "build and development",
@@ -525,7 +509,6 @@
       "language": "Rust",
       "topics": [],
       "keywords": [
-        "claudemd",
         "development commands",
         "architecture overview",
         "project structure",
@@ -565,7 +548,6 @@
       "language": "Python",
       "topics": [],
       "keywords": [
-        "claudemd",
         "project overview",
         "development commands",
         "environment setup",
@@ -665,7 +647,6 @@
       "language": "TypeScript",
       "topics": [],
       "keywords": [
-        "claudemd  engineering guide",
         "project overview",
         "runbook",
         "dev server troubleshooting",
@@ -685,7 +666,6 @@
       "language": "C++",
       "topics": [],
       "keywords": [
-        "claudemd",
         "project overview",
         "nonnegotiable rules",
         "architecture overview",
@@ -705,7 +685,6 @@
       "language": "C#",
       "topics": [],
       "keywords": [
-        "claudemd",
         "project overview",
         "development commands",
         "architecture  code structure",
@@ -765,7 +744,6 @@
       "language": "PHP",
       "topics": [],
       "keywords": [
-        "claudemd",
         "project overview",
         "repository structure",
         "architecture",
@@ -785,7 +763,6 @@
       "language": "JavaScript",
       "topics": [],
       "keywords": [
-        "claudemd",
         "project overview",
         "architecture",
         "frontend structure",
@@ -825,7 +802,6 @@
       "language": "TypeScript",
       "topics": [],
       "keywords": [
-        "claudemd",
         "project overview",
         "architecture",
         "monorepo structure",
@@ -865,7 +841,6 @@
       "language": "PHP",
       "topics": [],
       "keywords": [
-        "claudemd",
         "development rules",
         "tdd with pest php",
         "critical always run tests after any code change",
@@ -885,7 +860,6 @@
       "language": "TypeScript",
       "topics": [],
       "keywords": [
-        "claudemd",
         "project structure",
         "key directories",
         "architecture",
@@ -905,7 +879,6 @@
       "language": "C#",
       "topics": [],
       "keywords": [
-        "claudemd",
         "project overview",
         "development commands",
         "building and running",
@@ -925,7 +898,6 @@
       "language": "TypeScript",
       "topics": [],
       "keywords": [
-        "claudemd",
         "project overview",
         "development environment setup",
         "common commands",
@@ -945,7 +917,6 @@
       "language": "Python",
       "topics": [],
       "keywords": [
-        "claudemd",
         "project overview",
         "architecture",
         "core migration pipeline",
@@ -1019,7 +990,6 @@
       "language": "TypeScript",
       "topics": [],
       "keywords": [
-        "claudemd",
         "common commands",
         "code style guidelines",
         "tailwind css v4 styling",
@@ -1059,7 +1029,6 @@
       "language": "Rust",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "essential commands",
         "build and development",
@@ -1079,7 +1048,6 @@
       "language": "Go",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "commands",
         "building and running",
@@ -1099,7 +1067,6 @@
       "language": "C",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "build system",
         "autoconf/make (primary)",
@@ -1123,7 +1090,6 @@
         "typescript"
       ],
       "keywords": [
-        "claude.md",
         "project overview",
         "common development commands",
         "install dependencies",
@@ -1163,7 +1129,6 @@
       "language": "Java",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "build commands",
         "development environment",
@@ -1243,7 +1208,6 @@
       "language": null,
       "topics": [],
       "keywords": [
-        "claude.md",
         "product management documentation system",
         "system overview",
         "core capabilities",
@@ -1263,7 +1227,6 @@
       "language": "TypeScript",
       "topics": [],
       "keywords": [
-        "claude.md",
         "development commands",
         "project architecture",
         "key technologies",
@@ -1283,7 +1246,6 @@
       "language": "Go",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "key commands",
         "development",
@@ -1343,7 +1305,6 @@
       "language": "Python",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "build and development commands",
         "python development",
@@ -1365,7 +1326,6 @@
         "hacktoberfest"
       ],
       "keywords": [
-        "claude.md",
         "project overview",
         "technology stack",
         "development workflow",
@@ -1385,7 +1345,6 @@
       "language": "TypeScript",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "key commands",
         "development",
@@ -1404,8 +1363,7 @@
       "repo_url": "https://github.com/HungHsunHan/claude-code-ppt-generation-team",
       "language": "Python",
       "topics": [
-        "ai-agents",
-        "claude-code"
+        "ai-agents"
       ],
       "keywords": [
         "interaction relationships and call flow (pipeline)",
@@ -1427,7 +1385,6 @@
       "language": "Go",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "key features & design goals",
         "development setup",
@@ -1447,7 +1404,6 @@
       "language": "Python",
       "topics": [],
       "keywords": [
-        "claude.md",
         "path warning \u26a0\ufe0f",
         "project overview",
         "zone architecture",
@@ -1467,7 +1423,6 @@
       "language": "Go",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "project structure",
         "common development commands",
@@ -1493,7 +1448,6 @@
         "nodejs"
       ],
       "keywords": [
-        "claude.md",
         "essential commands",
         "after building, test the exports",
         "documentation",
@@ -1533,7 +1487,6 @@
       "language": "Python",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "development rules",
         "testing requirements",
@@ -1553,7 +1506,6 @@
       "language": "TypeScript",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "common commands",
         "development commands",
@@ -1573,7 +1525,6 @@
       "language": "C#",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "technology stack",
         "build and run commands",
@@ -1593,7 +1544,6 @@
       "language": "PowerShell",
       "topics": [],
       "keywords": [
-        "claude.md",
         "important guidelines",
         "project overview",
         "key features",
@@ -1616,7 +1566,6 @@
         "translation"
       ],
       "keywords": [
-        "claude.md",
         "context",
         "project overview",
         "important notes",
@@ -1642,7 +1591,6 @@
         "cicd"
       ],
       "keywords": [
-        "claude.md",
         "what is perception?",
         "the big picture",
         "architecture that actually works",
@@ -1662,7 +1610,6 @@
       "language": "C",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "github project management",
         "project information",
@@ -1688,7 +1635,6 @@
         "ports-and-adapters"
       ],
       "keywords": [
-        "claude.md",
         "project overview",
         "development commands",
         "testing and coverage",
@@ -1768,7 +1714,6 @@
       "language": "TypeScript",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "development commands",
         "building and running",
@@ -1788,7 +1733,6 @@
       "language": "TypeScript",
       "topics": [],
       "keywords": [
-        "claude.md",
         "repository overview",
         "architecture",
         "project structure",
@@ -1808,7 +1752,6 @@
       "language": "Rust",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "project status",
         "core architecture",
@@ -1828,7 +1771,6 @@
       "language": "TypeScript",
       "topics": [],
       "keywords": [
-        "claude.md",
         "\ud83d\udcd8 \u30d7\u30ed\u30b8\u30a7\u30af\u30c8\u6982\u8981",
         "\u2705 \u30bf\u30b9\u30af\u306e\u76ee\u7684\uff08goal\uff09",
         "\ud83d\udd0d \u4ed5\u69d8\u30fb\u8981\u4ef6",
@@ -1848,7 +1790,6 @@
       "language": "Vim Script",
       "topics": [],
       "keywords": [
-        "claude.md",
         "overview",
         "configuration structure",
         "key features",
@@ -1868,7 +1809,6 @@
       "language": "Shell",
       "topics": [],
       "keywords": [
-        "claude.md",
         "repository overview",
         "key tools and applications",
         "terminal and shell",
@@ -1888,7 +1828,6 @@
       "language": "JavaScript",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "development workflow",
         "local development setup",
@@ -1908,7 +1847,6 @@
       "language": "TypeScript",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "commands",
         "development",
@@ -1928,7 +1866,6 @@
       "language": "Swift",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "build & run",
         "architecture",
@@ -1988,7 +1925,6 @@
       "language": "TypeScript",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "development commands",
         "core development",
@@ -2008,7 +1944,6 @@
       "language": "TypeScript",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "architecture",
         "core game logic (`src/lib/`)",
@@ -2028,7 +1963,6 @@
       "language": "Go",
       "topics": [],
       "keywords": [
-        "claude.md",
         "project overview",
         "architecture",
         "development commands",
