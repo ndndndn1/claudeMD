@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CLAUDE.md Relationship Graph</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.27.0/cytoscape.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/cytoscape-fcose@2.2.0/cytoscape-fcose.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); min-height: 100vh; color: #fff; }
@@ -15,148 +14,640 @@
         .stat-item { display: flex; align-items: center; gap: 8px; }
         .stat-value { color: #4ecdc4; font-weight: bold; font-size: 18px; }
         .container { display: flex; height: calc(100vh - 100px); }
-        #cy { flex: 1; background: transparent; }
-        .sidebar { width: 350px; background: rgba(0,0,0,0.3); border-left: 1px solid rgba(255,255,255,0.1); padding: 20px; overflow-y: auto; }
+        #cy { flex: 1; background: rgba(0,0,0,0.2); }
+        .sidebar { width: 400px; background: rgba(0,0,0,0.3); border-left: 1px solid rgba(255,255,255,0.1); padding: 20px; overflow-y: auto; }
         .sidebar h2 { font-size: 16px; color: #4ecdc4; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .node-info { display: none; }
         .node-info.active { display: block; }
-        .info-label { font-size: 12px; color: #888; margin-top: 15px; margin-bottom: 5px; }
-        .info-value { font-size: 14px; color: #fff; word-break: break-word; }
+        .info-label { font-size: 12px; color: #888; margin-top: 12px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-value { font-size: 14px; color: #fff; word-break: break-word; line-height: 1.5; }
         .info-value a { color: #4ecdc4; text-decoration: none; }
         .info-value a:hover { text-decoration: underline; }
+        .summary-box { background: rgba(78, 205, 196, 0.1); border: 1px solid rgba(78, 205, 196, 0.3); border-radius: 8px; padding: 12px; margin-top: 8px; font-size: 13px; line-height: 1.6; color: #ddd; }
         .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
         .tag { background: rgba(78, 205, 196, 0.2); color: #4ecdc4; padding: 3px 8px; border-radius: 10px; font-size: 11px; }
         .controls { margin-bottom: 20px; }
         .control-group { margin-bottom: 15px; }
         .control-label { font-size: 12px; color: #888; margin-bottom: 5px; }
         select, input[type="range"] { width: 100%; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff; font-size: 13px; }
-        .btn { background: #4ecdc4; color: #1a1a2e; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 13px; margin-right: 8px; margin-bottom: 8px; }
+        .btn { background: #4ecdc4; color: #1a1a2e; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 13px; margin-right: 8px; margin-bottom: 8px; transition: all 0.2s; }
         .btn:hover { background: #3db9b1; }
+        .btn.secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+        .btn.secondary:hover { background: rgba(255,255,255,0.2); }
         .legend { margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px; }
         .legend-title { font-size: 12px; color: #888; margin-bottom: 10px; }
-        .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; font-size: 12px; }
+        .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; font-size: 12px; cursor: pointer; padding: 3px 5px; border-radius: 4px; transition: all 0.2s; }
+        .legend-item:hover { background: rgba(255,255,255,0.1); }
         .legend-color { width: 12px; height: 12px; border-radius: 50%; }
         .placeholder { color: #666; text-align: center; padding: 40px 20px; }
         .search-box { margin-bottom: 15px; }
         .search-box input { width: 100%; padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff; font-size: 13px; }
         .footer { font-size: 11px; color: #666; margin-top: 20px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .category-panel { margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px; }
+        .category-title { font-size: 14px; color: #4ecdc4; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .category-list { max-height: 200px; overflow-y: auto; }
+        .category-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; margin: 4px 0; background: rgba(255,255,255,0.05); border-radius: 5px; cursor: pointer; transition: all 0.2s; }
+        .category-item:hover { background: rgba(255,255,255,0.1); }
+        .category-item.active { background: rgba(78, 205, 196, 0.3); border-left: 3px solid #4ecdc4; }
+        .category-name { display: flex; align-items: center; gap: 8px; }
+        .category-count { background: rgba(78, 205, 196, 0.2); color: #4ecdc4; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+        .cluster-color { width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: #1a1a2e; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 25px; width: 500px; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { color: #4ecdc4; }
+        .modal-close { background: none; border: none; color: #888; font-size: 24px; cursor: pointer; }
+        .modal-close:hover { color: #fff; }
+        .download-item { display: flex; align-items: center; gap: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; margin-bottom: 8px; }
+        .download-item input[type="checkbox"] { width: 18px; height: 18px; }
+        .download-info { flex: 1; }
+        .download-name { font-size: 14px; color: #fff; }
+        .download-meta { font-size: 11px; color: #888; }
+        .tabs { display: flex; gap: 5px; margin-bottom: 15px; }
+        .tab-btn { padding: 8px 16px; background: rgba(255,255,255,0.05); border: none; border-radius: 5px; color: #888; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+        .tab-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .tab-btn.active { background: #4ecdc4; color: #1a1a2e; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        .loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #888; z-index: 10; }
+        #cy { position: relative; }
+        .optimization-note { font-size: 11px; color: #666; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 5px; margin-top: 10px; }
         @media (max-width: 768px) { .container { flex-direction: column; } .sidebar { width: 100%; height: auto; max-height: 300px; } #cy { height: 60vh; } }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🔗 CLAUDE.md Relationship Graph</h1>
+        <h1>CLAUDE.md Relationship Graph</h1>
         <div class="stats">
-            <div class="stat-item"><span>Repositories:</span><span class="stat-value">17</span></div>
-            <div class="stat-item"><span>Connections:</span><span class="stat-value">7</span></div>
-            <div class="stat-item"><span>Total Stars:</span><span class="stat-value">29,849</span></div>
-            <div class="stat-item"><span>Updated:</span><span class="stat-value" style="font-size:14px">2025-12-18 05:00</span></div>
+            <div class="stat-item"><span>Repositories:</span><span class="stat-value" id="stat-repos">-</span></div>
+            <div class="stat-item"><span>Connections:</span><span class="stat-value" id="stat-edges">-</span></div>
+            <div class="stat-item"><span>Clusters:</span><span class="stat-value" id="stat-clusters">0</span></div>
         </div>
     </div>
     <div class="container">
-        <div id="cy"></div>
+        <div id="cy"><div class="loading" id="loading-text">Loading graph data...</div></div>
         <div class="sidebar">
-            <div class="controls">
-                <h2>⚙️ Controls</h2>
-                <div class="search-box"><input type="text" id="search" placeholder="Search repositories..."></div>
-                <div class="control-group">
-                    <div class="control-label">Layout</div>
-                    <select id="layout-select">
-                        <option value="fcose">Force-Directed</option>
-                        <option value="circle">Circle</option>
-                        <option value="concentric">Concentric</option>
-                        <option value="grid">Grid</option>
-                    </select>
+            <div class="tabs">
+                <button class="tab-btn active" id="tab-btn-controls">Controls</button>
+                <button class="tab-btn" id="tab-btn-categories">Categories</button>
+                <button class="tab-btn" id="tab-btn-clusters">Clusters</button>
+            </div>
+
+            <div class="tab-panel active" id="panel-controls">
+                <div class="controls">
+                    <div class="search-box"><input type="text" id="search" placeholder="Search repositories..."></div>
+                    <div class="control-group">
+                        <div class="control-label">Layout</div>
+                        <select id="layout-select">
+                            <option value="cose" selected>Force-Directed</option>
+                            <option value="circle">Circle</option>
+                            <option value="concentric">Concentric (by Stars)</option>
+                            <option value="grid">Grid</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">Similarity Threshold: <span id="threshold-value">0.00</span></div>
+                        <input type="range" id="threshold" min="0" max="0.5" step="0.01" value="0">
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">Max Neighbors per Node (KNN): <span id="knn-value">10</span></div>
+                        <input type="range" id="knn-limit" min="3" max="20" step="1" value="10">
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <button class="btn" id="btn-reset">Reset View</button>
+                        <button class="btn secondary" id="btn-export">Export PNG</button>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <button class="btn" id="btn-download">Download Group</button>
+                    </div>
                 </div>
-                <div class="control-group">
-                    <div class="control-label">Edge Threshold: <span id="threshold-value">0.10</span></div>
-                    <input type="range" id="threshold" min="0.05" max="0.8" step="0.05" value="0.1">
+                <div class="legend">
+                    <div class="legend-title">Node Size = Stars | Color = Language</div>
+                    <div id="language-legend"></div>
                 </div>
-                <div style="margin-top: 15px;">
-                    <button class="btn" onclick="resetView()">🔄 Reset</button>
-                    <button class="btn" onclick="exportPNG()">📷 Export</button>
+                <div class="optimization-note">
+                    <strong>Scalability:</strong> Using KNN to limit edges per node.
+                    With 1000 nodes and K=10, only ~10K edges instead of 500K.
                 </div>
             </div>
-            <div class="legend">
-                <div class="legend-title">Node Size = Stars</div>
-                <div class="legend-item"><div class="legend-color" style="background: #ff6b6b;"></div><span>1000+ stars</span></div>
-                <div class="legend-item"><div class="legend-color" style="background: #feca57;"></div><span>100-999 stars</span></div>
-                <div class="legend-item"><div class="legend-color" style="background: #4ecdc4;"></div><span>&lt;100 stars</span></div>
+
+            <div class="tab-panel" id="panel-categories">
+                <div class="category-panel">
+                    <div class="category-title">
+                        <span>By Language</span>
+                        <button class="btn secondary" style="padding: 4px 10px; font-size: 11px;" id="btn-clear-lang">Clear</button>
+                    </div>
+                    <div class="category-list" id="language-categories"></div>
+                </div>
+                <div class="category-panel">
+                    <div class="category-title"><span>By Project Type</span></div>
+                    <div class="category-list" id="type-categories"></div>
+                </div>
             </div>
+
+            <div class="tab-panel" id="panel-clusters">
+                <div class="category-panel">
+                    <div class="category-title">
+                        <span>Connected Groups</span>
+                        <button class="btn secondary" style="padding: 4px 10px; font-size: 11px;" id="btn-clear-cluster">Clear</button>
+                    </div>
+                    <div class="category-list" id="cluster-list"></div>
+                </div>
+                <p style="font-size: 12px; color: #888; margin-top: 10px;">
+                    Clusters are groups of repositories connected by content similarity.
+                    Increase threshold to see connected groups.
+                </p>
+            </div>
+
             <div id="node-info" class="node-info">
-                <h2>📋 Repository</h2>
+                <h2>Repository Details</h2>
                 <div class="info-label">Name</div><div class="info-value" id="info-name"></div>
                 <div class="info-label">Stars</div><div class="info-value" id="info-stars"></div>
                 <div class="info-label">Language</div><div class="info-value" id="info-language"></div>
                 <div class="info-label">Description</div><div class="info-value" id="info-description"></div>
+                <div class="info-label">CLAUDE.md Summary</div>
+                <div class="summary-box" id="info-summary">No summary available</div>
                 <div class="info-label">Topics</div><div class="tags" id="info-topics"></div>
                 <div class="info-label">Keywords</div><div class="tags" id="info-keywords"></div>
                 <div class="info-label">Links</div>
-                <div class="info-value"><a id="link-repo" href="#" target="_blank">📁 Repo</a> | <a id="link-file" href="#" target="_blank">📄 CLAUDE.md</a></div>
+                <div class="info-value"><a id="link-repo" href="#" target="_blank">Repository</a> | <a id="link-file" href="#" target="_blank">CLAUDE.md</a></div>
+                <div style="margin-top: 15px;">
+                    <button class="btn" id="btn-similar">Show Similar</button>
+                    <button class="btn secondary" id="btn-download-single">Download</button>
+                </div>
             </div>
-            <div class="placeholder" id="placeholder">Click a node</div>
-            <div class="footer">KùzuDB Storage | MCP Server Ready</div>
+            <div class="placeholder" id="placeholder">Click a node to see details</div>
+            <div class="footer">KNN-optimized Graph | O(n*k) edges</div>
         </div>
     </div>
+
+    <div class="modal" id="download-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Download CLAUDE.md Files</h3>
+                <button class="modal-close" id="btn-close-modal">&times;</button>
+            </div>
+            <div id="download-list"></div>
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button class="btn" id="btn-download-selected">Download Selected</button>
+                <button class="btn secondary" id="btn-select-all">Select All</button>
+                <button class="btn secondary" id="btn-cancel-modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const nodesData = [{"id": "node_0", "label": "foam", "full_name": "foambubble/foam", "stars": 16630, "description": "A personal knowledge management and sharing system for VSCode", "url": "https://github.com/foambubble/foam/blob/main/CLAUDE.md", "repo_url": "https://github.com/foambubble/foam", "language": "TypeScript", "topics": ["graph-visualisation", "markdown", "markdown-editor", "pkm", "zettelkasten"], "keywords": ["claudemd", "collaboration principles", "project overview", "quick commands", "development"], "size": 11050, "summary": "Foam is a personal knowledge management and sharing system, built on Visual Studio Code and GitHub. It allows users to organize research, keep re-discoverable notes, write long-form content, and optionally publish it to the web. The main goals are to help users create relationships between thoughts ..."}, {"id": "node_1", "label": "mimir", "full_name": "grafana/mimir", "stars": 4835, "description": "Grafana Mimir provides horizontally scalable, highly available, multi-tenant, long-term storage for Prometheus.", "url": "https://github.com/grafana/mimir/blob/main/CLAUDE.md", "repo_url": "https://github.com/grafana/mimir", "language": "Go", "topics": ["prometheus", "metrics", "tsdb", "opentelemetry", "otlp"], "keywords": ["workflow", "grafana mimir helm chart", "formatting", "building grafana mimir", "run grafana mimir locally"], "size": 10262, "summary": "Welcome! We're excited that you're interested in contributing. Below are some basic guidelines."}, {"id": "node_2", "label": "nexent", "full_name": "ModelEngine-Group/nexent", "stars": 4083, "description": "Nexent is a zero-code platform for auto-generating agents \u2014 no orchestration, no complex drag-and-drop required. Nexent also offers powerful capabilities for agent running control, data processing and MCP tools.", "url": "https://github.com/ModelEngine-Group/nexent/blob/main/CLAUDE.md", "repo_url": "https://github.com/ModelEngine-Group/nexent", "language": "Python", "topics": ["agent", "agentic-ai", "agentic-framework", "agentic-rag", "agentic-workflow"], "keywords": ["claude code rules", "code quality standards", "englishonly comments and documentation", "initialize cache for 60 seconds", "\u521d\u59cb\u5316\u7f13\u5b58 60 \u79d2  forbidden"], "size": 6473, "summary": "- All comments and docstrings must be written in clear, concise English - Do not use non-English characters in comments (string literals may contain any language) - Use proper grammar and spelling; avoid ambiguous abbreviations"}, {"id": "node_3", "label": "claude-code-webui", "full_name": "sugyan/claude-code-webui", "stars": 754, "description": "Web-based interface for Claude CLI with streaming chat responses", "url": "https://github.com/sugyan/claude-code-webui/blob/main/CLAUDE.md", "repo_url": "https://github.com/sugyan/claude-code-webui", "language": "TypeScript", "topics": ["claude", "claude-cli", "web-ui"], "keywords": ["claude code web ui", "code quality", "setup for new contributors", "install lefthook", "or download from httpsgithubcomevilmartianslefthookreleases"], "size": 9646, "summary": "A web-based interface for the `claude` command line tool that provides streaming responses in a chat interface."}, {"id": "node_4", "label": "QuantumOptics.jl", "full_name": "qojulia/QuantumOptics.jl", "stars": 595, "description": "Library for the numerical simulation of closed as well as open quantum systems.", "url": "https://github.com/qojulia/QuantumOptics.jl/blob/main/CLAUDE.md", "repo_url": "https://github.com/qojulia/QuantumOptics.jl", "language": "Julia", "topics": ["julia", "quantum", "quantum-mechanics", "quantum-optics", "quantum-toolbox"], "keywords": ["quantumopticsjl", "project structure", "development commands", "running tests", "run all tests"], "size": 5753, "summary": "QuantumOptics.jl is a numerical framework written in Julia that makes it easy to simulate various kinds of quantum systems. It builds on QuantumOpticsBase.jl and provides dynamic solvers for time evolution, master equations, stochastic processes, and more."}, {"id": "node_5", "label": "querydsl", "full_name": "OpenFeign/querydsl", "stars": 542, "description": "Unified Queries for Java", "url": "https://github.com/OpenFeign/querydsl/blob/main/CLAUDE.md", "repo_url": "https://github.com/OpenFeign/querydsl", "language": "Java", "topics": [], "keywords": ["claudemd", "overview", "build commands", "basic build", "quick build skip tests and checks"], "size": 4858, "summary": "This is Querydsl, a framework for constructing type-safe SQL-like queries for multiple backends including JPA, MongoDB, and SQL in Java. This is a fork under OpenFeign maintaining the project with regular releases since the original project became stale."}, {"id": "node_6", "label": "mcp-server-neon", "full_name": "neondatabase/mcp-server-neon", "stars": 528, "description": "MCP server for interacting with Neon Management API and databases", "url": "https://github.com/neondatabase/mcp-server-neon/blob/main/CLAUDE.md", "repo_url": "https://github.com/neondatabase/mcp-server-neon", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "project overview", "development commands", "building and running", "install dependencies"], "size": 9346, "summary": "This is the **Neon MCP Server** - a Model Context Protocol server that bridges natural language requests to the Neon API, enabling LLMs to manage Neon Postgres databases through conversational commands. The project implements both local (stdio) and remote (SSE/Streamable HTTP) MCP server transports ..."}, {"id": "node_7", "label": "open-whispr", "full_name": "HeroTools/open-whispr", "stars": 515, "description": "Voice-to-text dictation app with local Whisper models and OpenAI API. Privacy-first, cross-platform, global hotkey activated.", "url": "https://github.com/HeroTools/open-whispr/blob/main/CLAUDE.md", "repo_url": "https://github.com/HeroTools/open-whispr", "language": "TypeScript", "topics": ["ai", "open-source", "whisper"], "keywords": ["openwhispr technical reference for ai assistants", "project overview", "architecture overview", "core technologies", "key architectural decisions"], "size": 11676, "summary": "OpenWhispr is an Electron-based desktop dictation application that uses OpenAI Whisper for speech-to-text transcription. It supports both local (privacy-focused) and cloud (OpenAI API) processing modes."}, {"id": "node_8", "label": "universal-router", "full_name": "Uniswap/universal-router", "stars": 489, "description": "Uniswap's Universal Router for NFT and ERC20 swapping", "url": "https://github.com/Uniswap/universal-router/blob/main/contracts/types/CLAUDE.md", "repo_url": "https://github.com/Uniswap/universal-router", "language": "TypeScript", "topics": [], "keywords": ["type definitions", "overview", "key files", "purpose", "autoupdate instructions"], "size": 848, "summary": "This directory contains Solidity type definitions and structs used throughout the Universal Router contracts."}, {"id": "node_9", "label": "rooch", "full_name": "rooch-network/rooch", "stars": 183, "description": "VApp Container with Move Language for Bitcoin ecosystem", "url": "https://github.com/rooch-network/rooch/blob/main/CLAUDE.md", "repo_url": "https://github.com/rooch-network/rooch", "language": "Rust", "topics": ["blockchain", "layer2", "modular", "move", "rollup"], "keywords": ["claudemd", "project overview", "development environment setup", "prerequisites", "rust toolchain required"], "size": 11192, "summary": "Rooch Network is a Bitcoin-focused Layer 2 blockchain solution positioned as a \"VApp (Verifiable Application) Container\" with the Move programming language. The project aims to provide verifiability of both computations and states within applications, ensuring transparency and reliability of operati..."}, {"id": "node_10", "label": "blog", "full_name": "jxnl/blog", "stars": 173, "description": "", "url": "https://github.com/jxnl/blog/blob/main/CLAUDE.md", "repo_url": "https://github.com/jxnl/blog", "language": "Python", "topics": [], "keywords": ["claudemd", "repository overview", "build commands", "install dependencies using uv as preferred", "development server with live reload"], "size": 5032, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_11", "label": "pixel-banner", "full_name": "jparkerweb/pixel-banner", "stars": 162, "description": "\ud83d\udea9 Enhance your Obsidian notes with customizable banner images, including AI-generated designs and a curated store of downloadable banners. Transform your workspace with visually stunning headers that add context, improve aesthetics, and take your note-taking beyond the ordinary.", "url": "https://github.com/jparkerweb/pixel-banner/blob/main/CLAUDE.md", "repo_url": "https://github.com/jparkerweb/pixel-banner", "language": "JavaScript", "topics": ["obsidian", "pexels-api", "plugin", "banner", "banner-image"], "keywords": ["claudemd", "overview", "essential commands", "development", "install dependencies"], "size": 9386, "summary": "Pixel Banner is an Obsidian plugin that adds customizable banner images to notes. It supports AI-generated banners via Pixel Banner Plus, local images/videos, and integrations with multiple image APIs (Pexels, Pixabay, Flickr, Unsplash). **Target Obsidian Version**: 1.6.0+ **Language**: JavaScript (..."}, {"id": "node_12", "label": "microfolio", "full_name": "aker-dev/microfolio", "stars": 125, "description": "A modern static portfolio generator based on SvelteKit 2 and Tailwind CSS 4", "url": "https://github.com/aker-dev/microfolio/blob/main/CLAUDE.md", "repo_url": "https://github.com/aker-dev/microfolio", "language": "Svelte", "topics": ["claude-code", "designer", "portfolio-project", "portfolio-site", "portfolio-template"], "keywords": ["claudemd", "project overview", "development commands", "essential commands", "development server"], "size": 4978, "summary": "microfolio is a modern static portfolio generator built with SvelteKit 2 and Tailwind CSS 4. It features a file-based content management system using folders and Markdown files, perfect for showcasing creative work. The project is developed by AKER and includes features like multiple view modes, int..."}, {"id": "node_13", "label": "claude-md-examples", "full_name": "ArthurClune/claude-md-examples", "stars": 80, "description": "", "url": "https://github.com/ArthurClune/claude-md-examples/blob/main/hugo-CLAUDE.md", "repo_url": "https://github.com/ArthurClune/claude-md-examples", "language": "Unknown", "topics": [], "keywords": ["cluneorg blog", "architecture", "build commands", "project structure", "style guidelines"], "size": 990, "summary": "This project is a Hugo personal blog, follwing the standard Hugo conventions Posts go in `content/posts`"}, {"id": "node_14", "label": "msg-rs", "full_name": "chainbound/msg-rs", "stars": 79, "description": "Messaging library for distributed systems built in Rust", "url": "https://github.com/chainbound/msg-rs/blob/main/CLAUDE.md", "repo_url": "https://github.com/chainbound/msg-rs", "language": "Rust", "topics": ["distributed-systems", "networking", "tokio", "rust"], "keywords": ["claudemd", "development commands", "build and test", "primary commands using just", "alternative cargo commands"], "size": 4138, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_15", "label": "poykott", "full_name": "TheBSD/poykott", "stars": 39, "description": "previously boycottisraelitech.com", "url": "https://github.com/TheBSD/poykott/blob/main/CLAUDE.md", "repo_url": "https://github.com/TheBSD/poykott", "language": "PHP", "topics": [], "keywords": ["laravel boost guidelines", "foundational context", "conventions", "verification scripts", "application structure  architecture"], "size": 22234, "summary": "<laravel-boost-guidelines> === foundation rules ==="}, {"id": "node_16", "label": "video-agent-claude-skill", "full_name": "donghaozhang/video-agent-claude-skill", "stars": 37, "description": "First Python Package for Video Cli Generation and Processing", "url": "https://github.com/donghaozhang/video-agent-claude-skill/blob/main/CLAUDE.md", "repo_url": "https://github.com/donghaozhang/video-agent-claude-skill", "language": "Python", "topics": [], "keywords": ["claudemd", "git workflow commands", "project overview", "ai content pipeline package", "environment setup"], "size": 11956, "summary": "This is the **AI Content Pipeline** - a unified Python package for multi-modal AI content generation."}];
-        const edgesData = [{"source": "node_11", "target": "node_16", "similarity": 0.126}, {"source": "node_16", "target": "node_7", "similarity": 0.158}, {"source": "node_14", "target": "node_9", "similarity": 0.115}, {"source": "node_15", "target": "node_1", "similarity": 0.105}, {"source": "node_6", "target": "node_3", "similarity": 0.119}, {"source": "node_0", "target": "node_1", "similarity": 0.131}, {"source": "node_13", "target": "node_10", "similarity": 0.259}];
-        let currentThreshold = 0.1;
-        function getNodeColor(stars) { if (stars >= 1000) return '#ff6b6b'; if (stars >= 100) return '#feca57'; return '#4ecdc4'; }
-        function getNodeSize(stars) { return Math.max(20, Math.min(80, 15 + Math.log10(stars + 1) * 15)); }
-        function createElements(threshold) {
-            const nodes = nodesData.map(n => ({ data: { id: n.id, label: n.label, ...n } }));
-            const edges = edgesData.filter(e => e.similarity >= threshold).map(e => ({ data: { id: e.source + '-' + e.target, source: e.source, target: e.target, similarity: e.similarity } }));
-            return [...nodes, ...edges];
+    (function() {
+        const languageColors = {
+            'TypeScript': '#3178c6', 'JavaScript': '#f7df1e', 'Python': '#3776ab',
+            'Rust': '#dea584', 'Go': '#00add8', 'Java': '#b07219', 'Ruby': '#cc342d',
+            'PHP': '#4f5d95', 'C#': '#178600', 'C++': '#f34b7d', 'C': '#555555',
+            'Svelte': '#ff3e00', 'Vue': '#41b883', 'Julia': '#9558b2', 'Dart': '#0175c2',
+            'HTML': '#e34c26', 'Jupyter Notebook': '#f37626', 'Nunjucks': '#1c4913', 'Vim Script': '#019833'
+        };
+
+        let nodesData = [];
+        let edgesData = [];
+        let currentThreshold = 0;
+        let knnLimit = 10;
+        let selectedNode = null;
+        let clusters = [];
+        let currentFilter = { type: null, value: null };
+        let cy;
+
+        // Load data from JSON file
+        async function loadData() {
+            try {
+                const response = await fetch('graph_data.json');
+                const data = await response.json();
+                nodesData = data.nodes;
+                edgesData = data.edges;
+                document.getElementById('stat-repos').textContent = nodesData.length;
+                initGraph();
+                renderCategories();
+                updateClusters();
+            } catch (error) {
+                console.error('Failed to load data:', error);
+                document.getElementById('cy').innerHTML = '<div class="loading">Failed to load data</div>';
+            }
         }
-        let cy = cytoscape({
-            container: document.getElementById('cy'),
-            elements: createElements(currentThreshold),
-            style: [
-                { selector: 'node', style: { 'label': 'data(label)', 'width': function(ele) { return getNodeSize(ele.data('stars')); }, 'height': function(ele) { return getNodeSize(ele.data('stars')); }, 'background-color': function(ele) { return getNodeColor(ele.data('stars')); }, 'border-width': 2, 'border-color': '#fff', 'color': '#fff', 'font-size': '10px', 'text-valign': 'bottom', 'text-margin-y': 5, 'text-outline-width': 2, 'text-outline-color': '#1a1a2e' } },
-                { selector: 'edge', style: { 'width': function(ele) { return 1 + ele.data('similarity') * 5; }, 'line-color': 'rgba(78, 205, 196, 0.4)', 'curve-style': 'bezier', 'opacity': function(ele) { return 0.3 + ele.data('similarity') * 0.5; } } },
-                { selector: '.faded', style: { 'opacity': 0.2 } }
-            ],
-            layout: { name: 'fcose', animate: true, randomize: true, nodeDimensionsIncludeLabels: true, idealEdgeLength: 150, nodeRepulsion: 8000 }
-        });
-        cy.on('tap', 'node', function(evt) {
-            const data = evt.target.data();
-            document.getElementById('info-name').innerHTML = '<a href="' + data.repo_url + '" target="_blank">' + data.full_name + '</a>';
-            document.getElementById('info-stars').textContent = data.stars.toLocaleString() + ' ⭐';
-            document.getElementById('info-language').textContent = data.language || 'Unknown';
-            document.getElementById('info-description').textContent = data.description || 'No description';
-            document.getElementById('info-topics').innerHTML = (data.topics || []).map(t => '<span class="tag">' + t + '</span>').join('');
-            document.getElementById('info-keywords').innerHTML = (data.keywords || []).map(k => '<span class="tag">' + k + '</span>').join('');
-            document.getElementById('link-repo').href = data.repo_url;
-            document.getElementById('link-file').href = data.url;
-            document.getElementById('node-info').classList.add('active');
-            document.getElementById('placeholder').style.display = 'none';
-            cy.elements().removeClass('faded');
-            const neighborhood = evt.target.neighborhood().add(evt.target);
-            cy.elements().not(neighborhood).addClass('faded');
-        });
-        cy.on('tap', function(evt) { if (evt.target === cy) cy.elements().removeClass('faded'); });
-        document.getElementById('layout-select').addEventListener('change', function() {
-            const name = this.value;
-            let layout = name === 'concentric' ? { name: 'concentric', concentric: n => n.data('stars'), levelWidth: () => 2, animate: true } : { name, animate: true };
-            cy.layout(layout).run();
-        });
-        document.getElementById('threshold').addEventListener('input', function() {
-            currentThreshold = parseFloat(this.value);
-            document.getElementById('threshold-value').textContent = currentThreshold.toFixed(2);
+
+        function categorizeProject(node) {
+            const text = ((node.description || '') + ' ' + (node.keywords || []).join(' ')).toLowerCase();
+            if (text.includes('mcp')) return 'MCP Server';
+            if (text.includes('plugin') || text.includes('obsidian')) return 'Plugin';
+            if (text.includes('api') || text.includes('backend') || text.includes('server')) return 'Backend/API';
+            if (text.includes('vue') || text.includes('svelte') || text.includes('react')) return 'Frontend';
+            if (text.includes('cli') || text.includes('command')) return 'CLI Tool';
+            if (text.includes('agent') || text.includes('ai')) return 'AI/Agent';
+            if (text.includes('game') || text.includes('pokemon')) return 'Game';
+            if (text.includes('mobile') || text.includes('flutter')) return 'Mobile';
+            if (text.includes('wordpress') || text.includes('php')) return 'WordPress/PHP';
+            return 'Other';
+        }
+
+        // KNN-based edge filtering: keep only top K neighbors per node
+        function getKNNEdges(threshold, k) {
+            // Filter by threshold first
+            const thresholdEdges = edgesData.filter(e => e.similarity >= threshold);
+
+            // Build adjacency with similarities
+            const nodeEdges = {};
+            nodesData.forEach(n => nodeEdges[n.id] = []);
+
+            thresholdEdges.forEach(e => {
+                nodeEdges[e.source].push({ target: e.target, similarity: e.similarity, edge: e });
+                nodeEdges[e.target].push({ target: e.source, similarity: e.similarity, edge: e });
+            });
+
+            // Keep only top K for each node
+            const selectedEdges = new Set();
+            Object.keys(nodeEdges).forEach(nodeId => {
+                const neighbors = nodeEdges[nodeId];
+                neighbors.sort((a, b) => b.similarity - a.similarity);
+                neighbors.slice(0, k).forEach(n => {
+                    const edgeKey = [n.edge.source, n.edge.target].sort().join('-');
+                    selectedEdges.add(edgeKey);
+                });
+            });
+
+            // Return unique edges
+            return thresholdEdges.filter(e => {
+                const key = [e.source, e.target].sort().join('-');
+                return selectedEdges.has(key);
+            });
+        }
+
+        function findClusters(edges) {
+            const adj = {};
+            nodesData.forEach(n => adj[n.id] = []);
+            edges.forEach(e => {
+                adj[e.source].push(e.target);
+                adj[e.target].push(e.source);
+            });
+            const visited = new Set();
+            const result = [];
+            nodesData.forEach(n => {
+                if (visited.has(n.id)) return;
+                const cluster = [];
+                const queue = [n.id];
+                while (queue.length) {
+                    const curr = queue.shift();
+                    if (visited.has(curr)) continue;
+                    visited.add(curr);
+                    cluster.push(curr);
+                    adj[curr].forEach(neighbor => { if (!visited.has(neighbor)) queue.push(neighbor); });
+                }
+                result.push(cluster);
+            });
+            return result.sort((a, b) => b.length - a.length);
+        }
+
+        function getNodeColor(node) { return languageColors[node.language] || '#4ecdc4'; }
+        // Node size: star=0 is smallest, star>=1 starts differentiating
+        function getNodeSize(stars) {
+            if (stars === 0) return 15;  // Smallest for zero stars
+            if (stars === 1) return 22;
+            // For stars >= 2, scale logarithmically
+            return Math.min(90, 25 + Math.log10(stars) * 25);
+        }
+
+        function createElements(threshold, k) {
+            const nodes = nodesData.map(n => ({ data: { id: n.id, label: n.label, ...n, category: categorizeProject(n) } }));
+            const filteredEdges = getKNNEdges(threshold, k);
+            const edges = filteredEdges.map(e => ({
+                data: { id: e.source + '-' + e.target, source: e.source, target: e.target, similarity: e.similarity }
+            }));
+            return { nodes, edges, edgeCount: filteredEdges.length };
+        }
+
+        function initGraph() {
+            // Remove loading text
+            const loadingEl = document.getElementById('loading-text');
+            if (loadingEl) loadingEl.remove();
+
+            const { nodes, edges, edgeCount } = createElements(currentThreshold, knnLimit);
+            document.getElementById('stat-edges').textContent = edgeCount;
+
+            cy = cytoscape({
+                container: document.getElementById('cy'),
+                elements: [...nodes, ...edges],
+                style: [
+                    { selector: 'node', style: {
+                        'label': 'data(label)', 'width': ele => getNodeSize(ele.data('stars')),
+                        'height': ele => getNodeSize(ele.data('stars')), 'background-color': ele => getNodeColor(ele.data()),
+                        'border-width': 2, 'border-color': '#fff', 'color': '#fff', 'font-size': '10px',
+                        'text-valign': 'bottom', 'text-margin-y': 5, 'text-outline-width': 2, 'text-outline-color': '#1a1a2e'
+                    }},
+                    { selector: 'edge', style: {
+                        'width': ele => 1 + ele.data('similarity') * 5, 'line-color': 'rgba(78, 205, 196, 0.5)',
+                        'curve-style': 'bezier', 'opacity': ele => 0.3 + ele.data('similarity') * 0.5
+                    }},
+                    { selector: '.faded', style: { 'opacity': 0.15 } },
+                    { selector: '.highlighted', style: { 'border-color': '#ff6b6b', 'border-width': 4 } }
+                ],
+                layout: {
+                    name: 'cose',
+                    animate: false,
+                    nodeRepulsion: 50000,        // Increased for more spacing
+                    idealEdgeLength: 180,        // Longer edges
+                    gravity: 0.2,                // Less gravity = more spread
+                    nodeDimensionsIncludeLabels: true,
+                    nodeOverlap: 30,             // Minimum node separation
+                    nestingFactor: 1.2
+                },
+                // Zoom settings
+                minZoom: 0.1,
+                maxZoom: 5,
+                wheelSensitivity: 0.15,          // Finer zoom steps (default 1)
+                zoomingEnabled: true,
+                userZoomingEnabled: true,
+                panningEnabled: true,
+                // Performance optimization for large graphs
+                textureOnViewport: true,
+                hideEdgesOnViewport: true,
+                motionBlur: true
+            });
+
+            cy.on('tap', 'node', function(evt) {
+                selectedNode = evt.target.data();
+                document.getElementById('info-name').innerHTML = '<a href="' + selectedNode.repo_url + '" target="_blank">' + selectedNode.full_name + '</a>';
+                document.getElementById('info-stars').textContent = selectedNode.stars + ' stars';
+                document.getElementById('info-language').textContent = selectedNode.language || 'Unknown';
+                document.getElementById('info-description').textContent = selectedNode.description || 'No description';
+
+                // Show summary (truncate to ~3 lines)
+                const summary = selectedNode.summary || 'No summary available';
+                const truncatedSummary = summary.length > 300 ? summary.substring(0, 300) + '...' : summary;
+                document.getElementById('info-summary').textContent = truncatedSummary;
+
+                document.getElementById('info-topics').innerHTML = (selectedNode.topics || []).map(t => '<span class="tag">' + t + '</span>').join('');
+                document.getElementById('info-keywords').innerHTML = (selectedNode.keywords || []).slice(0, 5).map(k => '<span class="tag">' + k + '</span>').join('');
+                document.getElementById('link-repo').href = selectedNode.repo_url;
+                document.getElementById('link-file').href = selectedNode.url;
+                document.getElementById('node-info').classList.add('active');
+                document.getElementById('placeholder').style.display = 'none';
+                cy.elements().removeClass('faded highlighted');
+                const neighborhood = evt.target.neighborhood().add(evt.target);
+                cy.elements().not(neighborhood).addClass('faded');
+                evt.target.addClass('highlighted');
+            });
+
+            cy.on('tap', function(evt) {
+                if (evt.target === cy) {
+                    // Click on empty space = show all nodes (clear selection)
+                    cy.elements().removeClass('faded highlighted');
+                    currentFilter = { type: null, value: null };
+                    document.querySelectorAll('.category-item').forEach(el => el.classList.remove('active'));
+                    document.getElementById('node-info').classList.remove('active');
+                    document.getElementById('placeholder').style.display = 'block';
+                    selectedNode = null;
+                }
+            });
+        }
+
+        function updateGraph() {
+            if (!cy) return;
+            const { edges, edgeCount } = createElements(currentThreshold, knnLimit);
             cy.edges().remove();
-            cy.add(edgesData.filter(e => e.similarity >= currentThreshold).map(e => ({ data: { id: e.source + '-' + e.target, source: e.source, target: e.target, similarity: e.similarity } })));
+            cy.add(edges);
+            document.getElementById('stat-edges').textContent = edgeCount;
+            updateClusters();
+        }
+
+        function updateClusters() {
+            const filteredEdges = getKNNEdges(currentThreshold, knnLimit);
+            clusters = findClusters(filteredEdges);
+            document.getElementById('stat-clusters').textContent = clusters.filter(c => c.length > 1).length;
+            renderClusterList();
+        }
+
+        function renderCategories() {
+            const langCounts = {};
+            nodesData.forEach(n => { langCounts[n.language] = (langCounts[n.language] || 0) + 1; });
+            const langSorted = Object.entries(langCounts).sort((a, b) => b[1] - a[1]);
+            document.getElementById('language-categories').innerHTML = langSorted.map(([lang, count]) =>
+                '<div class="category-item" data-lang="' + lang + '"><div class="category-name"><div style="width:10px;height:10px;border-radius:50%;background:' + (languageColors[lang] || '#4ecdc4') + '"></div><span>' + lang + '</span></div><span class="category-count">' + count + '</span></div>'
+            ).join('');
+
+            const typeCounts = {};
+            nodesData.forEach(n => { const t = categorizeProject(n); typeCounts[t] = (typeCounts[t] || 0) + 1; });
+            const typeSorted = Object.entries(typeCounts).sort((a, b) => b[1] - a[1]);
+            document.getElementById('type-categories').innerHTML = typeSorted.map(([type, count]) =>
+                '<div class="category-item" data-type="' + type + '"><div class="category-name"><span>' + type + '</span></div><span class="category-count">' + count + '</span></div>'
+            ).join('');
+
+            document.getElementById('language-legend').innerHTML = langSorted.slice(0, 8).map(([lang, count]) =>
+                '<div class="legend-item" data-lang="' + lang + '"><div class="legend-color" style="background:' + (languageColors[lang] || '#4ecdc4') + '"></div><span>' + lang + ' (' + count + ')</span></div>'
+            ).join('');
+        }
+
+        // Store only connected clusters (length > 1)
+        let connectedClusters = [];
+
+        function renderClusterList() {
+            const colors = ['#4ecdc4', '#ff6b6b', '#feca57', '#a55eea', '#26de81', '#fd9644', '#45aaf2'];
+            // Only keep clusters with 2+ connected nodes
+            connectedClusters = clusters.filter(c => c.length > 1);
+            const html = connectedClusters.map((cluster, i) => {
+                const nodes = cluster.map(id => nodesData.find(n => n.id === id));
+                const names = nodes.slice(0, 2).map(n => n.label).join(', ');
+                const more = nodes.length > 2 ? ' +' + (nodes.length - 2) : '';
+                return '<div class="category-item" data-cluster="' + i + '"><div class="category-name"><div class="cluster-color" style="background:' + colors[i % colors.length] + '"></div><span>' + names + more + '</span></div><span class="category-count">' + cluster.length + '</span></div>';
+            }).join('');
+            document.getElementById('cluster-list').innerHTML = html || '<p style="color:#666;font-size:12px;">Increase threshold to see clusters</p>';
+        }
+
+        function filterByLanguage(lang) {
+            currentFilter = { type: 'language', value: lang };
+            cy.elements().removeClass('faded highlighted');
+            const matches = cy.nodes().filter(n => n.data('language') === lang);
+            cy.elements().not(matches).not(matches.connectedEdges()).addClass('faded');
+            matches.addClass('highlighted');
+        }
+
+        function filterByType(type) {
+            currentFilter = { type: 'type', value: type };
+            cy.elements().removeClass('faded highlighted');
+            const matches = cy.nodes().filter(n => n.data('category') === type);
+            cy.elements().not(matches).not(matches.connectedEdges()).addClass('faded');
+            matches.addClass('highlighted');
+        }
+
+        function filterByCluster(index) {
+            currentFilter = { type: 'cluster', value: index };
+            cy.elements().removeClass('faded highlighted');
+            // Use connectedClusters (only clusters with 2+ nodes)
+            const ids = connectedClusters[index];
+            if (!ids) return;
+            const matches = cy.nodes().filter(n => ids.includes(n.id()));
+            cy.elements().not(matches).not(matches.connectedEdges()).addClass('faded');
+            matches.addClass('highlighted');
+        }
+
+        function clearFilter() {
+            currentFilter = { type: null, value: null };
+            cy.elements().removeClass('faded highlighted');
+            document.querySelectorAll('.category-item').forEach(el => el.classList.remove('active'));
+        }
+
+        function reapplyFilter() {
+            if (!currentFilter.type) return;
+            if (currentFilter.type === 'language') filterByLanguage(currentFilter.value);
+            else if (currentFilter.type === 'type') filterByType(currentFilter.value);
+            else if (currentFilter.type === 'cluster') filterByCluster(currentFilter.value);
+        }
+
+        function showDownloadModal() {
+            let nodes;
+            if (currentFilter.type === 'cluster') nodes = connectedClusters[currentFilter.value].map(id => nodesData.find(n => n.id === id));
+            else if (currentFilter.type === 'language') nodes = nodesData.filter(n => n.language === currentFilter.value);
+            else if (currentFilter.type === 'type') nodes = nodesData.filter(n => categorizeProject(n) === currentFilter.value);
+            else {
+                const h = cy.nodes('.highlighted');
+                nodes = h.length > 0 ? h.map(n => n.data()) : nodesData;
+            }
+            document.getElementById('download-list').innerHTML = nodes.map(n =>
+                '<div class="download-item"><input type="checkbox" value="' + n.url + '" checked><div class="download-info"><div class="download-name">' + n.label + '</div><div class="download-meta">' + n.language + ' | ' + n.stars + ' stars</div></div></div>'
+            ).join('');
+            document.getElementById('download-modal').classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+
+            // Tab buttons
+            document.getElementById('tab-btn-controls').addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('panel-controls').classList.add('active');
+            });
+            document.getElementById('tab-btn-categories').addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('panel-categories').classList.add('active');
+            });
+            document.getElementById('tab-btn-clusters').addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('panel-clusters').classList.add('active');
+            });
+
+            // Category clicks
+            document.getElementById('language-categories').addEventListener('click', function(e) {
+                const item = e.target.closest('.category-item');
+                if (item) filterByLanguage(item.dataset.lang);
+            });
+            document.getElementById('type-categories').addEventListener('click', function(e) {
+                const item = e.target.closest('.category-item');
+                if (item) filterByType(item.dataset.type);
+            });
+            document.getElementById('cluster-list').addEventListener('click', function(e) {
+                const item = e.target.closest('.category-item');
+                if (item) filterByCluster(parseInt(item.dataset.cluster));
+            });
+            document.getElementById('language-legend').addEventListener('click', function(e) {
+                const item = e.target.closest('.legend-item');
+                if (item) filterByLanguage(item.dataset.lang);
+            });
+
+            // Controls
+            document.getElementById('layout-select').addEventListener('change', function() {
+                const name = this.value;
+                let layout = name === 'concentric' ?
+                    { name: 'concentric', concentric: n => n.data('stars'), levelWidth: () => 2, animate: true } :
+                    { name, animate: true, nodeRepulsion: 15000 };
+                cy.layout(layout).run();
+            });
+
+            document.getElementById('threshold').addEventListener('input', function() {
+                currentThreshold = parseFloat(this.value);
+                document.getElementById('threshold-value').textContent = currentThreshold.toFixed(2);
+                updateGraph();
+            });
+
+            document.getElementById('knn-limit').addEventListener('input', function() {
+                knnLimit = parseInt(this.value);
+                document.getElementById('knn-value').textContent = knnLimit;
+                updateGraph();
+            });
+
+            document.getElementById('search').addEventListener('input', function() {
+                const q = this.value.toLowerCase();
+                if (!q) { cy.elements().removeClass('faded highlighted'); return; }
+                const matches = cy.nodes().filter(n =>
+                    n.data('label').toLowerCase().includes(q) ||
+                    n.data('full_name').toLowerCase().includes(q) ||
+                    (n.data('description') || '').toLowerCase().includes(q) ||
+                    (n.data('summary') || '').toLowerCase().includes(q)
+                );
+                cy.elements().addClass('faded');
+                matches.removeClass('faded').addClass('highlighted');
+                matches.neighborhood().removeClass('faded');
+            });
+
+            document.getElementById('btn-reset').addEventListener('click', function() {
+                cy.fit(); clearFilter(); document.getElementById('search').value = '';
+            });
+            document.getElementById('btn-export').addEventListener('click', function() {
+                const png = cy.png({ output: 'blob', bg: '#1a1a2e', scale: 2 });
+                const link = document.createElement('a'); link.href = URL.createObjectURL(png);
+                link.download = 'claude-md-graph.png'; link.click();
+            });
+            document.getElementById('btn-download').addEventListener('click', showDownloadModal);
+            document.getElementById('btn-similar').addEventListener('click', function() {
+                if (!selectedNode) return;
+                const node = cy.getElementById(selectedNode.id);
+                const neighborhood = node.neighborhood().add(node);
+                cy.elements().addClass('faded'); neighborhood.removeClass('faded'); node.addClass('highlighted');
+            });
+            document.getElementById('btn-download-single').addEventListener('click', async function() {
+                if (!selectedNode) return;
+                // Open in new tab
+                window.open(selectedNode.url, '_blank');
+                // Also download the file
+                try {
+                    const rawUrl = selectedNode.url
+                        .replace('github.com', 'raw.githubusercontent.com')
+                        .replace('/blob/', '/');
+                    const response = await fetch(rawUrl);
+                    if (response.ok) {
+                        const content = await response.text();
+                        const blob = new Blob([content], { type: 'text/markdown' });
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        link.download = selectedNode.label + '-CLAUDE.md';
+                        link.click();
+                    }
+                } catch (e) { console.log('Download failed, opened in new tab instead'); }
+            });
+            document.getElementById('btn-clear-lang').addEventListener('click', clearFilter);
+            document.getElementById('btn-clear-cluster').addEventListener('click', clearFilter);
+
+            // Modal
+            document.getElementById('btn-close-modal').addEventListener('click', function() { document.getElementById('download-modal').classList.remove('active'); });
+            document.getElementById('btn-cancel-modal').addEventListener('click', function() { document.getElementById('download-modal').classList.remove('active'); });
+            document.getElementById('btn-select-all').addEventListener('click', function() {
+                document.querySelectorAll('#download-list input[type="checkbox"]').forEach(cb => cb.checked = true);
+            });
+            document.getElementById('btn-download-selected').addEventListener('click', function() {
+                const urls = Array.from(document.querySelectorAll('#download-list input[type="checkbox"]:checked')).map(cb => cb.value);
+                if (urls.length === 0) { alert('No files selected'); return; }
+                if (urls.length <= 5) urls.forEach(url => window.open(url, '_blank'));
+                else {
+                    const blob = new Blob([urls.join('\n')], { type: 'text/plain' });
+                    const link = document.createElement('a'); link.href = URL.createObjectURL(blob);
+                    link.download = 'claude-md-urls.txt'; link.click();
+                    alert(urls.length + ' URLs saved to file.');
+                }
+                document.getElementById('download-modal').classList.remove('active');
+            });
         });
-        document.getElementById('search').addEventListener('input', function() {
-            const q = this.value.toLowerCase();
-            if (!q) { cy.elements().removeClass('faded'); return; }
-            const matches = cy.nodes().filter(n => n.data('label').toLowerCase().includes(q) || n.data('full_name').toLowerCase().includes(q));
-            cy.elements().addClass('faded');
-            matches.removeClass('faded');
-            matches.neighborhood().removeClass('faded');
-        });
-        function resetView() { cy.fit(); cy.elements().removeClass('faded'); document.getElementById('search').value = ''; }
-        function exportPNG() { const png = cy.png({ output: 'blob', bg: '#1a1a2e', scale: 2 }); const link = document.createElement('a'); link.href = URL.createObjectURL(png); link.download = 'claude-md-graph.png'; link.click(); }
+    })();
     </script>
 </body>
 </html>
