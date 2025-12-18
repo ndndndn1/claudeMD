@@ -70,7 +70,8 @@
         .tab-btn.active { background: #4ecdc4; color: #1a1a2e; }
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
-        .loading { text-align: center; padding: 50px; color: #888; }
+        .loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #888; z-index: 10; }
+        #cy { position: relative; }
         .optimization-note { font-size: 11px; color: #666; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 5px; margin-top: 10px; }
         @media (max-width: 768px) { .container { flex-direction: column; } .sidebar { width: 100%; height: auto; max-height: 300px; } #cy { height: 60vh; } }
     </style>
@@ -85,7 +86,7 @@
         </div>
     </div>
     <div class="container">
-        <div id="cy"><div class="loading">Loading graph data...</div></div>
+        <div id="cy"><div class="loading" id="loading-text">Loading graph data...</div></div>
         <div class="sidebar">
             <div class="tabs">
                 <button class="tab-btn active" id="tab-btn-controls">Controls</button>
@@ -316,6 +317,10 @@
         }
 
         function initGraph() {
+            // Remove loading text
+            const loadingEl = document.getElementById('loading-text');
+            if (loadingEl) loadingEl.remove();
+
             const { nodes, edges, edgeCount } = createElements(currentThreshold, knnLimit);
             document.getElementById('stat-edges').textContent = edgeCount;
 
@@ -566,8 +571,25 @@
                 const neighborhood = node.neighborhood().add(node);
                 cy.elements().addClass('faded'); neighborhood.removeClass('faded'); node.addClass('highlighted');
             });
-            document.getElementById('btn-download-single').addEventListener('click', function() {
-                if (selectedNode) window.open(selectedNode.url, '_blank');
+            document.getElementById('btn-download-single').addEventListener('click', async function() {
+                if (!selectedNode) return;
+                // Open in new tab
+                window.open(selectedNode.url, '_blank');
+                // Also download the file
+                try {
+                    const rawUrl = selectedNode.url
+                        .replace('github.com', 'raw.githubusercontent.com')
+                        .replace('/blob/', '/');
+                    const response = await fetch(rawUrl);
+                    if (response.ok) {
+                        const content = await response.text();
+                        const blob = new Blob([content], { type: 'text/markdown' });
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        link.download = selectedNode.label + '-CLAUDE.md';
+                        link.click();
+                    }
+                } catch (e) { console.log('Download failed, opened in new tab instead'); }
             });
             document.getElementById('btn-clear-lang').addEventListener('click', clearFilter);
             document.getElementById('btn-clear-cluster').addEventListener('click', clearFilter);
