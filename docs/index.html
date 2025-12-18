@@ -7,574 +7,156 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.27.0/cytoscape.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/cytoscape-fcose@2.2.0/cytoscape-fcose.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            min-height: 100vh;
-            color: #fff;
-        }
-        .header {
-            padding: 20px;
-            background: rgba(0,0,0,0.3);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .header h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        .stats {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            font-size: 14px;
-            color: #aaa;
-        }
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .stat-value {
-            color: #4ecdc4;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        .container {
-            display: flex;
-            height: calc(100vh - 100px);
-        }
-        #cy {
-            flex: 1;
-            background: transparent;
-        }
-        .sidebar {
-            width: 350px;
-            background: rgba(0,0,0,0.3);
-            border-left: 1px solid rgba(255,255,255,0.1);
-            padding: 20px;
-            overflow-y: auto;
-        }
-        .sidebar h2 {
-            font-size: 16px;
-            color: #4ecdc4;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .node-info {
-            display: none;
-        }
-        .node-info.active {
-            display: block;
-        }
-        .info-label {
-            font-size: 12px;
-            color: #888;
-            margin-top: 15px;
-            margin-bottom: 5px;
-        }
-        .info-value {
-            font-size: 14px;
-            color: #fff;
-            word-break: break-word;
-        }
-        .info-value a {
-            color: #4ecdc4;
-            text-decoration: none;
-        }
-        .info-value a:hover {
-            text-decoration: underline;
-        }
-        .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin-top: 5px;
-        }
-        .tag {
-            background: rgba(78, 205, 196, 0.2);
-            color: #4ecdc4;
-            padding: 3px 8px;
-            border-radius: 10px;
-            font-size: 11px;
-        }
-        .controls {
-            margin-bottom: 20px;
-        }
-        .control-group {
-            margin-bottom: 15px;
-        }
-        .control-label {
-            font-size: 12px;
-            color: #888;
-            margin-bottom: 5px;
-        }
-        select, input[type="range"] {
-            width: 100%;
-            padding: 8px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 5px;
-            color: #fff;
-            font-size: 13px;
-        }
-        input[type="range"] {
-            -webkit-appearance: none;
-            height: 6px;
-            padding: 0;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            background: #4ecdc4;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-        .btn {
-            background: #4ecdc4;
-            color: #1a1a2e;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 13px;
-            margin-right: 8px;
-            margin-bottom: 8px;
-        }
-        .btn:hover {
-            background: #3db9b1;
-        }
-        .legend {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 8px;
-        }
-        .legend-title {
-            font-size: 12px;
-            color: #888;
-            margin-bottom: 10px;
-        }
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 5px;
-            font-size: 12px;
-        }
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-        .placeholder {
-            color: #666;
-            text-align: center;
-            padding: 40px 20px;
-        }
-        .search-box {
-            margin-bottom: 15px;
-        }
-        .search-box input {
-            width: 100%;
-            padding: 10px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 5px;
-            color: #fff;
-            font-size: 13px;
-        }
-        .search-box input::placeholder {
-            color: #666;
-        }
-        .footer {
-            font-size: 11px;
-            color: #666;
-            margin-top: 20px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-                height: auto;
-                max-height: 300px;
-            }
-            #cy {
-                height: 60vh;
-            }
-            .stats {
-                flex-direction: column;
-                gap: 5px;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); min-height: 100vh; color: #fff; }
+        .header { padding: 20px; background: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .header h1 { font-size: 24px; margin-bottom: 10px; }
+        .stats { display: flex; flex-wrap: wrap; gap: 20px; font-size: 14px; color: #aaa; }
+        .stat-item { display: flex; align-items: center; gap: 8px; }
+        .stat-value { color: #4ecdc4; font-weight: bold; font-size: 18px; }
+        .container { display: flex; height: calc(100vh - 100px); }
+        #cy { flex: 1; background: transparent; }
+        .sidebar { width: 350px; background: rgba(0,0,0,0.3); border-left: 1px solid rgba(255,255,255,0.1); padding: 20px; overflow-y: auto; }
+        .sidebar h2 { font-size: 16px; color: #4ecdc4; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .node-info { display: none; }
+        .node-info.active { display: block; }
+        .info-label { font-size: 12px; color: #888; margin-top: 15px; margin-bottom: 5px; }
+        .info-value { font-size: 14px; color: #fff; word-break: break-word; }
+        .info-value a { color: #4ecdc4; text-decoration: none; }
+        .info-value a:hover { text-decoration: underline; }
+        .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+        .tag { background: rgba(78, 205, 196, 0.2); color: #4ecdc4; padding: 3px 8px; border-radius: 10px; font-size: 11px; }
+        .controls { margin-bottom: 20px; }
+        .control-group { margin-bottom: 15px; }
+        .control-label { font-size: 12px; color: #888; margin-bottom: 5px; }
+        select, input[type="range"] { width: 100%; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff; font-size: 13px; }
+        .btn { background: #4ecdc4; color: #1a1a2e; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 13px; margin-right: 8px; margin-bottom: 8px; }
+        .btn:hover { background: #3db9b1; }
+        .legend { margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px; }
+        .legend-title { font-size: 12px; color: #888; margin-bottom: 10px; }
+        .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; font-size: 12px; }
+        .legend-color { width: 12px; height: 12px; border-radius: 50%; }
+        .placeholder { color: #666; text-align: center; padding: 40px 20px; }
+        .search-box { margin-bottom: 15px; }
+        .search-box input { width: 100%; padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff; font-size: 13px; }
+        .footer { font-size: 11px; color: #666; margin-top: 20px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); }
+        @media (max-width: 768px) { .container { flex-direction: column; } .sidebar { width: 100%; height: auto; max-height: 300px; } #cy { height: 60vh; } }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>🔗 CLAUDE.md Relationship Graph</h1>
         <div class="stats">
-            <div class="stat-item">
-                <span>Repositories:</span>
-                <span class="stat-value">50</span>
-            </div>
-            <div class="stat-item">
-                <span>Connections:</span>
-                <span class="stat-value">14</span>
-            </div>
-            <div class="stat-item">
-                <span>Total Stars:</span>
-                <span class="stat-value">1,585</span>
-            </div>
-            <div class="stat-item">
-                <span>Updated:</span>
-                <span class="stat-value" style="font-size:14px">2025-12-17 23:57</span>
-            </div>
+            <div class="stat-item"><span>Repositories:</span><span class="stat-value">50</span></div>
+            <div class="stat-item"><span>Connections:</span><span class="stat-value">58</span></div>
+            <div class="stat-item"><span>Total Stars:</span><span class="stat-value">1,585</span></div>
+            <div class="stat-item"><span>Updated:</span><span class="stat-value" style="font-size:14px">2025-12-18 00:35</span></div>
         </div>
     </div>
-
     <div class="container">
         <div id="cy"></div>
         <div class="sidebar">
             <div class="controls">
                 <h2>⚙️ Controls</h2>
-
-                <div class="search-box">
-                    <input type="text" id="search" placeholder="Search repositories...">
-                </div>
-
+                <div class="search-box"><input type="text" id="search" placeholder="Search repositories..."></div>
                 <div class="control-group">
                     <div class="control-label">Layout</div>
                     <select id="layout-select">
-                        <option value="fcose">Force-Directed (fcose)</option>
+                        <option value="fcose">Force-Directed</option>
                         <option value="circle">Circle</option>
-                        <option value="concentric">Concentric (by stars)</option>
+                        <option value="concentric">Concentric</option>
                         <option value="grid">Grid</option>
                     </select>
                 </div>
-
                 <div class="control-group">
-                    <div class="control-label">Edge Threshold: <span id="threshold-value">0.15</span></div>
-                    <input type="range" id="threshold" min="0.05" max="0.8" step="0.05" value="0.15">
+                    <div class="control-label">Edge Threshold: <span id="threshold-value">0.10</span></div>
+                    <input type="range" id="threshold" min="0.05" max="0.8" step="0.05" value="0.1">
                 </div>
-
                 <div style="margin-top: 15px;">
-                    <button class="btn" onclick="resetView()">🔄 Reset View</button>
-                    <button class="btn" onclick="exportPNG()">📷 Export PNG</button>
+                    <button class="btn" onclick="resetView()">🔄 Reset</button>
+                    <button class="btn" onclick="exportPNG()">📷 Export</button>
                 </div>
             </div>
-
             <div class="legend">
                 <div class="legend-title">Node Size = Stars</div>
-                <div class="legend-title">Edge Width = Similarity</div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #ff6b6b;"></div>
-                    <span>High stars (1000+)</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #feca57;"></div>
-                    <span>Medium stars (100-999)</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #4ecdc4;"></div>
-                    <span>Low stars (&lt;100)</span>
-                </div>
+                <div class="legend-item"><div class="legend-color" style="background: #ff6b6b;"></div><span>1000+ stars</span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #feca57;"></div><span>100-999 stars</span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #4ecdc4;"></div><span>&lt;100 stars</span></div>
             </div>
-
             <div id="node-info" class="node-info">
-                <h2>📋 Repository Info</h2>
-                <div class="info-label">Name</div>
-                <div class="info-value" id="info-name"></div>
-                <div class="info-label">Stars</div>
-                <div class="info-value" id="info-stars"></div>
-                <div class="info-label">Language</div>
-                <div class="info-value" id="info-language"></div>
-                <div class="info-label">Description</div>
-                <div class="info-value" id="info-description"></div>
-                <div class="info-label">Topics</div>
-                <div class="tags" id="info-topics"></div>
-                <div class="info-label">Keywords</div>
-                <div class="tags" id="info-keywords"></div>
-                <div class="info-label">Summary</div>
-                <div class="info-value" id="info-summary"></div>
+                <h2>📋 Repository</h2>
+                <div class="info-label">Name</div><div class="info-value" id="info-name"></div>
+                <div class="info-label">Stars</div><div class="info-value" id="info-stars"></div>
+                <div class="info-label">Language</div><div class="info-value" id="info-language"></div>
+                <div class="info-label">Description</div><div class="info-value" id="info-description"></div>
+                <div class="info-label">Topics</div><div class="tags" id="info-topics"></div>
+                <div class="info-label">Keywords</div><div class="tags" id="info-keywords"></div>
                 <div class="info-label">Links</div>
-                <div class="info-value">
-                    <a id="link-repo" href="#" target="_blank">📁 Repository</a> |
-                    <a id="link-file" href="#" target="_blank">📄 CLAUDE.md</a>
-                </div>
+                <div class="info-value"><a id="link-repo" href="#" target="_blank">📁 Repo</a> | <a id="link-file" href="#" target="_blank">📄 CLAUDE.md</a></div>
             </div>
-
-            <div class="placeholder" id="placeholder">
-                Click on a node to see details
-            </div>
-
-            <div class="footer">
-                Generated by Claude MD Analyzer<br>
-                Data stored as JSON for GitHub Pages
-            </div>
+            <div class="placeholder" id="placeholder">Click a node</div>
+            <div class="footer">KùzuDB Storage | MCP Server Ready</div>
         </div>
     </div>
-
     <script>
-        // Data
-        const nodesData = [{"id": "node_0", "label": "QuantumOptics.jl", "full_name": "qojulia/QuantumOptics.jl", "stars": 595, "description": "Library for the numerical simulation of closed as well as open quantum systems.", "url": "https://github.com/qojulia/QuantumOptics.jl/blob/main/CLAUDE.md", "repo_url": "https://github.com/qojulia/QuantumOptics.jl", "language": "Julia", "topics": ["julia", "quantum", "quantum-mechanics", "quantum-optics", "quantum-toolbox"], "keywords": ["quantumopticsjl", "project structure", "development commands", "running tests", "run all tests"], "size": 5753, "summary": "QuantumOptics.jl is a numerical framework written in Julia that makes it easy to simulate various kinds of quantum systems. It builds on QuantumOpticsBase.jl and provides dynamic solvers for time evol..."}, {"id": "node_1", "label": "querydsl", "full_name": "OpenFeign/querydsl", "stars": 542, "description": "Unified Queries for Java", "url": "https://github.com/OpenFeign/querydsl/blob/main/CLAUDE.md", "repo_url": "https://github.com/OpenFeign/querydsl", "language": "Java", "topics": [], "keywords": ["claudemd", "overview", "build commands", "basic build", "quick build skip tests and checks"], "size": 4858, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_2", "label": "chatkit-link", "full_name": "exiao/chatkit-link", "stars": 1, "description": "Powers chatkit.link. Try out workflows built with OpenAI's new agent builder.", "url": "https://github.com/exiao/chatkit-link/blob/main/claude.md", "repo_url": "https://github.com/exiao/chatkit-link", "language": "JavaScript", "topics": ["chatkit", "openai"], "keywords": ["chatkit link development log", "overview", "tech stack", "key features", "1 sidebar workflow management"], "size": 7465, "summary": "ChatKit Link is a web application that allows users to demo their ChatKit workflows by providing a workflow ID and OpenAI API key. Built with FastAPI backend and Vite + React frontend."}, {"id": "node_3", "label": "pixel-banner", "full_name": "jparkerweb/pixel-banner", "stars": 162, "description": "\ud83d\udea9 Enhance your Obsidian notes with customizable banner images, including AI-generated designs and a curated store of downloadable banners. Transform your workspace with visually stunning headers that add context, improve aesthetics, and take your note-taking beyond the ordinary.", "url": "https://github.com/jparkerweb/pixel-banner/blob/main/CLAUDE.md", "repo_url": "https://github.com/jparkerweb/pixel-banner", "language": "JavaScript", "topics": ["obsidian", "pexels-api", "plugin", "banner", "banner-image"], "keywords": ["claudemd", "overview", "essential commands", "development", "install dependencies"], "size": 9386, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_4", "label": "kugelpos-backend", "full_name": "kugel-masa/kugelpos-backend", "stars": 4, "description": "Kugel POS Backend Services (API Services for POS Application)", "url": "https://github.com/kugel-masa/kugelpos-backend/blob/main/CLAUDE.md", "repo_url": "https://github.com/kugel-masa/kugelpos-backend", "language": "Python", "topics": [], "keywords": ["claudemd", "project overview", "architecture", "core services", "key technologies"], "size": 15204, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_5", "label": "si-systems-v5", "full_name": "daffy0208/si-systems-v5", "stars": 0, "description": "Enhanced AI Interaction Model", "url": "https://github.com/daffy0208/si-systems-v5/blob/main/claude.md", "repo_url": "https://github.com/daffy0208/si-systems-v5", "language": "TypeScript", "topics": [], "keywords": ["critical archonfirst rule  read this first", "archon integration  workflow", "core archon workflow principles", "the golden rule taskdriven development with archon", "project scenarios  initialization"], "size": 25750, "summary": "BEFORE doing ANYTHING else, when you see ANY task management scenario: 1. STOP and check if Archon MCP server is available 2. Use Archon task management as PRIMARY system 3. TodoWrite is ONLY for pers..."}, {"id": "node_6", "label": "travel-app", "full_name": "markhodierne/travel-app", "stars": 0, "description": "", "url": "https://github.com/markhodierne/travel-app/blob/main/CLAUDE.md", "repo_url": "https://github.com/markhodierne/travel-app", "language": "HTML", "topics": [], "keywords": ["project travel planning application cl", "project overview clovw", "tech stack cltech", "code style  conventions clstyle", "importmodule standards clstyleimp"], "size": 4595, "summary": "**IMPORTANT FOR CLAUDE: Reference this file before implementing anything**"}, {"id": "node_7", "label": "FileManager", "full_name": "oferhr/FileManager", "stars": 0, "description": "", "url": "https://github.com/oferhr/FileManager/blob/main/Claude.md", "repo_url": "https://github.com/oferhr/FileManager", "language": "C#", "topics": [], "keywords": ["filemanager", "project overview", "technology stack", "project structure", "key features"], "size": 5419, "summary": "A Windows Forms application for managing files with integrated Microsoft Office automation capabilities."}, {"id": "node_8", "label": "Farmfolio", "full_name": "chimexy8alluvial/Farmfolio", "stars": 0, "description": "Connect producers with conscious consumers through digital storytelling and marketplace discovery.", "url": "https://github.com/chimexy8alluvial/Farmfolio/blob/main/CLAUDE.md", "repo_url": "https://github.com/chimexy8alluvial/Farmfolio", "language": "JavaScript", "topics": [], "keywords": ["claudemd", "project overview", "development commands", "architecture overview", "core stack"], "size": 8146, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_9", "label": "hkdigital--lib-core", "full_name": "HKdigital/hkdigital--lib-core", "stars": 1, "description": "Base library that we use to power up our Sveltekit projects", "url": "https://github.com/HKdigital/hkdigital--lib-core/blob/main/claude.md", "repo_url": "https://github.com/HKdigital/hkdigital--lib-core", "language": "JavaScript", "topics": [], "keywords": ["sveltekit library", "project overview", "architecture  structure", "key technical decisions", "component patterns"], "size": 14194, "summary": "This is a modern SvelteKit library built with Svelte 5 and Skeleton.dev v3 components. The project emphasizes accessibility, clean code standards, and modern JavaScript patterns."}, {"id": "node_10", "label": "video-agent-claude-skill", "full_name": "donghaozhang/video-agent-claude-skill", "stars": 37, "description": "First Python Package for Video Cli Generation and Processing", "url": "https://github.com/donghaozhang/video-agent-claude-skill/blob/main/CLAUDE.md", "repo_url": "https://github.com/donghaozhang/video-agent-claude-skill", "language": "Python", "topics": [], "keywords": ["claudemd", "git workflow commands", "project overview", "ai content pipeline package", "environment setup"], "size": 11956, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_11", "label": "dantanner", "full_name": "dtanner/dantanner", "stars": 0, "description": "personal website", "url": "https://github.com/dtanner/dantanner/blob/main/CLAUDE.md", "repo_url": "https://github.com/dtanner/dantanner", "language": "Nunjucks", "topics": [], "keywords": ["claudemd", "project overview", "development commands", "build and development", "deployment"], "size": 2647, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_12", "label": "agentmotion", "full_name": "osobh/agentmotion", "stars": 0, "description": "Remove Control Agents", "url": "https://github.com/osobh/agentmotion/blob/main/claude.md", "repo_url": "https://github.com/osobh/agentmotion", "language": "TypeScript", "topics": [], "keywords": ["project agentmotion  universal remote control for ai coding assistants", "workflow", "update triggers", "key project commands", "mobile app react native expo"], "size": 8061, "summary": "AgentMotion is a mobile-first remote control system for AI coding assistants that enables developers to respond to AI prompts from anywhere. Built with React Native Expo for mobile, Python for both de..."}, {"id": "node_13", "label": "solana-sniper-bot", "full_name": "omkom/solana-sniper-bot", "stars": 2, "description": "", "url": "https://github.com/omkom/solana-sniper-bot/blob/main/CLAUDE.md", "repo_url": "https://github.com/omkom/solana-sniper-bot", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "important security notice", "core objective", "technical stack  standards", "language  typing"], "size": 33522, "summary": "This file provides comprehensive guidance to Claude Code (claude.ai/code) when working with this hyper-efficient token sniping tool."}, {"id": "node_14", "label": "gitstar_poller", "full_name": "iskng/gitstar_poller", "stars": 0, "description": "", "url": "https://github.com/iskng/gitstar_poller/blob/main/CLAUDE.md", "repo_url": "https://github.com/iskng/gitstar_poller", "language": "Rust", "topics": [], "keywords": ["claudemd", "development commands", "architecture overview", "project structure", "key features"], "size": 13023, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_15", "label": "vendoreval4", "full_name": "adamjdavidson/vendoreval4", "stars": 0, "description": "", "url": "https://github.com/adamjdavidson/vendoreval4/blob/main/claude.md", "repo_url": "https://github.com/adamjdavidson/vendoreval4", "language": "TypeScript", "topics": [], "keywords": ["project context vendoreval3", "project structure", "communication guidelines", "be direct and honest", "mandatory message start protocol"], "size": 25563, "summary": "This project uses Spec-Driven Development with Beads for issue tracking. Follow the workflows and guidelines defined below."}, {"id": "node_16", "label": "KI-SYSTEM", "full_name": "SHP-ART/KI-SYSTEM", "stars": 0, "description": "Selbstlernendes Smart Home System mit Web-Dashboard, Badezimmer-Automatisierung und Machine Learning. Unterst\u00fctzt Home Assistant & Homey Pro.", "url": "https://github.com/SHP-ART/KI-SYSTEM/blob/main/CLAUDE.md", "repo_url": "https://github.com/SHP-ART/KI-SYSTEM", "language": "Python", "topics": [], "keywords": ["claudemd", "project overview", "development commands", "environment setup", "create and activate virtual environment"], "size": 16406, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_17", "label": "verteilte", "full_name": "sheaksadi/verteilte", "stars": 0, "description": "", "url": "https://github.com/sheaksadi/verteilte/blob/main/claude.md", "repo_url": "https://github.com/sheaksadi/verteilte", "language": "Vue", "topics": [], "keywords": ["verteilte  german vocabulary learning app", "project structure", "tech stack", "frontend", "backend"], "size": 12349, "summary": "A spaced repetition flashcard app for learning German vocabulary, built with Tauri 2, Vue 3, and TypeScript."}, {"id": "node_18", "label": "vim-oracle", "full_name": "misterbuckley/vim-oracle", "stars": 0, "description": "Seamless AI assistance without leaving vim", "url": "https://github.com/misterbuckley/vim-oracle/blob/main/CLAUDE.md", "repo_url": "https://github.com/misterbuckley/vim-oracle", "language": "Vim Script", "topics": [], "keywords": ["vimoracle development guide", "testing", "running tests", "test structure", "adding new tests"], "size": 4486, "summary": "To run the basic functionality tests:"}, {"id": "node_19", "label": "etradeTools", "full_name": "trezero/etradeTools", "stars": 0, "description": "", "url": "https://github.com/trezero/etradeTools/blob/main/CLAUDE.md", "repo_url": "https://github.com/trezero/etradeTools", "language": "Python", "topics": [], "keywords": ["critical archonfirst rule  read this first", "archon integration  workflow", "core archon workflow principles", "the golden rule taskdriven development with archon", "project scenarios  initialization"], "size": 10997, "summary": "BEFORE doing ANYTHING else, when you see ANY task management scenario: 1. STOP and check if Archon MCP server is available 2. Use Archon task management as PRIMARY system 3. TodoWrite is ONLY for pers..."}, {"id": "node_20", "label": "terminator_task_manager", "full_name": "stibiums/terminator_task_manager", "stars": 0, "description": "", "url": "https://github.com/stibiums/terminator_task_manager/blob/main/claude.md", "repo_url": "https://github.com/stibiums/terminator_task_manager", "language": "Rust", "topics": [], "keywords": ["claude code \u5f00\u53d1\u65e5\u5fd7", "\u9879\u76ee\u4fe1\u606f", "\u5f00\u53d1\u8fc7\u7a0b", "\u7b2c\u4e00\u9636\u6bb5\u9700\u6c42\u5206\u6790\u4e0e\u67b6\u6784\u8bbe\u8ba1 30\u5206\u949f", "\u7b2c\u4e8c\u9636\u6bb5\u9879\u76ee\u521d\u59cb\u5316 15\u5206\u949f"], "size": 8309, "summary": "\u672c\u9879\u76ee\u4f7f\u7528 **Claude Code** \u8f85\u52a9\u5f00\u53d1\u5b8c\u6210\u3002"}, {"id": "node_21", "label": "report-generator-agent", "full_name": "ayoubben18/report-generator-agent", "stars": 1, "description": "", "url": "https://github.com/ayoubben18/report-generator-agent/blob/main/CLAUDE.md", "repo_url": "https://github.com/ayoubben18/report-generator-agent", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "development commands", "install dependencies always use pnpm", "start development server", "start convex backend required for realtime features"], "size": 3411, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_22", "label": "Noetic2.0", "full_name": "myspacecornelius/Noetic2.0", "stars": 0, "description": "", "url": "https://github.com/myspacecornelius/Noetic2.0/blob/main/claude.md", "repo_url": "https://github.com/myspacecornelius/Noetic2.0", "language": "TypeScript", "topics": [], "keywords": ["claudemd  engineering guide", "project overview", "runbook", "dev server troubleshooting", "security  dependency issues"], "size": 7169, "summary": "- Stack: Next.js 13 (pages router) + Nextra v3 (docs theme) + TypeScript - Purpose: Investor\u2011ready docs with charts and a \"Thesis Builder\" for exportable presentations - Branding: Noetic 2.0 \u2014 profess..."}, {"id": "node_23", "label": "ukkin", "full_name": "Skelf-Research/ukkin", "stars": 1, "description": "AI-Agent mobile web browser for everyone", "url": "https://github.com/Skelf-Research/ukkin/blob/main/CLAUDE.md", "repo_url": "https://github.com/Skelf-Research/ukkin", "language": "Dart", "topics": ["agent", "flutter", "generative-ai", "mobile", "webbrowser"], "keywords": ["claudemd", "development commands", "core flutter commands", "testing and quality", "platformspecific development"], "size": 6441, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_24", "label": "spectralcanvas-pro-v2", "full_name": "1hoookkk/spectralcanvas-pro-v2", "stars": 0, "description": "Real-time spectral synthesis plugin with paint-to-audio interface - JUCE 8 compatible", "url": "https://github.com/1hoookkk/spectralcanvas-pro-v2/blob/main/CLAUDE.md", "repo_url": "https://github.com/1hoookkk/spectralcanvas-pro-v2", "language": "C++", "topics": [], "keywords": ["claudemd", "project overview", "nonnegotiable rules", "architecture overview", "key constants  data structures"], "size": 7940, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_25", "label": "-Tower-of-Infinity-PT", "full_name": "KORWOT/-Tower-of-Infinity-PT", "stars": 0, "description": "\uac8c\uc784\ud504\ub85c\ud1a0\ud0c0\uc785", "url": "https://github.com/KORWOT/-Tower-of-Infinity-PT/blob/main/CLAUDE.md", "repo_url": "https://github.com/KORWOT/-Tower-of-Infinity-PT", "language": "C#", "topics": [], "keywords": ["claudemd", "project overview", "development commands", "architecture  code structure", "core architecture pattern"], "size": 4178, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_26", "label": "FlowQ", "full_name": "dev-parvej/FlowQ", "stars": 0, "description": "", "url": "https://github.com/dev-parvej/FlowQ/blob/main/CLAUDE.md", "repo_url": "https://github.com/dev-parvej/FlowQ", "language": "PHP", "topics": [], "keywords": ["wordpress dynamic survey plugin  current implementation", "whats currently implemented", "core plugin structure", "question system", "answer system"], "size": 14201, "summary": "- WordPress plugin with proper activation/deactivation hooks - Database migration system with custom tables - Internationalization support (text domain: 'flowq') - Security measures (nonce verificatio..."}, {"id": "node_27", "label": "heavens7", "full_name": "daviguides/heavens7", "stars": 0, "description": "Python MCP server for code docs, inspired by Context7 \u2014 fastmcp + Pydantic v2.", "url": "https://github.com/daviguides/heavens7/blob/main/Claude.md", "repo_url": "https://github.com/daviguides/heavens7", "language": "Python", "topics": [], "keywords": ["heavens7 mcp python", "overview", "motivation", "coding standards", "summary of main rules"], "size": 3204, "summary": "**Heavens7** is a Python-based implementation of a Model Context Protocol (MCP) server designed to connect with the [Context7](https://github.com/upstash/context7) API. It begins as a faithful rewrite..."}, {"id": "node_28", "label": "DynamicShortlinks", "full_name": "thebenlamm/DynamicShortlinks", "stars": 0, "description": "Dynamic Shortlinks", "url": "https://github.com/thebenlamm/DynamicShortlinks/blob/main/CLAUDE.md", "repo_url": "https://github.com/thebenlamm/DynamicShortlinks", "language": "PHP", "topics": [], "keywords": ["claudemd", "project overview", "repository structure", "architecture", "wordpress plugin structure"], "size": 3510, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_29", "label": "formulario-SRT", "full_name": "thiagopvn/formulario-SRT", "stars": 0, "description": "", "url": "https://github.com/thiagopvn/formulario-SRT/blob/main/CLAUDE.md", "repo_url": "https://github.com/thiagopvn/formulario-SRT", "language": "JavaScript", "topics": [], "keywords": ["claudemd", "project overview", "architecture", "frontend structure", "key files"], "size": 4802, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_30", "label": "gojjo-mcp", "full_name": "hmesfin/gojjo-mcp", "stars": 0, "description": "", "url": "https://github.com/hmesfin/gojjo-mcp/blob/main/CLAUDE.md", "repo_url": "https://github.com/hmesfin/gojjo-mcp", "language": "Python", "topics": [], "keywords": ["gojjo django vue mcp documentation server", "overview", "problem solved", "technology stack covered", "django backend"], "size": 8976, "summary": "This project creates a custom Model Context Protocol (MCP) server that provides Claude Code with up-to-date documentation for a specific Django + Vue.js technology stack. The server automatically fetc..."}, {"id": "node_31", "label": "podcast-studio", "full_name": "mikkelkrogsholm/podcast-studio", "stars": 0, "description": "", "url": "https://github.com/mikkelkrogsholm/podcast-studio/blob/main/CLAUDE.md", "repo_url": "https://github.com/mikkelkrogsholm/podcast-studio", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "project overview", "architecture", "monorepo structure", "core technologies"], "size": 9408, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_32", "label": "SQL----", "full_name": "li195111/SQL----", "stars": 0, "description": "", "url": "https://github.com/li195111/SQL----/blob/main/CLAUDE.md", "repo_url": "https://github.com/li195111/SQL----", "language": "Jupyter Notebook", "topics": [], "keywords": ["qchoice ai collaboration guidelines for sql\u6559\u5b78\u6587\u4ef6\u5c08\u6848 claude version", "\u5c08\u6848\u6982\u8ff0 project overview", "\u67b6\u69cb architecture", "\u958b\u767c\u5de5\u4f5c\u6d41\u7a0b development workflow", "\u6838\u5fc3\u539f\u5247\u898f\u683c\u9a45\u52d5\u958b\u767c specificationdriven development"], "size": 9007, "summary": "- \u4f7f\u7528 `source ~/.zshrc` \u4f86\u8f09\u5165\u74b0\u5883\u8b8a\u6578 - \u4f7f\u7528 `conda activate fju` \u4f86\u555f\u52d5 Python \u74b0\u5883"}, {"id": "node_33", "label": "event-platform", "full_name": "xavierau/event-platform", "stars": 0, "description": "", "url": "https://github.com/xavierau/event-platform/blob/main/CLAUDE.md", "repo_url": "https://github.com/xavierau/event-platform", "language": "PHP", "topics": [], "keywords": ["claudemd", "development rules", "tdd with pest php", "critical always run tests after any code change", "run specific tests"], "size": 4862, "summary": "**Laravel 12 Event Platform** - DDD modular monolithic architecture for event management with organizers, venues, ticketing, bookings, and multilingual support."}, {"id": "node_34", "label": "intelibi", "full_name": "korallis/intelibi", "stars": 0, "description": "AI-Powered Analytics Platform - Transform your data into intelligent dashboards through natural language conversations", "url": "https://github.com/korallis/intelibi/blob/main/CLAUDE.md", "repo_url": "https://github.com/korallis/intelibi", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "project structure", "key directories", "architecture", "development commands"], "size": 2577, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_35", "label": "UniMixerServer", "full_name": "bezalel6/UniMixerServer", "stars": 0, "description": "", "url": "https://github.com/bezalel6/UniMixerServer/blob/main/CLAUDE.md", "repo_url": "https://github.com/bezalel6/UniMixerServer", "language": "C#", "topics": [], "keywords": ["claudemd", "project overview", "development commands", "building and running", "build the project"], "size": 6940, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_36", "label": "msg-rs", "full_name": "chainbound/msg-rs", "stars": 79, "description": "Messaging library for distributed systems built in Rust", "url": "https://github.com/chainbound/msg-rs/blob/main/CLAUDE.md", "repo_url": "https://github.com/chainbound/msg-rs", "language": "Rust", "topics": ["distributed-systems", "networking", "tokio", "rust"], "keywords": ["claudemd", "development commands", "build and test", "primary commands using just", "alternative cargo commands"], "size": 4138, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_37", "label": "Anime-Pok-mon", "full_name": "hewenyu/Anime-Pok-mon", "stars": 0, "description": "\u4e8c\u6b21\u5143\u5b9d\u53ef\u68a6\u5bf9\u6218", "url": "https://github.com/hewenyu/Anime-Pok-mon/blob/main/CLAUDE.md", "repo_url": "https://github.com/hewenyu/Anime-Pok-mon", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "project overview", "development environment setup", "common commands", "code quality"], "size": 5025, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_38", "label": "microblog-to-hugo", "full_name": "shawnyeager/microblog-to-hugo", "stars": 0, "description": "Python scripts to migrate and refactor content from Micro.blog to Hugo", "url": "https://github.com/shawnyeager/microblog-to-hugo/blob/main/CLAUDE.md", "repo_url": "https://github.com/shawnyeager/microblog-to-hugo", "language": "Python", "topics": [], "keywords": ["claudemd", "project overview", "architecture", "core migration pipeline", "script relationships"], "size": 5279, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_39", "label": "KGB", "full_name": "sudoxue/KGB", "stars": 0, "description": "kubernetes get brain", "url": "https://github.com/sudoxue/KGB/blob/main/CLAUDE.md", "repo_url": "https://github.com/sudoxue/KGB", "language": "Go", "topics": [], "keywords": ["kgb strategic development plan", "constitutional reading protocol", "core constitutional principles", "development journal system", "revolutionary documentation protocol"], "size": 13579, "summary": "*Strategic roadmap and technical guidance for AWACS/KORGI development*"}, {"id": "node_40", "label": "vespera-atelier", "full_name": "EchoingVesper/vespera-atelier", "stars": 3, "description": "Vespera Atelier: Intelligent platform for document-centric orchestration, task management, and creative workflows", "url": "https://github.com/EchoingVesper/vespera-atelier/blob/main/CLAUDE.md", "repo_url": "https://github.com/EchoingVesper/vespera-atelier", "language": "Python", "topics": [], "keywords": ["claudemd  vespera atelier monorepo", "monorepo structure", "working in the monorepo", "important automatic directory switching", "if you need monorepo root context be explicit"], "size": 24218, "summary": "This file provides guidance to Claude Code when working in the Vespera Atelier monorepo."}, {"id": "node_41", "label": "MultiRheoFlow", "full_name": "comphy-lab/MultiRheoFlow", "stars": 4, "description": "An extensible framework for multiphase flows with complex rheology, built on Basilisk C", "url": "https://github.com/comphy-lab/MultiRheoFlow/blob/main/CLAUDE.md", "repo_url": "https://github.com/comphy-lab/MultiRheoFlow", "language": "C", "topics": [], "keywords": ["viscoelastic3d development guidelines", "project structure", "some selected files inside basilisksrc", "project structure", "build  test commands"], "size": 4701, "summary": "\u251c-- `basilisk/src/`: Core Basilisk CFD library (reference only, do not modify) <- This contains the codebase for Basilisk C--a wrapper around C to do computational fluid dynamics. \u2502   \u251c\u2500\u2500 `navier-stok..."}, {"id": "node_42", "label": "artifex.ai-studio-pro", "full_name": "ChoonwooLim/artifex.ai-studio-pro", "stars": 0, "description": "", "url": "https://github.com/ChoonwooLim/artifex.ai-studio-pro/blob/main/claude.md", "repo_url": "https://github.com/ChoonwooLim/artifex.ai-studio-pro", "language": "HTML", "topics": [], "keywords": ["artifexai studio pro  \uc885\ud569 \ud504\ub85c\uc81d\ud2b8 \uac1c\ubc1c \uac00\uc774\ub4dc", "\ud504\ub85c\uc81d\ud2b8 \uac1c\uc694", "\ud575\uc2ec \uac00\uce58", "\ub0a0\uc9dc \ubc0f \uc2dc\uac04\ub300 \uc778\uc2dd", "\uc911\uc694 \uc815\ud655\ud55c \ub0a0\uc9dc \ud655\uc778"], "size": 21264, "summary": "**\ud504\ub85c\uc81d\ud2b8\uba85**: Artifex.AI Studio Pro **\ubc84\uc804**: 0.0.0 **\ud0c0\uc785**: AI \uae30\ubc18 \uba40\ud2f0\ubbf8\ub514\uc5b4 \ucf58\ud150\uce20 \uc0dd\uc131 \ud50c\ub7ab\ud3fc **\uae30\uc220 \uc2a4\ud0dd**: React 19 + TypeScript + Vite + Google Generative AI"}, {"id": "node_43", "label": "webhookmaster", "full_name": "awfixer-platform/webhookmaster", "stars": 0, "description": "", "url": "https://github.com/awfixer-platform/webhookmaster/blob/main/CLAUDE.md", "repo_url": "https://github.com/awfixer-platform/webhookmaster", "language": "Python", "topics": [], "keywords": [], "size": 9, "summary": "./LLM.md"}, {"id": "node_44", "label": "node-tree", "full_name": "ruchernchong/node-tree", "stars": 0, "description": "", "url": "https://github.com/ruchernchong/node-tree/blob/main/CLAUDE.md", "repo_url": "https://github.com/ruchernchong/node-tree", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "common commands", "code style guidelines", "tailwind css v4 styling", "typescript conventions"], "size": 8276, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_45", "label": "simple_mysql_partitioning", "full_name": "Andryu/simple_mysql_partitioning", "stars": 4, "description": "Simple, mysql partition command wrapper for Ruby", "url": "https://github.com/Andryu/simple_mysql_partitioning/blob/main/CLAUDE.md", "repo_url": "https://github.com/Andryu/simple_mysql_partitioning", "language": "Ruby", "topics": [], "keywords": ["claudemd", "\u30b3\u30de\u30f3\u30c9", "\u30c6\u30b9\u30c8", "docker\u958b\u767a"], "size": 1804, "summary": "\u3053\u306e\u30d5\u30a1\u30a4\u30eb\u306f\u3001\u3053\u306e\u30ea\u30dd\u30b8\u30c8\u30ea\u3067\u30b3\u30fc\u30c9\u3092\u6271\u3046\u969b\u306eClaude Code (claude.ai/code)\u5411\u3051\u306e\u30ac\u30a4\u30c0\u30f3\u30b9\u3092\u63d0\u4f9b\u3057\u307e\u3059\u3002"}, {"id": "node_46", "label": "Monochromatic", "full_name": "Aquaticat/Monochromatic", "stars": 2, "description": "", "url": "https://github.com/Aquaticat/Monochromatic/blob/main/CLAUDE.md", "repo_url": "https://github.com/Aquaticat/Monochromatic", "language": "TypeScript", "topics": [], "keywords": ["agentsmd  development guidelines for ai agents", "communication style", "direct communication", "forbidden language patterns", "forbidden acknowledgment patterns"], "size": 39052, "summary": "<!-- Canon source: .kilocode/rules/* - This file consolidates all rules from the kilocode rules directory -->"}, {"id": "node_47", "label": "whyp", "full_name": "jalanb/whyp", "stars": 18, "description": "whyp extends type, wittily", "url": "https://github.com/jalanb/whyp/blob/main/CLAUDE.md", "repo_url": "https://github.com/jalanb/whyp", "language": "Python", "topics": ["shell", "python"], "keywords": ["claudemd", "project overview", "hybrid architecture", "core integration pattern", "critical integration points"], "size": 3984, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_48", "label": "microfolio", "full_name": "aker-dev/microfolio", "stars": 125, "description": "A modern static portfolio generator based on SvelteKit 2 and Tailwind CSS 4", "url": "https://github.com/aker-dev/microfolio/blob/main/CLAUDE.md", "repo_url": "https://github.com/aker-dev/microfolio", "language": "Svelte", "topics": ["claude-code", "designer", "portfolio-project", "portfolio-site", "portfolio-template"], "keywords": ["claudemd", "project overview", "development commands", "essential commands", "development server"], "size": 4978, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_49", "label": "pr-summary", "full_name": "yan/pr-summary", "stars": 4, "description": "GitHub Action to capture PR activity and store it as git notes", "url": "https://github.com/yan/pr-summary/blob/main/CLAUDE.md", "repo_url": "https://github.com/yan/pr-summary", "language": "Python", "topics": [], "keywords": ["claudemd  development session documentation", "project overview", "design decisions", "1 storage strategy git notes", "2 implementation language python with type annotations"], "size": 14075, "summary": "This document captures the design decisions, architecture, and development process for the PR Summary GitHub Action."}];
-        const edgesData = [{"source": "node_5", "target": "node_19", "similarity": 0.869}, {"source": "node_6", "target": "node_30", "similarity": 0.279}, {"source": "node_8", "target": "node_44", "similarity": 0.158}, {"source": "node_9", "target": "node_46", "similarity": 0.209}, {"source": "node_9", "target": "node_48", "similarity": 0.186}, {"source": "node_10", "target": "node_42", "similarity": 0.237}, {"source": "node_11", "target": "node_38", "similarity": 0.175}, {"source": "node_11", "target": "node_48", "similarity": 0.194}, {"source": "node_14", "target": "node_49", "similarity": 0.19}, {"source": "node_22", "target": "node_42", "similarity": 0.172}, {"source": "node_26", "target": "node_28", "similarity": 0.168}, {"source": "node_26", "target": "node_29", "similarity": 0.189}, {"source": "node_27", "target": "node_30", "similarity": 0.154}, {"source": "node_29", "target": "node_44", "similarity": 0.19}];
-
-        let currentThreshold = 0.15;
-
-        // Get node color based on stars
-        function getNodeColor(stars) {
-            if (stars >= 1000) return '#ff6b6b';
-            if (stars >= 100) return '#feca57';
-            return '#4ecdc4';
-        }
-
-        // Get node size based on stars (log scale)
-        function getNodeSize(stars) {
-            return Math.max(20, Math.min(80, 15 + Math.log10(stars + 1) * 15));
-        }
-
-        // Create Cytoscape elements
+        const nodesData = [{"id": "node_0", "label": "QuantumOptics.jl", "full_name": "qojulia/QuantumOptics.jl", "stars": 595, "description": "Library for the numerical simulation of closed as well as open quantum systems.", "url": "https://github.com/qojulia/QuantumOptics.jl/blob/main/CLAUDE.md", "repo_url": "https://github.com/qojulia/QuantumOptics.jl", "language": "Julia", "topics": ["julia", "quantum", "quantum-mechanics", "quantum-optics", "quantum-toolbox"], "keywords": ["quantumopticsjl", "project structure", "development commands", "running tests", "run all tests"], "size": 5753, "summary": "QuantumOptics.jl is a numerical framework written in Julia that makes it easy to simulate various kinds of quantum systems. It builds on QuantumOpticsBase.jl and provides dynamic solvers for time evol..."}, {"id": "node_1", "label": "querydsl", "full_name": "OpenFeign/querydsl", "stars": 542, "description": "Unified Queries for Java", "url": "https://github.com/OpenFeign/querydsl/blob/main/CLAUDE.md", "repo_url": "https://github.com/OpenFeign/querydsl", "language": "Java", "topics": [], "keywords": ["claudemd", "overview", "build commands", "basic build", "quick build skip tests and checks"], "size": 4858, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_2", "label": "pixel-banner", "full_name": "jparkerweb/pixel-banner", "stars": 162, "description": "\ud83d\udea9 Enhance your Obsidian notes with customizable banner images, including AI-generated designs and a curated store of downloadable banners. Transform your workspace with visually stunning headers that add context, improve aesthetics, and take your note-taking beyond the ordinary.", "url": "https://github.com/jparkerweb/pixel-banner/blob/main/CLAUDE.md", "repo_url": "https://github.com/jparkerweb/pixel-banner", "language": "JavaScript", "topics": ["obsidian", "pexels-api", "plugin", "banner", "banner-image"], "keywords": ["claudemd", "overview", "essential commands", "development", "install dependencies"], "size": 9386, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_3", "label": "microfolio", "full_name": "aker-dev/microfolio", "stars": 125, "description": "A modern static portfolio generator based on SvelteKit 2 and Tailwind CSS 4", "url": "https://github.com/aker-dev/microfolio/blob/main/CLAUDE.md", "repo_url": "https://github.com/aker-dev/microfolio", "language": "Svelte", "topics": ["claude-code", "designer", "portfolio-project", "portfolio-site", "portfolio-template"], "keywords": ["claudemd", "project overview", "development commands", "essential commands", "development server"], "size": 4978, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_4", "label": "msg-rs", "full_name": "chainbound/msg-rs", "stars": 79, "description": "Messaging library for distributed systems built in Rust", "url": "https://github.com/chainbound/msg-rs/blob/main/CLAUDE.md", "repo_url": "https://github.com/chainbound/msg-rs", "language": "Rust", "topics": ["distributed-systems", "networking", "tokio", "rust"], "keywords": ["claudemd", "development commands", "build and test", "primary commands using just", "alternative cargo commands"], "size": 4138, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_5", "label": "video-agent-claude-skill", "full_name": "donghaozhang/video-agent-claude-skill", "stars": 37, "description": "First Python Package for Video Cli Generation and Processing", "url": "https://github.com/donghaozhang/video-agent-claude-skill/blob/main/CLAUDE.md", "repo_url": "https://github.com/donghaozhang/video-agent-claude-skill", "language": "Python", "topics": [], "keywords": ["claudemd", "git workflow commands", "project overview", "ai content pipeline package", "environment setup"], "size": 11956, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_6", "label": "whyp", "full_name": "jalanb/whyp", "stars": 18, "description": "whyp extends type, wittily", "url": "https://github.com/jalanb/whyp/blob/main/CLAUDE.md", "repo_url": "https://github.com/jalanb/whyp", "language": "Python", "topics": ["shell", "python"], "keywords": ["claudemd", "project overview", "hybrid architecture", "core integration pattern", "critical integration points"], "size": 3984, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_7", "label": "kugelpos-backend", "full_name": "kugel-masa/kugelpos-backend", "stars": 4, "description": "Kugel POS Backend Services (API Services for POS Application)", "url": "https://github.com/kugel-masa/kugelpos-backend/blob/main/CLAUDE.md", "repo_url": "https://github.com/kugel-masa/kugelpos-backend", "language": "Python", "topics": [], "keywords": ["claudemd", "project overview", "architecture", "core services", "key technologies"], "size": 15204, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_8", "label": "MultiRheoFlow", "full_name": "comphy-lab/MultiRheoFlow", "stars": 4, "description": "An extensible framework for multiphase flows with complex rheology, built on Basilisk C", "url": "https://github.com/comphy-lab/MultiRheoFlow/blob/main/CLAUDE.md", "repo_url": "https://github.com/comphy-lab/MultiRheoFlow", "language": "C", "topics": [], "keywords": ["viscoelastic3d development guidelines", "project structure", "some selected files inside basilisksrc", "project structure", "build  test commands"], "size": 4701, "summary": "\u251c-- `basilisk/src/`: Core Basilisk CFD library (reference only, do not modify) <- This contains the codebase for Basilisk C--a wrapper around C to do computational fluid dynamics. \u2502   \u251c\u2500\u2500 `navier-stok..."}, {"id": "node_9", "label": "simple_mysql_partitioning", "full_name": "Andryu/simple_mysql_partitioning", "stars": 4, "description": "Simple, mysql partition command wrapper for Ruby", "url": "https://github.com/Andryu/simple_mysql_partitioning/blob/main/CLAUDE.md", "repo_url": "https://github.com/Andryu/simple_mysql_partitioning", "language": "Ruby", "topics": [], "keywords": ["claudemd", "\u30b3\u30de\u30f3\u30c9", "\u30c6\u30b9\u30c8", "docker\u958b\u767a"], "size": 1804, "summary": "\u3053\u306e\u30d5\u30a1\u30a4\u30eb\u306f\u3001\u3053\u306e\u30ea\u30dd\u30b8\u30c8\u30ea\u3067\u30b3\u30fc\u30c9\u3092\u6271\u3046\u969b\u306eClaude Code (claude.ai/code)\u5411\u3051\u306e\u30ac\u30a4\u30c0\u30f3\u30b9\u3092\u63d0\u4f9b\u3057\u307e\u3059\u3002"}, {"id": "node_10", "label": "pr-summary", "full_name": "yan/pr-summary", "stars": 4, "description": "GitHub Action to capture PR activity and store it as git notes", "url": "https://github.com/yan/pr-summary/blob/main/CLAUDE.md", "repo_url": "https://github.com/yan/pr-summary", "language": "Python", "topics": [], "keywords": ["claudemd  development session documentation", "project overview", "design decisions", "1 storage strategy git notes", "2 implementation language python with type annotations"], "size": 14075, "summary": "This document captures the design decisions, architecture, and development process for the PR Summary GitHub Action."}, {"id": "node_11", "label": "vespera-atelier", "full_name": "EchoingVesper/vespera-atelier", "stars": 3, "description": "Vespera Atelier: Intelligent platform for document-centric orchestration, task management, and creative workflows", "url": "https://github.com/EchoingVesper/vespera-atelier/blob/main/CLAUDE.md", "repo_url": "https://github.com/EchoingVesper/vespera-atelier", "language": "Python", "topics": [], "keywords": ["claudemd  vespera atelier monorepo", "monorepo structure", "working in the monorepo", "important automatic directory switching", "if you need monorepo root context be explicit"], "size": 24218, "summary": "This file provides guidance to Claude Code when working in the Vespera Atelier monorepo."}, {"id": "node_12", "label": "solana-sniper-bot", "full_name": "omkom/solana-sniper-bot", "stars": 2, "description": "", "url": "https://github.com/omkom/solana-sniper-bot/blob/main/CLAUDE.md", "repo_url": "https://github.com/omkom/solana-sniper-bot", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "important security notice", "core objective", "technical stack  standards", "language  typing"], "size": 33522, "summary": "This file provides comprehensive guidance to Claude Code (claude.ai/code) when working with this hyper-efficient token sniping tool."}, {"id": "node_13", "label": "Monochromatic", "full_name": "Aquaticat/Monochromatic", "stars": 2, "description": "", "url": "https://github.com/Aquaticat/Monochromatic/blob/main/CLAUDE.md", "repo_url": "https://github.com/Aquaticat/Monochromatic", "language": "TypeScript", "topics": [], "keywords": ["agentsmd  development guidelines for ai agents", "communication style", "direct communication", "forbidden language patterns", "forbidden acknowledgment patterns"], "size": 39052, "summary": "<!-- Canon source: .kilocode/rules/* - This file consolidates all rules from the kilocode rules directory -->"}, {"id": "node_14", "label": "chatkit-link", "full_name": "exiao/chatkit-link", "stars": 1, "description": "Powers chatkit.link. Try out workflows built with OpenAI's new agent builder.", "url": "https://github.com/exiao/chatkit-link/blob/main/claude.md", "repo_url": "https://github.com/exiao/chatkit-link", "language": "JavaScript", "topics": ["chatkit", "openai"], "keywords": ["chatkit link development log", "overview", "tech stack", "key features", "1 sidebar workflow management"], "size": 7465, "summary": "ChatKit Link is a web application that allows users to demo their ChatKit workflows by providing a workflow ID and OpenAI API key. Built with FastAPI backend and Vite + React frontend."}, {"id": "node_15", "label": "hkdigital--lib-core", "full_name": "HKdigital/hkdigital--lib-core", "stars": 1, "description": "Base library that we use to power up our Sveltekit projects", "url": "https://github.com/HKdigital/hkdigital--lib-core/blob/main/claude.md", "repo_url": "https://github.com/HKdigital/hkdigital--lib-core", "language": "JavaScript", "topics": [], "keywords": ["sveltekit library", "project overview", "architecture  structure", "key technical decisions", "component patterns"], "size": 14194, "summary": "This is a modern SvelteKit library built with Svelte 5 and Skeleton.dev v3 components. The project emphasizes accessibility, clean code standards, and modern JavaScript patterns."}, {"id": "node_16", "label": "report-generator-agent", "full_name": "ayoubben18/report-generator-agent", "stars": 1, "description": "", "url": "https://github.com/ayoubben18/report-generator-agent/blob/main/CLAUDE.md", "repo_url": "https://github.com/ayoubben18/report-generator-agent", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "development commands", "install dependencies always use pnpm", "start development server", "start convex backend required for realtime features"], "size": 3411, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_17", "label": "ukkin", "full_name": "Skelf-Research/ukkin", "stars": 1, "description": "AI-Agent mobile web browser for everyone", "url": "https://github.com/Skelf-Research/ukkin/blob/main/CLAUDE.md", "repo_url": "https://github.com/Skelf-Research/ukkin", "language": "Dart", "topics": ["agent", "flutter", "generative-ai", "mobile", "webbrowser"], "keywords": ["claudemd", "development commands", "core flutter commands", "testing and quality", "platformspecific development"], "size": 6441, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_18", "label": "si-systems-v5", "full_name": "daffy0208/si-systems-v5", "stars": 0, "description": "Enhanced AI Interaction Model", "url": "https://github.com/daffy0208/si-systems-v5/blob/main/claude.md", "repo_url": "https://github.com/daffy0208/si-systems-v5", "language": "TypeScript", "topics": [], "keywords": ["critical archonfirst rule  read this first", "archon integration  workflow", "core archon workflow principles", "the golden rule taskdriven development with archon", "project scenarios  initialization"], "size": 25750, "summary": "BEFORE doing ANYTHING else, when you see ANY task management scenario: 1. STOP and check if Archon MCP server is available 2. Use Archon task management as PRIMARY system 3. TodoWrite is ONLY for pers..."}, {"id": "node_19", "label": "travel-app", "full_name": "markhodierne/travel-app", "stars": 0, "description": "", "url": "https://github.com/markhodierne/travel-app/blob/main/CLAUDE.md", "repo_url": "https://github.com/markhodierne/travel-app", "language": "HTML", "topics": [], "keywords": ["project travel planning application cl", "project overview clovw", "tech stack cltech", "code style  conventions clstyle", "importmodule standards clstyleimp"], "size": 4595, "summary": "**IMPORTANT FOR CLAUDE: Reference this file before implementing anything**"}, {"id": "node_20", "label": "FileManager", "full_name": "oferhr/FileManager", "stars": 0, "description": "", "url": "https://github.com/oferhr/FileManager/blob/main/Claude.md", "repo_url": "https://github.com/oferhr/FileManager", "language": "C#", "topics": [], "keywords": ["filemanager", "project overview", "technology stack", "project structure", "key features"], "size": 5419, "summary": "A Windows Forms application for managing files with integrated Microsoft Office automation capabilities."}, {"id": "node_21", "label": "Farmfolio", "full_name": "chimexy8alluvial/Farmfolio", "stars": 0, "description": "Connect producers with conscious consumers through digital storytelling and marketplace discovery.", "url": "https://github.com/chimexy8alluvial/Farmfolio/blob/main/CLAUDE.md", "repo_url": "https://github.com/chimexy8alluvial/Farmfolio", "language": "JavaScript", "topics": [], "keywords": ["claudemd", "project overview", "development commands", "architecture overview", "core stack"], "size": 8146, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_22", "label": "dantanner", "full_name": "dtanner/dantanner", "stars": 0, "description": "personal website", "url": "https://github.com/dtanner/dantanner/blob/main/CLAUDE.md", "repo_url": "https://github.com/dtanner/dantanner", "language": "Nunjucks", "topics": [], "keywords": ["claudemd", "project overview", "development commands", "build and development", "deployment"], "size": 2647, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_23", "label": "agentmotion", "full_name": "osobh/agentmotion", "stars": 0, "description": "Remove Control Agents", "url": "https://github.com/osobh/agentmotion/blob/main/claude.md", "repo_url": "https://github.com/osobh/agentmotion", "language": "TypeScript", "topics": [], "keywords": ["project agentmotion  universal remote control for ai coding assistants", "workflow", "update triggers", "key project commands", "mobile app react native expo"], "size": 8061, "summary": "AgentMotion is a mobile-first remote control system for AI coding assistants that enables developers to respond to AI prompts from anywhere. Built with React Native Expo for mobile, Python for both de..."}, {"id": "node_24", "label": "gitstar_poller", "full_name": "iskng/gitstar_poller", "stars": 0, "description": "", "url": "https://github.com/iskng/gitstar_poller/blob/main/CLAUDE.md", "repo_url": "https://github.com/iskng/gitstar_poller", "language": "Rust", "topics": [], "keywords": ["claudemd", "development commands", "architecture overview", "project structure", "key features"], "size": 13023, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_25", "label": "vendoreval4", "full_name": "adamjdavidson/vendoreval4", "stars": 0, "description": "", "url": "https://github.com/adamjdavidson/vendoreval4/blob/main/claude.md", "repo_url": "https://github.com/adamjdavidson/vendoreval4", "language": "TypeScript", "topics": [], "keywords": ["project context vendoreval3", "project structure", "communication guidelines", "be direct and honest", "mandatory message start protocol"], "size": 25563, "summary": "This project uses Spec-Driven Development with Beads for issue tracking. Follow the workflows and guidelines defined below."}, {"id": "node_26", "label": "KI-SYSTEM", "full_name": "SHP-ART/KI-SYSTEM", "stars": 0, "description": "Selbstlernendes Smart Home System mit Web-Dashboard, Badezimmer-Automatisierung und Machine Learning. Unterst\u00fctzt Home Assistant & Homey Pro.", "url": "https://github.com/SHP-ART/KI-SYSTEM/blob/main/CLAUDE.md", "repo_url": "https://github.com/SHP-ART/KI-SYSTEM", "language": "Python", "topics": [], "keywords": ["claudemd", "project overview", "development commands", "environment setup", "create and activate virtual environment"], "size": 16406, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_27", "label": "verteilte", "full_name": "sheaksadi/verteilte", "stars": 0, "description": "", "url": "https://github.com/sheaksadi/verteilte/blob/main/claude.md", "repo_url": "https://github.com/sheaksadi/verteilte", "language": "Vue", "topics": [], "keywords": ["verteilte  german vocabulary learning app", "project structure", "tech stack", "frontend", "backend"], "size": 12349, "summary": "A spaced repetition flashcard app for learning German vocabulary, built with Tauri 2, Vue 3, and TypeScript."}, {"id": "node_28", "label": "vim-oracle", "full_name": "misterbuckley/vim-oracle", "stars": 0, "description": "Seamless AI assistance without leaving vim", "url": "https://github.com/misterbuckley/vim-oracle/blob/main/CLAUDE.md", "repo_url": "https://github.com/misterbuckley/vim-oracle", "language": "Vim Script", "topics": [], "keywords": ["vimoracle development guide", "testing", "running tests", "test structure", "adding new tests"], "size": 4486, "summary": "To run the basic functionality tests:"}, {"id": "node_29", "label": "etradeTools", "full_name": "trezero/etradeTools", "stars": 0, "description": "", "url": "https://github.com/trezero/etradeTools/blob/main/CLAUDE.md", "repo_url": "https://github.com/trezero/etradeTools", "language": "Python", "topics": [], "keywords": ["critical archonfirst rule  read this first", "archon integration  workflow", "core archon workflow principles", "the golden rule taskdriven development with archon", "project scenarios  initialization"], "size": 10997, "summary": "BEFORE doing ANYTHING else, when you see ANY task management scenario: 1. STOP and check if Archon MCP server is available 2. Use Archon task management as PRIMARY system 3. TodoWrite is ONLY for pers..."}, {"id": "node_30", "label": "terminator_task_manager", "full_name": "stibiums/terminator_task_manager", "stars": 0, "description": "", "url": "https://github.com/stibiums/terminator_task_manager/blob/main/claude.md", "repo_url": "https://github.com/stibiums/terminator_task_manager", "language": "Rust", "topics": [], "keywords": ["claude code \u5f00\u53d1\u65e5\u5fd7", "\u9879\u76ee\u4fe1\u606f", "\u5f00\u53d1\u8fc7\u7a0b", "\u7b2c\u4e00\u9636\u6bb5\u9700\u6c42\u5206\u6790\u4e0e\u67b6\u6784\u8bbe\u8ba1 30\u5206\u949f", "\u7b2c\u4e8c\u9636\u6bb5\u9879\u76ee\u521d\u59cb\u5316 15\u5206\u949f"], "size": 8309, "summary": "\u672c\u9879\u76ee\u4f7f\u7528 **Claude Code** \u8f85\u52a9\u5f00\u53d1\u5b8c\u6210\u3002"}, {"id": "node_31", "label": "Noetic2.0", "full_name": "myspacecornelius/Noetic2.0", "stars": 0, "description": "", "url": "https://github.com/myspacecornelius/Noetic2.0/blob/main/claude.md", "repo_url": "https://github.com/myspacecornelius/Noetic2.0", "language": "TypeScript", "topics": [], "keywords": ["claudemd  engineering guide", "project overview", "runbook", "dev server troubleshooting", "security  dependency issues"], "size": 7169, "summary": "- Stack: Next.js 13 (pages router) + Nextra v3 (docs theme) + TypeScript - Purpose: Investor\u2011ready docs with charts and a \"Thesis Builder\" for exportable presentations - Branding: Noetic 2.0 \u2014 profess..."}, {"id": "node_32", "label": "spectralcanvas-pro-v2", "full_name": "1hoookkk/spectralcanvas-pro-v2", "stars": 0, "description": "Real-time spectral synthesis plugin with paint-to-audio interface - JUCE 8 compatible", "url": "https://github.com/1hoookkk/spectralcanvas-pro-v2/blob/main/CLAUDE.md", "repo_url": "https://github.com/1hoookkk/spectralcanvas-pro-v2", "language": "C++", "topics": [], "keywords": ["claudemd", "project overview", "nonnegotiable rules", "architecture overview", "key constants  data structures"], "size": 7940, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_33", "label": "-Tower-of-Infinity-PT", "full_name": "KORWOT/-Tower-of-Infinity-PT", "stars": 0, "description": "\uac8c\uc784\ud504\ub85c\ud1a0\ud0c0\uc785", "url": "https://github.com/KORWOT/-Tower-of-Infinity-PT/blob/main/CLAUDE.md", "repo_url": "https://github.com/KORWOT/-Tower-of-Infinity-PT", "language": "C#", "topics": [], "keywords": ["claudemd", "project overview", "development commands", "architecture  code structure", "core architecture pattern"], "size": 4178, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_34", "label": "FlowQ", "full_name": "dev-parvej/FlowQ", "stars": 0, "description": "", "url": "https://github.com/dev-parvej/FlowQ/blob/main/CLAUDE.md", "repo_url": "https://github.com/dev-parvej/FlowQ", "language": "PHP", "topics": [], "keywords": ["wordpress dynamic survey plugin  current implementation", "whats currently implemented", "core plugin structure", "question system", "answer system"], "size": 14201, "summary": "- WordPress plugin with proper activation/deactivation hooks - Database migration system with custom tables - Internationalization support (text domain: 'flowq') - Security measures (nonce verificatio..."}, {"id": "node_35", "label": "heavens7", "full_name": "daviguides/heavens7", "stars": 0, "description": "Python MCP server for code docs, inspired by Context7 \u2014 fastmcp + Pydantic v2.", "url": "https://github.com/daviguides/heavens7/blob/main/Claude.md", "repo_url": "https://github.com/daviguides/heavens7", "language": "Python", "topics": [], "keywords": ["heavens7 mcp python", "overview", "motivation", "coding standards", "summary of main rules"], "size": 3204, "summary": "**Heavens7** is a Python-based implementation of a Model Context Protocol (MCP) server designed to connect with the [Context7](https://github.com/upstash/context7) API. It begins as a faithful rewrite..."}, {"id": "node_36", "label": "DynamicShortlinks", "full_name": "thebenlamm/DynamicShortlinks", "stars": 0, "description": "Dynamic Shortlinks", "url": "https://github.com/thebenlamm/DynamicShortlinks/blob/main/CLAUDE.md", "repo_url": "https://github.com/thebenlamm/DynamicShortlinks", "language": "PHP", "topics": [], "keywords": ["claudemd", "project overview", "repository structure", "architecture", "wordpress plugin structure"], "size": 3510, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_37", "label": "formulario-SRT", "full_name": "thiagopvn/formulario-SRT", "stars": 0, "description": "", "url": "https://github.com/thiagopvn/formulario-SRT/blob/main/CLAUDE.md", "repo_url": "https://github.com/thiagopvn/formulario-SRT", "language": "JavaScript", "topics": [], "keywords": ["claudemd", "project overview", "architecture", "frontend structure", "key files"], "size": 4802, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_38", "label": "gojjo-mcp", "full_name": "hmesfin/gojjo-mcp", "stars": 0, "description": "", "url": "https://github.com/hmesfin/gojjo-mcp/blob/main/CLAUDE.md", "repo_url": "https://github.com/hmesfin/gojjo-mcp", "language": "Python", "topics": [], "keywords": ["gojjo django vue mcp documentation server", "overview", "problem solved", "technology stack covered", "django backend"], "size": 8976, "summary": "This project creates a custom Model Context Protocol (MCP) server that provides Claude Code with up-to-date documentation for a specific Django + Vue.js technology stack. The server automatically fetc..."}, {"id": "node_39", "label": "podcast-studio", "full_name": "mikkelkrogsholm/podcast-studio", "stars": 0, "description": "", "url": "https://github.com/mikkelkrogsholm/podcast-studio/blob/main/CLAUDE.md", "repo_url": "https://github.com/mikkelkrogsholm/podcast-studio", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "project overview", "architecture", "monorepo structure", "core technologies"], "size": 9408, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_40", "label": "SQL----", "full_name": "li195111/SQL----", "stars": 0, "description": "", "url": "https://github.com/li195111/SQL----/blob/main/CLAUDE.md", "repo_url": "https://github.com/li195111/SQL----", "language": "Jupyter Notebook", "topics": [], "keywords": ["qchoice ai collaboration guidelines for sql\u6559\u5b78\u6587\u4ef6\u5c08\u6848 claude version", "\u5c08\u6848\u6982\u8ff0 project overview", "\u67b6\u69cb architecture", "\u958b\u767c\u5de5\u4f5c\u6d41\u7a0b development workflow", "\u6838\u5fc3\u539f\u5247\u898f\u683c\u9a45\u52d5\u958b\u767c specificationdriven development"], "size": 9007, "summary": "- \u4f7f\u7528 `source ~/.zshrc` \u4f86\u8f09\u5165\u74b0\u5883\u8b8a\u6578 - \u4f7f\u7528 `conda activate fju` \u4f86\u555f\u52d5 Python \u74b0\u5883"}, {"id": "node_41", "label": "event-platform", "full_name": "xavierau/event-platform", "stars": 0, "description": "", "url": "https://github.com/xavierau/event-platform/blob/main/CLAUDE.md", "repo_url": "https://github.com/xavierau/event-platform", "language": "PHP", "topics": [], "keywords": ["claudemd", "development rules", "tdd with pest php", "critical always run tests after any code change", "run specific tests"], "size": 4862, "summary": "**Laravel 12 Event Platform** - DDD modular monolithic architecture for event management with organizers, venues, ticketing, bookings, and multilingual support."}, {"id": "node_42", "label": "intelibi", "full_name": "korallis/intelibi", "stars": 0, "description": "AI-Powered Analytics Platform - Transform your data into intelligent dashboards through natural language conversations", "url": "https://github.com/korallis/intelibi/blob/main/CLAUDE.md", "repo_url": "https://github.com/korallis/intelibi", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "project structure", "key directories", "architecture", "development commands"], "size": 2577, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_43", "label": "UniMixerServer", "full_name": "bezalel6/UniMixerServer", "stars": 0, "description": "", "url": "https://github.com/bezalel6/UniMixerServer/blob/main/CLAUDE.md", "repo_url": "https://github.com/bezalel6/UniMixerServer", "language": "C#", "topics": [], "keywords": ["claudemd", "project overview", "development commands", "building and running", "build the project"], "size": 6940, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_44", "label": "Anime-Pok-mon", "full_name": "hewenyu/Anime-Pok-mon", "stars": 0, "description": "\u4e8c\u6b21\u5143\u5b9d\u53ef\u68a6\u5bf9\u6218", "url": "https://github.com/hewenyu/Anime-Pok-mon/blob/main/CLAUDE.md", "repo_url": "https://github.com/hewenyu/Anime-Pok-mon", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "project overview", "development environment setup", "common commands", "code quality"], "size": 5025, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_45", "label": "microblog-to-hugo", "full_name": "shawnyeager/microblog-to-hugo", "stars": 0, "description": "Python scripts to migrate and refactor content from Micro.blog to Hugo", "url": "https://github.com/shawnyeager/microblog-to-hugo/blob/main/CLAUDE.md", "repo_url": "https://github.com/shawnyeager/microblog-to-hugo", "language": "Python", "topics": [], "keywords": ["claudemd", "project overview", "architecture", "core migration pipeline", "script relationships"], "size": 5279, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}, {"id": "node_46", "label": "KGB", "full_name": "sudoxue/KGB", "stars": 0, "description": "kubernetes get brain", "url": "https://github.com/sudoxue/KGB/blob/main/CLAUDE.md", "repo_url": "https://github.com/sudoxue/KGB", "language": "Go", "topics": [], "keywords": ["kgb strategic development plan", "constitutional reading protocol", "core constitutional principles", "development journal system", "revolutionary documentation protocol"], "size": 13579, "summary": "*Strategic roadmap and technical guidance for AWACS/KORGI development*"}, {"id": "node_47", "label": "artifex.ai-studio-pro", "full_name": "ChoonwooLim/artifex.ai-studio-pro", "stars": 0, "description": "", "url": "https://github.com/ChoonwooLim/artifex.ai-studio-pro/blob/main/claude.md", "repo_url": "https://github.com/ChoonwooLim/artifex.ai-studio-pro", "language": "HTML", "topics": [], "keywords": ["artifexai studio pro  \uc885\ud569 \ud504\ub85c\uc81d\ud2b8 \uac1c\ubc1c \uac00\uc774\ub4dc", "\ud504\ub85c\uc81d\ud2b8 \uac1c\uc694", "\ud575\uc2ec \uac00\uce58", "\ub0a0\uc9dc \ubc0f \uc2dc\uac04\ub300 \uc778\uc2dd", "\uc911\uc694 \uc815\ud655\ud55c \ub0a0\uc9dc \ud655\uc778"], "size": 21264, "summary": "**\ud504\ub85c\uc81d\ud2b8\uba85**: Artifex.AI Studio Pro **\ubc84\uc804**: 0.0.0 **\ud0c0\uc785**: AI \uae30\ubc18 \uba40\ud2f0\ubbf8\ub514\uc5b4 \ucf58\ud150\uce20 \uc0dd\uc131 \ud50c\ub7ab\ud3fc **\uae30\uc220 \uc2a4\ud0dd**: React 19 + TypeScript + Vite + Google Generative AI"}, {"id": "node_48", "label": "webhookmaster", "full_name": "awfixer-platform/webhookmaster", "stars": 0, "description": "", "url": "https://github.com/awfixer-platform/webhookmaster/blob/main/CLAUDE.md", "repo_url": "https://github.com/awfixer-platform/webhookmaster", "language": "Python", "topics": [], "keywords": [], "size": 9, "summary": "./LLM.md"}, {"id": "node_49", "label": "node-tree", "full_name": "ruchernchong/node-tree", "stars": 0, "description": "", "url": "https://github.com/ruchernchong/node-tree/blob/main/CLAUDE.md", "repo_url": "https://github.com/ruchernchong/node-tree", "language": "TypeScript", "topics": [], "keywords": ["claudemd", "common commands", "code style guidelines", "tailwind css v4 styling", "typescript conventions"], "size": 8276, "summary": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."}];
+        const edgesData = [{"source": "node_14", "target": "node_39", "similarity": 0.105}, {"source": "node_14", "target": "node_21", "similarity": 0.111}, {"source": "node_2", "target": "node_5", "similarity": 0.114}, {"source": "node_7", "target": "node_23", "similarity": 0.101}, {"source": "node_18", "target": "node_29", "similarity": 0.869}, {"source": "node_19", "target": "node_10", "similarity": 0.1}, {"source": "node_19", "target": "node_38", "similarity": 0.279}, {"source": "node_19", "target": "node_5", "similarity": 0.13}, {"source": "node_19", "target": "node_15", "similarity": 0.103}, {"source": "node_20", "target": "node_37", "similarity": 0.115}, {"source": "node_21", "target": "node_49", "similarity": 0.158}, {"source": "node_21", "target": "node_44", "similarity": 0.105}, {"source": "node_15", "target": "node_3", "similarity": 0.186}, {"source": "node_15", "target": "node_13", "similarity": 0.209}, {"source": "node_15", "target": "node_42", "similarity": 0.104}, {"source": "node_5", "target": "node_10", "similarity": 0.14}, {"source": "node_5", "target": "node_13", "similarity": 0.104}, {"source": "node_5", "target": "node_47", "similarity": 0.237}, {"source": "node_5", "target": "node_26", "similarity": 0.109}, {"source": "node_5", "target": "node_23", "similarity": 0.139}, {"source": "node_22", "target": "node_3", "similarity": 0.194}, {"source": "node_22", "target": "node_45", "similarity": 0.175}, {"source": "node_23", "target": "node_10", "similarity": 0.113}, {"source": "node_23", "target": "node_11", "similarity": 0.136}, {"source": "node_23", "target": "node_46", "similarity": 0.104}, {"source": "node_23", "target": "node_38", "similarity": 0.148}, {"source": "node_23", "target": "node_35", "similarity": 0.141}, {"source": "node_23", "target": "node_17", "similarity": 0.123}, {"source": "node_12", "target": "node_24", "similarity": 0.102}, {"source": "node_24", "target": "node_10", "similarity": 0.19}, {"source": "node_24", "target": "node_49", "similarity": 0.106}, {"source": "node_24", "target": "node_4", "similarity": 0.111}, {"source": "node_25", "target": "node_13", "similarity": 0.105}, {"source": "node_25", "target": "node_40", "similarity": 0.103}, {"source": "node_25", "target": "node_29", "similarity": 0.115}, {"source": "node_26", "target": "node_10", "similarity": 0.105}, {"source": "node_26", "target": "node_49", "similarity": 0.101}, {"source": "node_16", "target": "node_3", "similarity": 0.136}, {"source": "node_16", "target": "node_39", "similarity": 0.138}, {"source": "node_31", "target": "node_47", "similarity": 0.172}, {"source": "node_31", "target": "node_42", "similarity": 0.119}, {"source": "node_17", "target": "node_46", "similarity": 0.131}, {"source": "node_33", "target": "node_44", "similarity": 0.116}, {"source": "node_34", "target": "node_49", "similarity": 0.125}, {"source": "node_34", "target": "node_41", "similarity": 0.12}, {"source": "node_34", "target": "node_37", "similarity": 0.189}, {"source": "node_34", "target": "node_36", "similarity": 0.168}, {"source": "node_35", "target": "node_11", "similarity": 0.127}, {"source": "node_35", "target": "node_38", "similarity": 0.154}, {"source": "node_37", "target": "node_49", "similarity": 0.19}, {"source": "node_38", "target": "node_11", "similarity": 0.137}, {"source": "node_39", "target": "node_3", "similarity": 0.104}, {"source": "node_39", "target": "node_43", "similarity": 0.117}, {"source": "node_40", "target": "node_47", "similarity": 0.101}, {"source": "node_42", "target": "node_3", "similarity": 0.105}, {"source": "node_42", "target": "node_44", "similarity": 0.136}, {"source": "node_45", "target": "node_3", "similarity": 0.132}, {"source": "node_13", "target": "node_10", "similarity": 0.116}];
+        let currentThreshold = 0.1;
+        function getNodeColor(stars) { if (stars >= 1000) return '#ff6b6b'; if (stars >= 100) return '#feca57'; return '#4ecdc4'; }
+        function getNodeSize(stars) { return Math.max(20, Math.min(80, 15 + Math.log10(stars + 1) * 15)); }
         function createElements(threshold) {
-            const nodes = nodesData.map(n => ({
-                data: {
-                    id: n.id,
-                    label: n.label,
-                    ...n
-                }
-            }));
-
-            const edges = edgesData
-                .filter(e => e.similarity >= threshold)
-                .map(e => ({
-                    data: {
-                        id: e.source + '-' + e.target,
-                        source: e.source,
-                        target: e.target,
-                        similarity: e.similarity
-                    }
-                }));
-
+            const nodes = nodesData.map(n => ({ data: { id: n.id, label: n.label, ...n } }));
+            const edges = edgesData.filter(e => e.similarity >= threshold).map(e => ({ data: { id: e.source + '-' + e.target, source: e.source, target: e.target, similarity: e.similarity } }));
             return [...nodes, ...edges];
         }
-
-        // Initialize Cytoscape
         let cy = cytoscape({
             container: document.getElementById('cy'),
             elements: createElements(currentThreshold),
             style: [
-                {
-                    selector: 'node',
-                    style: {
-                        'label': 'data(label)',
-                        'width': function(ele) { return getNodeSize(ele.data('stars')); },
-                        'height': function(ele) { return getNodeSize(ele.data('stars')); },
-                        'background-color': function(ele) { return getNodeColor(ele.data('stars')); },
-                        'border-width': 2,
-                        'border-color': '#fff',
-                        'color': '#fff',
-                        'font-size': '10px',
-                        'text-valign': 'bottom',
-                        'text-margin-y': 5,
-                        'text-outline-width': 2,
-                        'text-outline-color': '#1a1a2e'
-                    }
-                },
-                {
-                    selector: 'node:selected',
-                    style: {
-                        'border-width': 4,
-                        'border-color': '#fff',
-                        'background-color': '#fff',
-                        'color': '#4ecdc4'
-                    }
-                },
-                {
-                    selector: 'edge',
-                    style: {
-                        'width': function(ele) { return 1 + ele.data('similarity') * 5; },
-                        'line-color': 'rgba(78, 205, 196, 0.4)',
-                        'curve-style': 'bezier',
-                        'opacity': function(ele) { return 0.3 + ele.data('similarity') * 0.5; }
-                    }
-                },
-                {
-                    selector: 'edge:selected',
-                    style: {
-                        'line-color': '#4ecdc4',
-                        'opacity': 1
-                    }
-                },
-                {
-                    selector: '.highlighted',
-                    style: {
-                        'background-color': '#fff',
-                        'border-color': '#4ecdc4'
-                    }
-                },
-                {
-                    selector: '.faded',
-                    style: {
-                        'opacity': 0.2
-                    }
-                }
+                { selector: 'node', style: { 'label': 'data(label)', 'width': function(ele) { return getNodeSize(ele.data('stars')); }, 'height': function(ele) { return getNodeSize(ele.data('stars')); }, 'background-color': function(ele) { return getNodeColor(ele.data('stars')); }, 'border-width': 2, 'border-color': '#fff', 'color': '#fff', 'font-size': '10px', 'text-valign': 'bottom', 'text-margin-y': 5, 'text-outline-width': 2, 'text-outline-color': '#1a1a2e' } },
+                { selector: 'edge', style: { 'width': function(ele) { return 1 + ele.data('similarity') * 5; }, 'line-color': 'rgba(78, 205, 196, 0.4)', 'curve-style': 'bezier', 'opacity': function(ele) { return 0.3 + ele.data('similarity') * 0.5; } } },
+                { selector: '.faded', style: { 'opacity': 0.2 } }
             ],
-            layout: {
-                name: 'fcose',
-                animate: true,
-                randomize: true,
-                nodeDimensionsIncludeLabels: true,
-                idealEdgeLength: 150,
-                nodeRepulsion: 8000,
-                edgeElasticity: 0.45
-            }
+            layout: { name: 'fcose', animate: true, randomize: true, nodeDimensionsIncludeLabels: true, idealEdgeLength: 150, nodeRepulsion: 8000 }
         });
-
-        // Node click handler
         cy.on('tap', 'node', function(evt) {
-            const node = evt.target;
-            const data = node.data();
-
-            document.getElementById('info-name').innerHTML =
-                '<a href="' + data.repo_url + '" target="_blank">' + data.full_name + '</a>';
+            const data = evt.target.data();
+            document.getElementById('info-name').innerHTML = '<a href="' + data.repo_url + '" target="_blank">' + data.full_name + '</a>';
             document.getElementById('info-stars').textContent = data.stars.toLocaleString() + ' ⭐';
             document.getElementById('info-language').textContent = data.language || 'Unknown';
             document.getElementById('info-description').textContent = data.description || 'No description';
-            document.getElementById('info-summary').textContent = data.summary || 'No summary available';
-
-            // Topics
-            const topicsEl = document.getElementById('info-topics');
-            topicsEl.innerHTML = (data.topics || []).map(t => '<span class="tag">' + t + '</span>').join('');
-
-            // Keywords
-            const keywordsEl = document.getElementById('info-keywords');
-            keywordsEl.innerHTML = (data.keywords || []).map(k => '<span class="tag">' + k + '</span>').join('');
-
+            document.getElementById('info-topics').innerHTML = (data.topics || []).map(t => '<span class="tag">' + t + '</span>').join('');
+            document.getElementById('info-keywords').innerHTML = (data.keywords || []).map(k => '<span class="tag">' + k + '</span>').join('');
             document.getElementById('link-repo').href = data.repo_url;
             document.getElementById('link-file').href = data.url;
-
             document.getElementById('node-info').classList.add('active');
             document.getElementById('placeholder').style.display = 'none';
-
-            // Highlight connected nodes
-            cy.elements().removeClass('highlighted faded');
-            const neighborhood = node.neighborhood().add(node);
+            cy.elements().removeClass('faded');
+            const neighborhood = evt.target.neighborhood().add(evt.target);
             cy.elements().not(neighborhood).addClass('faded');
-            neighborhood.addClass('highlighted');
         });
-
-        // Background click
-        cy.on('tap', function(evt) {
-            if (evt.target === cy) {
-                cy.elements().removeClass('highlighted faded');
-            }
-        });
-
-        // Layout change
+        cy.on('tap', function(evt) { if (evt.target === cy) cy.elements().removeClass('faded'); });
         document.getElementById('layout-select').addEventListener('change', function() {
-            const layoutName = this.value;
-            let layout;
-
-            if (layoutName === 'concentric') {
-                layout = {
-                    name: 'concentric',
-                    concentric: function(node) { return node.data('stars'); },
-                    levelWidth: function() { return 2; },
-                    animate: true
-                };
-            } else if (layoutName === 'fcose') {
-                layout = {
-                    name: 'fcose',
-                    animate: true,
-                    randomize: false,
-                    nodeDimensionsIncludeLabels: true,
-                    idealEdgeLength: 150,
-                    nodeRepulsion: 8000
-                };
-            } else {
-                layout = {
-                    name: layoutName,
-                    animate: true
-                };
-            }
-
+            const name = this.value;
+            let layout = name === 'concentric' ? { name: 'concentric', concentric: n => n.data('stars'), levelWidth: () => 2, animate: true } : { name, animate: true };
             cy.layout(layout).run();
         });
-
-        // Threshold change
         document.getElementById('threshold').addEventListener('input', function() {
             currentThreshold = parseFloat(this.value);
             document.getElementById('threshold-value').textContent = currentThreshold.toFixed(2);
-
-            // Update edges
             cy.edges().remove();
-            const newEdges = edgesData
-                .filter(e => e.similarity >= currentThreshold)
-                .map(e => ({
-                    data: {
-                        id: e.source + '-' + e.target,
-                        source: e.source,
-                        target: e.target,
-                        similarity: e.similarity
-                    }
-                }));
-            cy.add(newEdges);
+            cy.add(edgesData.filter(e => e.similarity >= currentThreshold).map(e => ({ data: { id: e.source + '-' + e.target, source: e.source, target: e.target, similarity: e.similarity } })));
         });
-
-        // Search
         document.getElementById('search').addEventListener('input', function() {
-            const query = this.value.toLowerCase();
-
-            if (!query) {
-                cy.elements().removeClass('highlighted faded');
-                return;
-            }
-
-            const matches = cy.nodes().filter(node => {
-                const data = node.data();
-                return data.label.toLowerCase().includes(query) ||
-                       data.full_name.toLowerCase().includes(query) ||
-                       (data.description || '').toLowerCase().includes(query) ||
-                       (data.topics || []).some(t => t.toLowerCase().includes(query));
-            });
-
-            if (matches.length > 0) {
-                cy.elements().addClass('faded');
-                matches.removeClass('faded').addClass('highlighted');
-                const neighborhood = matches.neighborhood();
-                neighborhood.removeClass('faded');
-            }
+            const q = this.value.toLowerCase();
+            if (!q) { cy.elements().removeClass('faded'); return; }
+            const matches = cy.nodes().filter(n => n.data('label').toLowerCase().includes(q) || n.data('full_name').toLowerCase().includes(q));
+            cy.elements().addClass('faded');
+            matches.removeClass('faded');
+            matches.neighborhood().removeClass('faded');
         });
-
-        // Reset view
-        function resetView() {
-            cy.fit();
-            cy.elements().removeClass('highlighted faded');
-            document.getElementById('search').value = '';
-        }
-
-        // Export PNG
-        function exportPNG() {
-            const png = cy.png({
-                output: 'blob',
-                bg: '#1a1a2e',
-                scale: 2
-            });
-
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(png);
-            link.download = 'claude-md-graph.png';
-            link.click();
-        }
+        function resetView() { cy.fit(); cy.elements().removeClass('faded'); document.getElementById('search').value = ''; }
+        function exportPNG() { const png = cy.png({ output: 'blob', bg: '#1a1a2e', scale: 2 }); const link = document.createElement('a'); link.href = URL.createObjectURL(png); link.download = 'claude-md-graph.png'; link.click(); }
     </script>
 </body>
 </html>

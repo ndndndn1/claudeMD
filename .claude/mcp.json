@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "claude-md-analyzer": {
+      "command": "python",
+      "args": ["-m", "claude_md_analyzer.mcp_server"],
+      "cwd": "/workspaces/claudeMD",
+      "env": {
+        "CLAUDE_MD_DB_PATH": "./data/kuzu_db"
+      }
+    }
+  }
+}

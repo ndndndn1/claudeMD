@@ -8,9 +8,11 @@ Features:
 - Visualize relationships using embeddings
 - Batch download and merge related files
 - Agent-friendly API interface
+- KùzuDB graph database storage
+- MCP server for Claude Code integration
 """
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 from .models import ClaudeFile, Repository, AnalysisResult
 from .github_searcher import GitHubSearcher
@@ -20,6 +22,7 @@ from .visualizer import RelationshipVisualizer
 from .downloader import BatchDownloader
 from .merger import FileMerger
 from .agent_api import AgentAPI
+from .storage import KuzuStorage, RepoNode
 
 __all__ = [
     "ClaudeFile",
@@ -32,4 +35,6 @@ __all__ = [
     "BatchDownloader",
     "FileMerger",
     "AgentAPI",
+    "KuzuStorage",
+    "RepoNode",
 ]
