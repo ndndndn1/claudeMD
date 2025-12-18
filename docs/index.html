@@ -396,8 +396,13 @@
 
             cy.on('tap', function(evt) {
                 if (evt.target === cy) {
+                    // Click on empty space = show all nodes (clear selection)
                     cy.elements().removeClass('faded highlighted');
-                    reapplyFilter();
+                    currentFilter = { type: null, value: null };
+                    document.querySelectorAll('.category-item').forEach(el => el.classList.remove('active'));
+                    document.getElementById('node-info').classList.remove('active');
+                    document.getElementById('placeholder').style.display = 'block';
+                    selectedNode = null;
                 }
             });
         }
@@ -438,9 +443,14 @@
             ).join('');
         }
 
+        // Store only connected clusters (length > 1)
+        let connectedClusters = [];
+
         function renderClusterList() {
             const colors = ['#4ecdc4', '#ff6b6b', '#feca57', '#a55eea', '#26de81', '#fd9644', '#45aaf2'];
-            const html = clusters.filter(c => c.length > 1).map((cluster, i) => {
+            // Only keep clusters with 2+ connected nodes
+            connectedClusters = clusters.filter(c => c.length > 1);
+            const html = connectedClusters.map((cluster, i) => {
                 const nodes = cluster.map(id => nodesData.find(n => n.id === id));
                 const names = nodes.slice(0, 2).map(n => n.label).join(', ');
                 const more = nodes.length > 2 ? ' +' + (nodes.length - 2) : '';
@@ -468,7 +478,9 @@
         function filterByCluster(index) {
             currentFilter = { type: 'cluster', value: index };
             cy.elements().removeClass('faded highlighted');
-            const ids = clusters[index];
+            // Use connectedClusters (only clusters with 2+ nodes)
+            const ids = connectedClusters[index];
+            if (!ids) return;
             const matches = cy.nodes().filter(n => ids.includes(n.id()));
             cy.elements().not(matches).not(matches.connectedEdges()).addClass('faded');
             matches.addClass('highlighted');
@@ -489,7 +501,7 @@
 
         function showDownloadModal() {
             let nodes;
-            if (currentFilter.type === 'cluster') nodes = clusters[currentFilter.value].map(id => nodesData.find(n => n.id === id));
+            if (currentFilter.type === 'cluster') nodes = connectedClusters[currentFilter.value].map(id => nodesData.find(n => n.id === id));
             else if (currentFilter.type === 'language') nodes = nodesData.filter(n => n.language === currentFilter.value);
             else if (currentFilter.type === 'type') nodes = nodesData.filter(n => categorizeProject(n) === currentFilter.value);
             else {
