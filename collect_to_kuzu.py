@@ -44,11 +44,42 @@ def extract_keywords(content, max_keywords=5):
     return keywords[:max_keywords]
 
 
-def generate_summary(content, max_length=200):
-    """Generate simple summary from content."""
+def extract_project_overview(content, max_length=300):
+    """Extract Project Overview section from CLAUDE.md content."""
     lines = content.strip().split('\n')
-    summary_lines = []
 
+    # Find Project Overview section
+    overview_start = -1
+    overview_lines = []
+    in_overview = False
+
+    for i, line in enumerate(lines):
+        line_lower = line.lower().strip()
+
+        # Check for Project Overview header (various formats)
+        if re.match(r'^#+\s*(project\s*overview|overview)', line_lower):
+            in_overview = True
+            continue
+
+        # If we're in overview, collect lines until next header
+        if in_overview:
+            if line.strip().startswith('#'):
+                break  # Next section started
+            if line.strip():
+                overview_lines.append(line.strip())
+            # Limit to ~3 lines of content
+            if len(overview_lines) >= 3:
+                break
+
+    # If Project Overview found, use it
+    if overview_lines:
+        summary = ' '.join(overview_lines)
+        if len(summary) > max_length:
+            summary = summary[:max_length] + "..."
+        return summary
+
+    # Fallback: use first non-header paragraph if no Project Overview
+    summary_lines = []
     for line in lines:
         line = line.strip()
         if not line:
@@ -58,7 +89,7 @@ def generate_summary(content, max_length=200):
         if line.startswith('#'):
             continue
         summary_lines.append(line)
-        if len(' '.join(summary_lines)) > max_length:
+        if len(summary_lines) >= 3:
             break
 
     summary = ' '.join(summary_lines)
@@ -114,10 +145,11 @@ def calculate_tfidf_similarity(contents):
     return similarity
 
 
-def collect_and_store(max_results=50, db_path="./data/kuzu_db"):
+def collect_and_store(max_results=50, min_stars=0, db_path="./data/kuzu_db"):
     """Collect CLAUDE.md files and store in KùzuDB."""
     print("=" * 60)
     print("CLAUDE.md Collector - KùzuDB Storage")
+    print(f"  Min Stars: {min_stars} | Max Results: {max_results}")
     print("=" * 60)
     print()
 
@@ -162,6 +194,12 @@ def collect_and_store(max_results=50, db_path="./data/kuzu_db"):
             print("❌ Failed")
             continue
 
+        # Filter by minimum stars
+        stars = repo_info.get('stargazerCount', 0)
+        if stars < min_stars:
+            print(f"⏭️ Skipped ({stars} ⭐ < {min_stars})")
+            continue
+
         # Get file content
         try:
             content_result = subprocess.run(
@@ -197,7 +235,7 @@ def collect_and_store(max_results=50, db_path="./data/kuzu_db"):
             topics=topics,
             keywords=extract_keywords(content),
             content=content,
-            summary=generate_summary(content),
+            summary=extract_project_overview(content),
             size=len(content),
             collected_at=datetime.now().isoformat()
         )
@@ -435,4 +473,4 @@ def generate_html_visualization(storage):
 
 
 if __name__ == "__main__":
-    collect_and_store(max_results=50)
+    collect_and_store(max_results=200, min_stars=30)
